@@ -1,9 +1,19 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import FrontPage from './components/FrontPage';
+
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import Test from './components/Test';
+import FrontPage from './components/FrontPage/FrontPage';
 
 function App() {
 	return (
-		<FrontPage/>
+		<Router>
+			<Switch>
+				<Route exact path='/'>
+					<FrontPage className='d-flex align-items-center mr-5'/>
+				</Route>
+				<Route exact path='/test' component={Test} />
+			</Switch>
+		</Router>
 	);
 }
 

@@ -1,0 +1,15 @@
+.frontEndBtn {
+	width: 1000px;
+	height: 150px;
+	margin-top: 60px;
+	max-width: 100%;
+	max-height: 100%;
+}
+
+.backgroundImage{
+	background-image: url('H:/Schulsachen/Semester/Semester_6/Cloud/Project/21s-cd-teamc/frontend/src/image/ZweiPersonenMachenSport.jpg');
+	max-width: 100%;
+	max-height: 100%;
+	background-size: cover;
+
+}
