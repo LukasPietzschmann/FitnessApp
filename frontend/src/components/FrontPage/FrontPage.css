@@ -7,9 +7,10 @@
 }
 
 .backgroundImage{
-	background-image: url('H:/Schulsachen/Semester/Semester_6/Cloud/Project/21s-cd-teamc/frontend/src/image/ZweiPersonenMachenSport.jpg');
+	background-image: url('../../image/ZweiPersonenMachenSport.jpg');
+	width: 100%;
+	height: 100vh;
 	max-width: 100%;
 	max-height: 100%;
 	background-size: cover;
-
 }
