@@ -9,7 +9,7 @@ function App() {
 		<Router>
 			<Switch>
 				<Route exact path='/'>
-					<FrontPage className='d-flex align-items-center mr-5'/>
+					<FrontPage className=''/>
 				</Route>
 				<Route exact path='/test' component={Test} />
 			</Switch>
