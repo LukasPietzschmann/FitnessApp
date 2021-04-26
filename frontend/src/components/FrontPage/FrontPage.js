@@ -10,19 +10,19 @@ function FrontPage({ className }) {
 		{
 			title: 'Sport',
 			desc: 'Erstelle einen neuen Trainingsplan, um deinen Körper fit zu halten!',
-			target: '/test',
+			target: '/areaChoice',
 			img: Sport
 		},
 		{
 			title: 'Gruppen',
 			desc: 'Zusammen macht alles mehr Spaß. Trainiere zusammen mit deinen Freunden und teilt euren Vortschritt!',
-			target: '/test',
+			target: '/areaChoice',
 			img: Group
 		},
 		{
 			title: 'Shopping',
 			desc: 'Shoppe neues Equipment, um neue Trainings-Methoden zu entdecken!',
-			target: '/test',
+			target: '/areaChoice',
 			img: Shopping
 		}
 	];

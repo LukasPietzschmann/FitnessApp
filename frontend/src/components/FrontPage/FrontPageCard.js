@@ -1,4 +1,4 @@
-import './FrontPage.css';
+import '../ButtonBehavior.css';
 
 function FrontPageCard({ className, title, desc, img, target }) {
 	return (
