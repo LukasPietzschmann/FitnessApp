@@ -1,5 +1,5 @@
 
-function ExerciseTypesCards(className, title, target) {
+function ExerciseTypesCards({className, title, target}) {
 	return (
 		<div className={`card border-dark ${className}`} onClick={() => window.location = target} style={{width: '80rem'}}>
 			<div className='card-title'>

@@ -26,13 +26,13 @@ function App() {
 						<ExerciseAreaTypes id='full'/>
 					</Route>
 
-					<Route exact path='/UpperBody/Chest' >
+					<Route exact path='/areaChoice/UpperBody/Chest' >
 						<ExerciseTypes id='chest' />
 					</Route>
-					<Route exact path='/LowerBody/Legs'>
+					<Route exact path='/areaChoice/LowerBody/Legs'>
 						<ExerciseTypes id='legs'/>
 					</Route>
-					<Route exact path='/FullBody/Booty'>
+					<Route exact path='/areaChoice/FullBody/Booty'>
 						<ExerciseTypes id='booty'/>
 					</Route>
 
