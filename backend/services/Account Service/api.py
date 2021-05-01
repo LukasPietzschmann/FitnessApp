@@ -1,4 +1,5 @@
 from flask import Flask, request as req
+from flask.helpers import make_response
 from flask_restful import Api, Resource
 from pymongo import MongoClient, errors
 from hashlib import sha1
@@ -98,7 +99,10 @@ class Login(Resource):
 			return "Wrong Password", 400
 		token = ''.join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(10))
 		users.update_one({"_id": user_id}, {"$addToSet": {"tokens": token}})
-		return {"token": token}, 200
+
+		response = make_response({}, 200)
+		response.set_cookie(key="Token", value=token, secure=False)
+		return response
 
 
 class Logout(Resource):
