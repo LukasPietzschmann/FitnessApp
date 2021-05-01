@@ -88,17 +88,17 @@ class Register(Resource):
 class Login(Resource):
 	def post(self):
 		body = req.get_json() if req.content_type == "application/json" else json.loads(req.get_data().decode("utf-8"))
-		if not ("password" in body and "uid" in body):
+		if not ("password" in body and "uname" in body):
 			return "Password (password) and UserID (uid) are required", 400
-		user_id = body["uid"]
+		uname = body["uname"]
 		password = body["password"]
-		res = users.find_one({"_id": user_id})
+		res = users.find_one({"uname": uname})
 		if not res:
-			return "No valid UserID", 404
+			return "No valid Username", 404
 		if not res["password"] == password:
 			return "Wrong Password", 400
 		token = ''.join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(10))
-		users.update_one({"_id": user_id}, {"$addToSet": {"tokens": token}})
+		users.update_one({"uname": uname}, {"$addToSet": {"tokens": token}})
 
 		response = make_response({}, 200)
 		response.set_cookie(key="Token", value=token, secure=False)
