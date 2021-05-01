@@ -15,7 +15,7 @@ function AccountHeader({ className }) {
 		return (
 			<div className={`d-flex justify-content-around ${className}`}>
 				<div className='display-3'>Hallo {accInfo.name}!</div>
-				<img className='rounded-circle' src={accInfo.image} height='100rem' alt='Profile picture'/>
+				{/* <img className='rounded-circle' src={accInfo.image} height='100rem' alt='Profile picture'/> */}
 			</div>
 		);
 	else

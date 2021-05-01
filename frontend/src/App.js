@@ -4,26 +4,41 @@ import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import Test from './components/Test';
 import FrontPage from './components/FrontPage/FrontPage';
 import AreaChoice from './components/AreaChoicePage/AreaChoice';
+import ExerciseAreaTypes from './components/ExerciseAreaTypes/ExerciseAreaTypes';
+import Header from './components/Header/Header';
 import ExerciseTypes from './components/ExerciseTypes/ExerciseTypes';
 
 function App() {
 	return (
 		<Router>
-			<Switch>
-				<Route exact path='/'>
-					<FrontPage className=''/>
-				</Route>
-				<Route exact path='/areaChoice/UpperBody' >
-					<ExerciseTypes id='upper' />
-				</Route>
-				<Route exact path='/areaChoice/LowerBody'>
-					<ExerciseTypes id='lower'/>
-				</Route><Route exact path='/areaChoice/LowerBody'>
-					<ExerciseTypes id='whole'/>
-				</Route>
-				<Route exact path='/areaChoice' component={AreaChoice} />
-				<Route exact path='/areaChoice/test' component={Test} />
-			</Switch>
+			<Header/>
+				<Switch>
+					<Route exact path='/'>
+						<FrontPage className=''/>
+					</Route>
+					<Route exact path='/areaChoice/UpperBody' >
+						<ExerciseAreaTypes id='upper' />
+					</Route>
+					<Route exact path='/areaChoice/LowerBody'>
+						<ExerciseAreaTypes id='lower'/>
+					</Route>
+					<Route exact path='/areaChoice/FullBody'>
+						<ExerciseAreaTypes id='full'/>
+					</Route>
+
+					<Route exact path='/UpperBody/Chest' >
+						<ExerciseTypes id='chest' />
+					</Route>
+					<Route exact path='/LowerBody/Legs'>
+						<ExerciseTypes id='legs'/>
+					</Route>
+					<Route exact path='/FullBody/Booty'>
+						<ExerciseTypes id='booty'/>
+					</Route>
+
+					<Route exact path='/areaChoice' component={AreaChoice} />
+					<Route exact path='/areaChoice/test' component={Test} />
+				</Switch>
 		</Router>
 	);
 }

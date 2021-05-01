@@ -29,7 +29,7 @@ function FrontPage({ className }) {
 
 	return (
 		<div className={`${className}`}>
-			<AccountHeader className='mt-5' />
+			<AccountHeader className='mt-2' />
 			<div className='d-flex justify-content-around align-items-center' style={{ height: '70vh' }}>
 				{cards.map(({ title, desc, target, img }, i) => <FrontPageCard className='shadow-lg m-3' key={i} title={title} desc={desc} target={target} img={img} />)}
 			</div>
