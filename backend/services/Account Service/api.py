@@ -1,6 +1,7 @@
 from flask import Flask, request as req
 from flask.helpers import make_response
 from flask_restful import Api, Resource
+from flask_cors import CORS
 from pymongo import MongoClient, errors
 from hashlib import sha1
 import json
@@ -9,6 +10,7 @@ import string
 
 
 app = Flask(__name__)
+CORS(app, supports_credentials=True)
 api = Api(app)
 
 
