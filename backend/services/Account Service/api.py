@@ -71,9 +71,9 @@ class Register(Resource):
 	def post(self):
 		body = req.get_json() if req.content_type == "application/json" else json.loads(req.get_data().decode("utf-8"))
 		print(type(body))
-		if not "uname" in body:
+		if not "uname" in body or body["uname"] == "":
 			return "A Username (uname) is required", 400
-		if not "password" in body:
+		if not "password" in body or body["password"] == "":
 			return "A Password (passord) is required", 400
 
 		uid = str(int(sha1(body["uname"].encode("utf-8")).hexdigest(), 16) % (10 ** 10))
