@@ -1,5 +1,5 @@
 import useCookie from '../../hooks/useCookie';
-import Login from './Login';
+import LoginOrRegister from './LoginOrRegister';
 
 function Profile({ className }) {
 	const [token, deleteToken] = useCookie('Token');
@@ -8,7 +8,7 @@ function Profile({ className }) {
 		<div>
 			{
 				token ? <button onClick={deleteToken}>Delete Cookie (Token: {token.value})</button> :
-				<Login className='mx-5'/>
+				<LoginOrRegister className='mx-5' />
 			}
 		</div>
 	);
