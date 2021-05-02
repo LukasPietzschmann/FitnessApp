@@ -89,12 +89,12 @@ class Login(Resource):
 	def post(self):
 		body = req.get_json() if req.content_type == "application/json" else json.loads(req.get_data().decode("utf-8"))
 		if not ("password" in body and "uname" in body):
-			return "Password (password) and UserID (uid) are required", 400
+			return "Password (password) and Username (uname) are required", 400
 		uname = body["uname"]
 		password = body["password"]
 		res = users.find_one({"uname": uname})
 		if not res:
-			return "No valid Username", 404
+			return "No valid Username", 400
 		if not res["password"] == password:
 			return "Wrong Password", 400
 		token = ''.join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(10))
