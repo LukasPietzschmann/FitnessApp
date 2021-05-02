@@ -104,6 +104,7 @@ class Login(Resource):
 
 		response = make_response({}, 200)
 		response.set_cookie(key="Token", value=token, secure=False)
+		response.set_cookie(key="UID", value=res["_id"], secure=False)
 		return response
 
 
