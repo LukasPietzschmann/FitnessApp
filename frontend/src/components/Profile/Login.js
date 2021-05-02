@@ -27,7 +27,7 @@ function Login({ className }) {
 			</form>
 			<button className='btn btn-success' onClick={() => {
 				axiosInstance.post('/login', {uname: uname, password: passwd}, {withCredentials: true})
-					.then(window.location.reload)
+					.then(() => window.location.reload())
 					.catch(err => {
 						console.error(err.response);
 						if (err.response.status === 400)
