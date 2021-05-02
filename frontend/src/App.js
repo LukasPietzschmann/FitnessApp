@@ -7,6 +7,7 @@ import AreaChoice from './components/AreaChoicePage/AreaChoice';
 import ExerciseAreaTypes from './components/ExerciseAreaTypes/ExerciseAreaTypes';
 import Header from './components/Header/Header';
 import ExerciseTypes from './components/ExerciseTypes/ExerciseTypes';
+import Profile from './components/Profile/Profile';
 
 function App() {
 	return (
@@ -38,6 +39,7 @@ function App() {
 
 					<Route exact path='/areaChoice' component={AreaChoice} />
 					<Route exact path='/areaChoice/test' component={Test} />
+				<Route exact path='/profile' component={Profile} />
 				</Switch>
 		</Router>
 	);
