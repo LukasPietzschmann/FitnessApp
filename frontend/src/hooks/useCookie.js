@@ -7,7 +7,7 @@ function useCookie(cookieName) {
 	useEffect(() => {
 		setCookies(document.cookie.split(';').map((cookie) => {
 			let elems = cookie.split('=');
-			return { name: elems[0], value: elems[1], args: elems.slice(2) }
+			return { name: elems[0].trim(), value: elems[1], args: elems.slice(2) }
 		}));
 	}, [_]);
 
