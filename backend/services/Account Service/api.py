@@ -4,6 +4,7 @@ from flask_restful import Api, Resource
 from flask_cors import CORS
 from pymongo import MongoClient, errors
 from hashlib import sha1
+from datetime import datetime, timedelta
 import json
 import secrets
 import string
@@ -103,8 +104,8 @@ class Login(Resource):
 		users.update_one({"uname": uname}, {"$addToSet": {"tokens": token}})
 
 		response = make_response({}, 200)
-		response.set_cookie(key="Token", value=token, secure=False)
-		response.set_cookie(key="UID", value=res["_id"], secure=False)
+		response.set_cookie(key="Token", value=token, secure=False, max_age=360 * 60 * 60 * 24)
+		response.set_cookie(key="UID", value=res["_id"], secure=False, max_age=360 * 60 * 60 * 24)
 		return response
 
 
