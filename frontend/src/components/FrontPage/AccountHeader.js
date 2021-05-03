@@ -1,25 +1,30 @@
 import { useEffect, useState } from 'react';
 
+import { axiosInstance } from '../../constants';
+
+import useCookie from '../../hooks/useCookie';
+
 function AccountHeader({ className }) {
+	const [token] = useCookie('Token');
+	const [uid] = useCookie('UID');
+	const [userInfo, setUserInfo] = useState(null);
+
 	useEffect(() => {
-		//fetch Acc. Info
-		setAcc({
-			name: 'Lukas',
-			image: 'https://www.alchinlong.com/wp-content/uploads/2015/09/sample-profile.png'
-		});
-	});
+		if (uid && token) {
+			axiosInstance.get(`/user/${uid.value}`, { headers: { Token: token.value } })
+				.then(({ data }) => setUserInfo(data))
+				.catch(err => console.error(err));
+		}
+	}, [token]);
 
-	const [accInfo, setAcc] = useState(null);
-
-	if (accInfo)
+	if (userInfo)
 		return (
 			<div className={`d-flex justify-content-around ${className}`}>
-				<div className='display-3'>Hallo {accInfo.name}!</div>
-				{/* <img className='rounded-circle' src={accInfo.image} height='100rem' alt='Profile picture'/> */}
+				<div className='display-3'>Hello <b>{userInfo.uname}</b>!</div>
 			</div>
 		);
 	else
-		return '...'
+		return '';
 }
 
 export default AccountHeader;
