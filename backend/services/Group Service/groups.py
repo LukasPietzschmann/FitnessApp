@@ -1,8 +1,7 @@
 from hashlib import sha1
-from bson import errors
 from flask import Flask, request as req
 from flask_restful import Api, Resource
-from pymongo import MongoClient
+from pymongo import MongoClient, errors
 import json
 
 app = Flask(__name__)
@@ -14,7 +13,6 @@ groups = client.Benutzer.Gruppen
 class MakeGroup(Resource):
     def post(self):
         body = req.get_json() if req.content_type == "application/json" else json.loads(req.get_data().decode("utf-8"))
-        print(type(body))
         if not "gname" in body:
             return "A Groupname (gname) is required", 400
 
@@ -26,17 +24,17 @@ class MakeGroup(Resource):
                 **body
             })
         except errors.DuplicateKeyError:
-            return "Duplicate ID: Account name is already in Use", 400
+            return "Duplicate ID: Group name is already in Use", 400
         return {"uid": gid}, 200
-    
+
 class Group(Resource):
-    
+
     def get(self, group_id):
         res_group = groups.find_one({"_id": group_id})
         if not res_group:
             return "No Valid ID", 404
         return res_group, 200
-    
+
     def put(self, group_id):
         if not groups.find_one({"_id": group_id}):
             return "No valid GroupID", 404
@@ -45,7 +43,7 @@ class Group(Resource):
             return "Groupname (gname) can't be updated", 400
         groups.update_one({"_id": group_id}, {"$set": body})
         return self.get(group_id)
-    
+
     def delete(self, group_id):
         res_group = groups.find_one({"_id": group_id})
         if res_group == 0:
@@ -53,8 +51,8 @@ class Group(Resource):
         else:
             groups.delete_one({"_id": group_id})
             return res_group, 200
-        
-api.add_resource(Group, '/group/<string:group_id>')    
+
+api.add_resource(Group, '/group/<string:group_id>')
 api.add_resource(MakeGroup, '/group')
 
 if __name__ == '__main__':
