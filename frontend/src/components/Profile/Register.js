@@ -45,7 +45,24 @@ function Register({ className }) {
 				</div>
 				<div className='form-group'>
 					<label>Profile Picture</label>
-					<input className='form-control-file' type='file' accept="image/*" onChange={e => setImage(e.target.files[0])} />
+					<div className='border p-1'>
+						<input className='d-none' id='select-file' type='file' onInput={e => {
+							let file = e.target.files[0];
+							let reader = new FileReader();
+							reader.onload = e => setImage({ file: file, url: URL.createObjectURL(file), name: file.name, rawBytes: e.target.result });
+							reader.readAsBinaryString(file);
+						}}/>
+						<button className='btn btn-outline-secondary' onClick={e => {
+							document.getElementById('select-file').click();
+							e.preventDefault();
+						}}>Select Picture</button>
+						{image && <img className='rounded-circle ml-3' style={{ objectFit: 'cover' }} src={image.url} width='40em' height='40em' />}
+						<span className='ml-3 text-muted'>{image ? image.name : 'Nothing selected'}</span>
+						{image && <div className='btn float-right' onClick={e => {
+							setImage(null);
+							document.getElementById('select-file').value = '';
+						}}>X</div>}
+					</div>
 				</div>
 			</form>
 			<small className='d-block mb-4 text-secondary'>
@@ -55,8 +72,8 @@ function Register({ className }) {
 				axiosInstance.post('/user', { uname: uname, password: passwd, name: name, mail: mail, address: home}, { withCredentials: true })
 					.then(() => window.location.reload())
 					.catch(err => {
-						console.error(err.response);
-						if (err.response.status === 400)
+						console.error(err, err.response);
+						if (err.response && err.response.status === 400)
 							setError(err.response.data);
 					});
 			}}>Register</button>
