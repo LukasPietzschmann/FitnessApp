@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { axiosInstance } from '../../constants';
 
-function Register({ className }) {
+function Register({ className, style }) {
 	const [uname, setUName] = useState('');
 	const [passwd, setPasswd] = useState('');
 	const [name, setName] = useState('');
@@ -12,8 +12,8 @@ function Register({ className }) {
 	const [error, setError] = useState(null);
 
 	return (
-		<div className={className}>
-			<h1 className='display-3'>Register</h1>
+		<div className={className} style={style}>
+			<h1 className='display-3 text-center'>Register</h1>
 			<form>
 				<div className='form-group'>
 					<label>Username</label>
@@ -68,16 +68,19 @@ function Register({ className }) {
 			<small className='d-block mb-4 text-secondary'>
 				<sup className='text-danger'>*</sup> required
 			</small>
-			<button className='btn btn-success' onClick={() => { //TODO upload image
-				axiosInstance.post('/user', { uname: uname, password: passwd, name: name, mail: mail, address: home}, { withCredentials: true })
-					.then(() => window.location.reload())
-					.catch(err => {
-						console.error(err, err.response);
-						if (err.response && err.response.status === 400)
-							setError(err.response.data);
-					});
-			}}>Register</button>
-			<div className='d-inline text-danger ml-2'>{error}</div>
+			<div className='text-center'>
+				<button className='btn btn-success' onClick={() => { //TODO upload image
+					axiosInstance.post('/user', { uname: uname, password: passwd, name: name, mail: mail, address: home}, { withCredentials: true })
+						.then(() => window.location.href = '/login')
+						.catch(err => {
+							console.error(err, err.response);
+							if (err.response && err.response.status === 400)
+								setError(err.response.data);
+						});
+				}}>Register</button>
+				</div>
+			<div className='d-inline text-danger m-2'>{error}</div>
+			<div className='text-center m-4'><a href='/login'>You already have an Account? Login here!</a></div>
 		</div>
 	);
 }

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { axiosInstance } from '../../constants';
 import useUser from '../../hooks/useUser';
-import LoginOrRegister from './LoginOrRegister';
+import Login from './Login';
 
 function Profile({ className }) {
 	const [token, uid, logout] = useUser();
@@ -45,11 +45,14 @@ function Profile({ className }) {
 						}}>Save Changes</button>
 						<button className='btn btn-outline-danger float-right' onClick={() => {
 							axiosInstance.post(`/logout/${uid}`, null, { headers: { Token: token } })
-								.then(res => logout())
+								.then(res => {
+									logout();
+									window.location.href = '/login';
+								})
 								.catch(err => console.error(err));
 						}}>Logout</button>
 					</div>
-					: <LoginOrRegister />
+					: window.location.href = '/login'
 			}
 		</div>
 	);

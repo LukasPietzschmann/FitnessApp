@@ -8,41 +8,49 @@ import ExerciseAreaTypes from './components/ExerciseAreaTypes/ExerciseAreaTypes'
 import Header from './components/Header/Header';
 import ExerciseTypes from './components/ExerciseTypes/ExerciseTypes';
 import Profile from './components/Profile/Profile';
+import Login from './components/Profile/Login';
+import Register from './components/Profile/Register';
 
 function App() {
 	return (
 		<Router>
-			<Header/>
-				<Switch>
-					<Route exact path='/'>
-						<FrontPage className=''/>
-					</Route>
-					<Route exact path='/areaChoice/UpperBody' >
-						<ExerciseAreaTypes id='upper' />
-					</Route>
-					<Route exact path='/areaChoice/LowerBody'>
-						<ExerciseAreaTypes id='lower'/>
-					</Route>
-					<Route exact path='/areaChoice/FullBody'>
-						<ExerciseAreaTypes id='full'/>
-					</Route>
+			<Header />
+			<Switch>
+				<Route exact path='/'>
+					<FrontPage className='' />
+				</Route>
+				<Route exact path='/areaChoice/UpperBody' >
+					<ExerciseAreaTypes id='upper' />
+				</Route>
+				<Route exact path='/areaChoice/LowerBody'>
+					<ExerciseAreaTypes id='lower' />
+				</Route>
+				<Route exact path='/areaChoice/FullBody'>
+					<ExerciseAreaTypes id='full' />
+				</Route>
 
-					<Route exact path='/areaChoice/UpperBody/Chest' >
-						<ExerciseTypes id='chest' />
-					</Route>
-					<Route exact path='/areaChoice/LowerBody/Legs'>
-						<ExerciseTypes id='legs'/>
-					</Route>
-					<Route exact path='/areaChoice/FullBody/Booty'>
-						<ExerciseTypes id='booty'/>
-					</Route>
+				<Route exact path='/areaChoice/UpperBody/Chest' >
+					<ExerciseTypes id='chest' />
+				</Route>
+				<Route exact path='/areaChoice/LowerBody/Legs'>
+					<ExerciseTypes id='legs' />
+				</Route>
+				<Route exact path='/areaChoice/FullBody/Booty'>
+					<ExerciseTypes id='booty' />
+				</Route>
 
-					<Route exact path='/areaChoice' component={AreaChoice} />
-					<Route exact path='/areaChoice/test' component={Test} />
+				<Route exact path='/areaChoice' component={AreaChoice} />
+				<Route exact path='/areaChoice/test' component={Test} />
 				<Route exact path='/profile'>
 					<Profile className='mx-3' />
 				</Route>
-				</Switch>
+				<Route exact path='/login'>
+					<Login className='mx-auto mt-5' style={{width: 'clamp(400px, 35vw, 1000px)'}}/>
+				</Route>
+				<Route exact path='/register'>
+					<Register className='mx-auto mt-5' style={{width: 'clamp(400px, 35vw, 1000px)'}}/>
+				</Route>
+			</Switch>
 		</Router>
 	);
 }
