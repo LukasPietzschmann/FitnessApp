@@ -39,7 +39,9 @@ function App() {
 
 					<Route exact path='/areaChoice' component={AreaChoice} />
 					<Route exact path='/areaChoice/test' component={Test} />
-				<Route exact path='/profile' component={Profile} />
+				<Route exact path='/profile'>
+					<Profile className='mx-3' />
+				</Route>
 				</Switch>
 		</Router>
 	);
