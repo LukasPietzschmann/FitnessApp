@@ -30,7 +30,7 @@ function Login({ className }) {
 					.then(() => window.location.reload())
 					.catch(err => {
 						console.error(err.response);
-						if (err.response.status === 400)
+						if (err.response && err.response.status === 400)
 							setError(err.response.data);
 					});
 			}}>Login</button>

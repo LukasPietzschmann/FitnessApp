@@ -14,7 +14,7 @@ function useCookie(cookieName) {
 	let cookie = cookies.find(elem => elem.name === cookieName);
 
 	return [cookie, () => {
-		if (cookie == undefined)
+		if (cookie === undefined)
 			return;
 		document.cookie = `${cookieName}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;`;
 		refresh();
