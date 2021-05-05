@@ -2,9 +2,11 @@ from hashlib import sha1
 from flask import Flask, request as req
 from flask_restful import Api, Resource
 from pymongo import MongoClient, errors
+from flask_cors import CORS
 import json
 
 app = Flask(__name__)
+CORS(app, supports_credentials=True)
 api = Api(app)
 
 client = MongoClient("mongodb+srv://Backend:j31pfFcnrxUni0DO@cluster0.si7sf.mongodb.net/Group?retryWrites=true&w=majority")
@@ -39,8 +41,6 @@ class Group(Resource):
         if not groups.find_one({"_id": group_id}):
             return "No valid GroupID", 404
         body = req.get_json() if req.content_type == "application/json" else json.loads(req.get_data().decode("utf-8"))
-        if "gname" in body:
-            return "Groupname (gname) can't be updated", 400
         groups.update_one({"_id": group_id}, {"$set": body})
         return self.get(group_id)
 
