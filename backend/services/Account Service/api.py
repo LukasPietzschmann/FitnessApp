@@ -4,7 +4,6 @@ from flask_restful import Api, Resource
 from flask_cors import CORS
 from pymongo import MongoClient, errors
 from hashlib import sha1
-from datetime import datetime, timedelta
 import json
 import secrets
 import string
@@ -15,8 +14,8 @@ CORS(app, supports_credentials=True)
 api = Api(app)
 
 
-client = MongoClient("mongodb+srv://Lukas:thasSKfdalJHL@cluster0.si7sf.mongodb.net/Users?retryWrites=true&w=majority")
-users = client.CDCTeamC.Users
+client = MongoClient("mongodb+srv://Backend:j31pfFcnrxUni0DO@cluster0.si7sf.mongodb.net/User?retryWrites=true&w=majority")
+users = client.GroupAndUser.User
 
 
 def needs_authentication(func):

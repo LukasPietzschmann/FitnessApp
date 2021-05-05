@@ -7,8 +7,8 @@ import json
 app = Flask(__name__)
 api = Api(app)
 
-client = MongoClient("mongodb+srv://User1:1234@cdcteamc.oon82.mongodb.net/Benutzer?retryWrites=true&w=majority")
-groups = client.Benutzer.Gruppen
+client = MongoClient("mongodb+srv://Backend:j31pfFcnrxUni0DO@cluster0.si7sf.mongodb.net/Group?retryWrites=true&w=majority")
+groups = client.GroupAndUser.Group
 
 class MakeGroup(Resource):
     def post(self):
