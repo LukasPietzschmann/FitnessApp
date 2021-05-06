@@ -10,6 +10,8 @@ import ExerciseTypes from './components/ExerciseTypes/ExerciseTypes';
 import Profile from './components/Profile/Profile';
 import Login from './components/Profile/Login';
 import Register from './components/Profile/Register';
+import Group from './components/Group/GroupPage';
+import GroupOverlay from './components/GroupOverlay/GroupOverlay';
 
 function App() {
 	return (
@@ -29,18 +31,20 @@ function App() {
 					<ExerciseAreaTypes id='full' />
 				</Route>
 
-				<Route exact path='/areaChoice/UpperBody/Chest' >
-					<ExerciseTypes id='chest' />
-				</Route>
-				<Route exact path='/areaChoice/LowerBody/Legs'>
-					<ExerciseTypes id='legs' />
-				</Route>
-				<Route exact path='/areaChoice/FullBody/Booty'>
-					<ExerciseTypes id='booty' />
-				</Route>
-
-				<Route exact path='/areaChoice' component={AreaChoice} />
+					<Route exact path='/areaChoice/UpperBody/Chest' >
+						<ExerciseTypes id='chest' />
+					</Route>
+					<Route exact path='/areaChoice/LowerBody/Legs'>
+						<ExerciseTypes id='legs'/>
+					</Route>
+					<Route exact path='/areaChoice/FullBody/Booty'>
+						<ExerciseTypes id='booty'/>
+					</Route>
+					<Route exact path='/Group' component={Group} />
+					<Route exact path='/Group/GroupOverlay' component={GroupOverlay}/>
+					<Route exact path='/areaChoice' component={AreaChoice} />
 				<Route exact path='/areaChoice/test' component={Test} />
+
 				<Route exact path='/profile'>
 					<Profile className='mx-3' />
 				</Route>
