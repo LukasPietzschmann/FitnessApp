@@ -1,11 +1,21 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
+import useUser from '../../hooks/useUser';
 import { axiosInstance } from '../../constants';
 
 function Login({ className, style }) {
 	const [uname, setUName] = useState('');
 	const [passwd, setPasswd] = useState('');
 	const [error, setError] = useState(null);
+
+	const [token, uid, logout] = useUser();
+
+	useEffect(() => {
+		if (token && uid)
+			axiosInstance.get(`/user/${uid}`, { headers: { Token: token } })
+				.then(({ data }) => setError(`You (${data.uname}) are already logged in!`))
+				.catch(err => console.error(err));
+	}, [token, uid]);
 
 	return (
 		<div className={`${className}`} style={style}>
@@ -26,7 +36,7 @@ function Login({ className, style }) {
 				</div>
 			</form>
 			<div className='text-center'>
-				<button className='btn btn-success' onClick={() => {
+				<button className='btn btn-success btn-disabled' disabled={token && uid} onClick={() => {
 					axiosInstance.post('/login', {uname: uname, password: passwd}, {withCredentials: true})
 						.then(() => window.location.href = '/')
 						.catch(err => {
