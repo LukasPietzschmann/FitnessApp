@@ -16,6 +16,7 @@ api = Api(app)
 
 client = MongoClient("mongodb+srv://Backend:j31pfFcnrxUni0DO@cluster0.si7sf.mongodb.net/User?retryWrites=true&w=majority")
 users = client.GroupAndUser.User
+groups = client.GroupAndUser.Group
 
 
 def needs_authentication(func):
@@ -28,7 +29,8 @@ def needs_authentication(func):
 	def wrapper(*args, **kw):
 		if (token := req.headers.get("token")) == None:
 			return "No Token was spezified", 401
-		if (uid := kw['user_id']) == None and (uid := args[1]) == None:
+		uid = req.headers.get("uid") or (kw["user_id"] if "user_id" in kw else (args[1] if len(args) > 2 else None))
+		if uid == None:
 			return "No uid was spezified", 401
 		if not authenticate(uid, token):
 			return "No valid Token for the given uid", 401
@@ -70,7 +72,6 @@ class User(Resource):
 class Register(Resource):
 	def post(self):
 		body = req.get_json() if req.content_type == "application/json" else json.loads(req.get_data().decode("utf-8"))
-		print(type(body))
 		if not "uname" in body or body["uname"] == "":
 			return "A Username (uname) is required", 400
 		if not "password" in body or body["password"] == "":
@@ -123,6 +124,86 @@ api.add_resource(User, '/user/<string:user_id>')
 api.add_resource(Register, '/user')
 api.add_resource(Login, '/login')
 api.add_resource(Logout, '/logout/<string:user_id>')
+
+
+def needs_to_be_in_group(func):
+	def wrapper(*args, **kw):
+		gid = kw["group_id"] if "group_id" in kw else (args[1] if len(args) > 2 else None)
+		uid = req.headers.get("uid") or (kw["user_id"] if "user_id" in kw else (args[2] if len(args) > 3 else None))
+		res = groups.find_one({"_id": gid})
+		if res == None:
+			return "No valid GroupID", 404
+		if "members" in res and uid in res["members"]:
+			return func(*args, **kw)
+		return "The given User is no Member of the given Group", 400
+	return wrapper
+
+
+class Group(Resource):
+	@needs_authentication
+	@needs_to_be_in_group
+	def get(self, group_id):
+		res = groups.find_one({"_id": group_id})
+		if not res:
+			return "No valid GroupID", 404
+		return res, 200
+
+
+	@needs_authentication
+	@needs_to_be_in_group
+	def put(self, group_id):
+		if not groups.find_one({"_id": group_id}):
+			return "No valid GroupID", 404
+		body = req.get_json() if req.content_type == "application/json" else json.loads(req.get_data().decode("utf-8"))
+		if "gname" in body:
+			return "Groupname (gname) can't be updated", 400
+		groups.update_one({"_id": group_id}, {"$set": body})
+		return self.get(group_id)
+
+
+class MakeGroup(Resource):
+	@needs_authentication
+	def post(self):
+		body = req.get_json() if req.content_type == "application/json" else json.loads(req.get_data().decode("utf-8"))
+		if not "gname" in body or body["gname"] == "":
+			return "A Groupname (gname) is required", 400
+
+		gid = str(int(sha1(body["gname"].encode("utf-8")).hexdigest(), 16) % (10 ** 10))
+		try:
+			groups.insert_one({
+				"_id": gid,
+				**body
+			})
+		except errors.DuplicateKeyError:
+			return "Duplicate ID: Groupname is already in Use", 400
+		return {"gid": gid}, 200
+
+
+class AddUserToGroup(Resource):
+	@needs_authentication
+	def post(self, group_id, user_id):
+		if not (group := groups.find_one({"_id": group_id})):
+			return "No valid GroupID", 404
+		if not users.find_one({"_id": user_id}):
+			return "No valid UserID", 404
+		groups.update_one({"_id": group_id}, {"$addToSet": {"members": user_id}})
+		return None, 200
+
+	@needs_authentication
+	@needs_to_be_in_group
+	def delete(self, group_id, user_id):
+		if not (group := groups.find_one({"_id": group_id})):
+			return "No valid GroupID", 404
+		if not users.find_one({"_id": user_id}):
+			return "No valid UserID", 404
+		groups.update({"_id": group_id}, {"$pull": {"members": user_id}})
+		#TODO wenn keine Benutzer mehr drin sind -> Gruppe löschen
+		return None, 200
+
+
+api.add_resource(Group, '/group/<string:group_id>')
+api.add_resource(MakeGroup, '/group')
+api.add_resource(AddUserToGroup, '/group/<string:group_id>/<string:user_id>')
 
 
 if __name__ == '__main__':
