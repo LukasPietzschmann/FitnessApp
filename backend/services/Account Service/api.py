@@ -120,7 +120,21 @@ class Logout(Resource):
 		return None, 200
 
 
+class GroupsWithUser(Resource):
+	@needs_authentication
+	# FIXME Wenn im Header eine uid angegeben ist (mit dem korrekten Token) dann
+	# lässt sich eine andere uid im Pfad angeben und somit lassen sich die
+	# Gruppen anderer Benutzer abfragen
+	def get(self, user_id):
+		res = users.find_one({"_id": user_id})
+		if not res:
+			return "No valid UserID", 404
+		gres = groups.find({"members": {"$elemMatch": {"$eq": user_id}}})
+		return list(gres), 200
+
+
 api.add_resource(User, '/user/<string:user_id>')
+api.add_resource(GroupsWithUser, '/user/<string:user_id>/groups')
 api.add_resource(Register, '/user')
 api.add_resource(Login, '/login')
 api.add_resource(Logout, '/logout/<string:user_id>')
