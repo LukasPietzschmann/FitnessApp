@@ -39,6 +39,14 @@ def needs_authentication(func):
 	return wrapper
 
 
+class UserName(Resource):
+	def get(self, user_id):
+		res = users.find_one({"_id": user_id})
+		if not res:
+			return "No valid UserID", 404
+		return res["uname"], 200
+
+
 class User(Resource):
 	@needs_authentication
 	def get(self, user_id):
@@ -135,6 +143,7 @@ class GroupsWithUser(Resource):
 
 api.add_resource(User, '/user/<string:user_id>')
 api.add_resource(GroupsWithUser, '/user/<string:user_id>/groups')
+api.add_resource(UserName, '/user/<string:user_id>/name')
 api.add_resource(Register, '/user')
 api.add_resource(Login, '/login')
 api.add_resource(Logout, '/logout/<string:user_id>')
