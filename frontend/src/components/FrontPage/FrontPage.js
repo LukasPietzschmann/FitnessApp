@@ -16,7 +16,7 @@ function FrontPage({ className }) {
 		{
 			title: 'Gruppen',
 			desc: 'Zusammen macht alles mehr Spaß. Trainiere zusammen mit deinen Freunden und teilt euren Vortschritt!',
-			target: '/Group',
+			target: '/groups',
 			img: Group
 		},
 		{
