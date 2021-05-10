@@ -12,6 +12,7 @@ import Login from './components/Profile/Login';
 import Register from './components/Profile/Register';
 import AllGroups from './components/AllGroups/AllGroups';
 import Group from './components/SingleGroup/Group';
+import GroupInvitation from './components/SingleGroup/GroupInvitation';
 
 function App() {
 	return (
@@ -31,28 +32,29 @@ function App() {
 					<ExerciseAreaTypes id='full' />
 				</Route>
 
-					<Route exact path='/areaChoice/UpperBody/Chest' >
-						<ExerciseTypes id='chest' />
-					</Route>
-					<Route exact path='/areaChoice/LowerBody/Legs'>
-						<ExerciseTypes id='legs'/>
-					</Route>
-					<Route exact path='/areaChoice/FullBody/Booty'>
-						<ExerciseTypes id='booty'/>
-					</Route>
-					<Route exact path='/groups' component={AllGroups} />
-					<Route exact path='/groups/:group_id' component={Group}/>
-					<Route exact path='/areaChoice' component={AreaChoice} />
+				<Route exact path='/areaChoice/UpperBody/Chest' >
+					<ExerciseTypes id='chest' />
+				</Route>
+				<Route exact path='/areaChoice/LowerBody/Legs'>
+					<ExerciseTypes id='legs' />
+				</Route>
+				<Route exact path='/areaChoice/FullBody/Booty'>
+					<ExerciseTypes id='booty' />
+				</Route>
+				<Route exact path='/groups' component={AllGroups} />
+				<Route exact path='/groups/:group_id' component={Group} />
+				<Route exact path='/groups/:group_id/join' component={GroupInvitation} />
+				<Route exact path='/areaChoice' component={AreaChoice} />
 				<Route exact path='/areaChoice/test' component={Test} />
 
 				<Route exact path='/profile'>
 					<Profile className='mx-3' />
 				</Route>
 				<Route exact path='/login'>
-					<Login className='mx-auto mt-5' style={{width: 'clamp(400px, 35vw, 1000px)'}}/>
+					<Login className='mx-auto mt-5' style={{ width: 'clamp(400px, 35vw, 1000px)' }} />
 				</Route>
 				<Route exact path='/register'>
-					<Register className='mx-auto mt-5' style={{width: 'clamp(400px, 35vw, 1000px)'}}/>
+					<Register className='mx-auto mt-5' style={{ width: 'clamp(400px, 35vw, 1000px)' }} />
 				</Route>
 			</Switch>
 		</Router>

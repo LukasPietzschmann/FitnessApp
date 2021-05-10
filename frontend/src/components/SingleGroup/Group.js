@@ -50,6 +50,13 @@ function Group({ className, match }) {
 					{memberNames.map(member => <li className='list-group-item' key={member}>{member}</li>)}
 				</ul>
 			</div>
+			<button className='btn btn-outline-primary' onClick={() => {
+				//TODO prefix with FrontendServer IP
+				let link = `http://localhost:3000/groups/${group._id}/join`;
+				navigator.clipboard.writeText(link)
+					.then(() => console.log('Async: Copying to clipboard was successful!'))
+					.catch((err) => console.error('Async: Could not copy text: ', err));
+			}}>Copy Invitation Link</button>
 			<button className='btn btn-outline-danger' onClick={() => {
 				axiosInstance.delete(`/group/${group._id}/${uid}`, { headers: { Token: token } })
 					.then(res => window.location.href = "/")
