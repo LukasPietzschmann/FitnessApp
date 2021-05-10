@@ -224,9 +224,18 @@ class AddUserToGroup(Resource):
 		return None, 200
 
 
+class GroupName(Resource):
+	def get(self, group_id):
+		res = groups.find_one({"_id": group_id})
+		if not res:
+			return "No valid GroupID", 404
+		return res["gname"], 200
+
+
 api.add_resource(Group, '/group/<string:group_id>')
 api.add_resource(MakeGroup, '/group')
 api.add_resource(AddUserToGroup, '/group/<string:group_id>/<string:user_id>')
+api.add_resource(GroupName, '/group/<string:group_id>/name')
 
 
 if __name__ == '__main__':
