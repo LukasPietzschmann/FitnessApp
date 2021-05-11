@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { axiosInstance } from '../../constants';
+import uploadToBlob from '../../tools/uploadToBlob';
 
 function Register({ className, style }) {
 	const [uname, setUName] = useState('');
@@ -69,14 +70,17 @@ function Register({ className, style }) {
 				<sup className='text-danger'>*</sup> required
 			</small>
 			<div className='text-center'>
-				<button className='btn btn-success' onClick={() => { //TODO upload image
-					axiosInstance.post('/user', { uname: uname, password: passwd, name: name, mail: mail, address: home}, { withCredentials: true })
-						.then(() => window.location.href = '/login')
-						.catch(err => {
-							console.error(err, err.response);
-							if (err.response && err.response.status === 400)
-								setError(err.response.data);
-						});
+				<button className='btn btn-success' onClick={() => {
+					uploadToBlob(`${uname}-profile-pic.jpg`, image.file).then(({url, deleteBlob}) => {
+						axiosInstance.post('/user', { uname: uname, password: passwd, name: name, mail: mail, address: home, img: url}, { withCredentials: true })
+							.then(() => {})
+							.catch(err => {
+								console.error(err, err.response);
+								deleteBlob(); //FIXME wenn der uname schon vorhanden war, wird das Bild des Benutzers mit dem uname gelöscht
+								if (err.response && err.response.status === 400)
+									setError(err.response.data);
+							});
+					})
 				}}>Register</button>
 				</div>
 			<div className='d-inline text-danger m-2'>{error}</div>
