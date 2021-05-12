@@ -73,7 +73,7 @@ function Register({ className, style }) {
 				<button className='btn btn-success' onClick={() => {
 					uploadToBlob(`${uname}-profile-pic.jpg`, image.file).then(({url, deleteBlob}) => {
 						axiosInstance.post('/user', { uname: uname, password: passwd, name: name, mail: mail, address: home, img: url}, { withCredentials: true })
-							.then(() => {})
+							.then(() => window.location.href = '/login')
 							.catch(err => {
 								console.error(err, err.response);
 								deleteBlob(); //FIXME wenn der uname schon vorhanden war, wird das Bild des Benutzers mit dem uname gelöscht
