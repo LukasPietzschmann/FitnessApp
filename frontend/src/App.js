@@ -13,6 +13,7 @@ import Register from './components/Profile/Register';
 import AllGroups from './components/AllGroups/AllGroups';
 import Group from './components/SingleGroup/Group';
 import GroupInvitation from './components/SingleGroup/GroupInvitation';
+import NotFound from './components/NotFound';
 
 function App() {
 	return (
@@ -56,6 +57,7 @@ function App() {
 				<Route exact path='/register'>
 					<Register className='mx-auto mt-5' style={{ width: 'clamp(400px, 35vw, 1000px)' }} />
 				</Route>
+				<Route component={NotFound} />
 			</Switch>
 		</Router>
 	);
