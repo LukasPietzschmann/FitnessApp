@@ -8,20 +8,20 @@ import Group from '../../image/group.png';
 function FrontPage({ className }) {
 	const cards = [
 		{
-			title: 'Sport',
-			desc: 'Erstelle einen neuen Trainingsplan, um deinen Körper fit zu halten!',
+			title: 'Sports',
+			desc: 'Create a new workout plan to keep your body fit and in shape!',
 			target: '/areaChoice',
 			img: Sport
 		},
 		{
-			title: 'Gruppen',
-			desc: 'Zusammen macht alles mehr Spaß. Trainiere zusammen mit deinen Freunden und teilt euren Vortschritt!',
+			title: 'Groups',
+			desc: 'Everything is more fun together. Woukout together with your friends and share your progress!',
 			target: '/groups',
 			img: Group
 		},
 		{
 			title: 'Shopping',
-			desc: 'Shoppe neues Equipment, um neue Trainings-Methoden zu entdecken!',
+			desc: 'Shop new equipment to discover new training methods!',
 			target: '/areaChoice',
 			img: Shopping
 		}
