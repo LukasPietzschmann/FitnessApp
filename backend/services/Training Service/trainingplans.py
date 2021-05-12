@@ -3,13 +3,15 @@ from flask import Flask, request as req
 from flask_restful import Api, Resource
 from pymongo import MongoClient, errors
 from flask_cors import CORS
+from os import environ as env
+from dotenv import load_dotenv
 import json
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 api = Api(app)
 
-client = MongoClient("mongodb+srv://Backend:j31pfFcnrxUni0DO@cluster0.si7sf.mongodb.net/Group?retryWrites=true&w=majority")
+client = MongoClient(env.get("MONGODB_CON_STR"))
 units = client.Training.TrainingUnits
 plans = client.Training.TrainingPlans
 users = client.GroupAndUser.User
@@ -70,4 +72,5 @@ class WorkoutPlan(Resource):
 api.add_resource(WorkoutPlan, '/gitworkoutPlan/<string:unit_id>')
 
 if __name__ == '__main__':
-    app.run(debug=True)        
+    load_dotenv()
+    app.run(debug=True)

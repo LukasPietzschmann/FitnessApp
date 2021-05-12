@@ -1,15 +1,16 @@
 ﻿from hashlib import sha1
 from flask import Flask, request as req
 from flask_restful import Api, Resource
-from pymongo import MongoClient, errors
+from pymongo import MongoClient
 from flask_cors import CORS
-import json
+from dotenv import load_dotenv
+from os import environ as env
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 api = Api(app)
 
-client = MongoClient("mongodb+srv://Backend:j31pfFcnrxUni0DO@cluster0.si7sf.mongodb.net/Group?retryWrites=true&w=majority")
+client = MongoClient(env.get("MONGODB_CON_STR"))
 units = client.Training.TrainingUnits
 users = client.GroupAndUser.User
 
@@ -45,4 +46,5 @@ class TrainingUnit(Resource):
 api.add_resource(TrainingUnit, '/trainingUnits/<string:unit_id>')
 
 if __name__ == '__main__':
-    app.run(debug=True)        
+    load_dotenv()
+    app.run(debug=True)

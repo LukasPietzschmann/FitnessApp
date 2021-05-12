@@ -3,3 +3,4 @@ flask_restful
 pymongo
 dnspython
 flask_cors
+python-dotenv

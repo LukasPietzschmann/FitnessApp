@@ -4,6 +4,8 @@ from flask_restful import Api, Resource
 from flask_cors import CORS
 from pymongo import MongoClient, errors
 from hashlib import sha1
+from dotenv import load_dotenv
+from os import environ as env
 import json
 import secrets
 import string
@@ -14,7 +16,7 @@ CORS(app, supports_credentials=True)
 api = Api(app)
 
 
-client = MongoClient("mongodb+srv://Backend:j31pfFcnrxUni0DO@cluster0.si7sf.mongodb.net/User?retryWrites=true&w=majority")
+client = MongoClient(env.get("MONGODB_CON_STR"))
 users = client.GroupAndUser.User
 groups = client.GroupAndUser.Group
 
@@ -239,4 +241,5 @@ api.add_resource(GroupName, '/group/<string:group_id>/name')
 
 
 if __name__ == '__main__':
+	load_dotenv()
 	app.run(debug=True)

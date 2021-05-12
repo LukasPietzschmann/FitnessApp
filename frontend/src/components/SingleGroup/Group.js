@@ -51,8 +51,7 @@ function Group({ className, match }) {
 				</ul>
 			</div>
 			<button className='btn btn-outline-primary' onClick={() => {
-				//TODO prefix with FrontendServer IP
-				let link = `http://localhost:3000/groups/${group._id}/join`;
+				let link = `${process.env.REACT_APP_FRONTEND_BASE}groups/${group._id}/join`;
 				navigator.clipboard.writeText(link)
 					.then(() => console.log('Async: Copying to clipboard was successful!'))
 					.catch((err) => console.error('Async: Could not copy text: ', err));
