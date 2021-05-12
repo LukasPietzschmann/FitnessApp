@@ -14,8 +14,25 @@ import AllGroups from './components/AllGroups/AllGroups';
 import Group from './components/SingleGroup/Group';
 import GroupInvitation from './components/SingleGroup/GroupInvitation';
 import NotFound from './components/NotFound';
+import useUser from './hooks/useUser';
 
 function App() {
+	const [token, uid, logout] = useUser();
+
+	if (!(token && uid))
+		return (
+			<Router>
+				<Switch>
+					<Route exact path={['/', '/login']}>
+						<Login className='mx-auto mt-5' style={{ width: 'clamp(400px, 35vw, 1000px)' }} />
+					</Route>
+					<Route exact path='/register'>
+						<Register className='mx-auto mt-5' style={{ width: 'clamp(400px, 35vw, 1000px)' }} />
+					</Route>
+					<Route component={NotFound}/>
+				</Switch>
+			</Router>
+		);
 	return (
 		<Router>
 			<Header />
