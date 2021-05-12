@@ -4,4 +4,4 @@ A simple Fitness App written with REACT and Python Flask by:
 * **Vincent Ugrai** ([@Gremmling](https://github.com/Gremmling))
 * **Leon Schugk** ([@K1ngSlam](https://github.com/K1ngSlam))
 * **Johannes Wimmer**
-* **Johannes Schenker**
+* **Johannes Schenker** ([@Blackyoshi](https://github.com/Blackyoshi))
