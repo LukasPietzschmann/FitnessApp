@@ -5,6 +5,9 @@ import useUser from '../../hooks/useUser';
 import Modal from '../Modal/Modal';
 import GroupCard from './GroupCard.js';
 
+import JoinGroupIcon from '../../image/join_group.svg';
+import AddGroupIcon from '../../image/add.svg';
+
 
 function AllGroups({ className }) {
 	const [token, uid, logout] = useUser();
@@ -51,8 +54,8 @@ function AllGroups({ className }) {
 			</Modal>
 			<div className='d-inline-flex mt-3 ml-3'>
 				{groups.map(({ gname, img, _id }, i) => <GroupCard className='shadow-lg m-2' key={i} title={gname} target={`/groups/${_id}`} img={img} />)}
-				<GroupCard className='shadow-lg m-2' key='join' title='Join Group' onClick={() => join(true)} />
-				<GroupCard className='shadow-lg m-2' key='add' title='Add Group' onClick={() => add(true)} />
+				<GroupCard className='shadow-lg m-2' key='join' title='Join Group' img={JoinGroupIcon} onClick={() => join(true)} />
+				<GroupCard className='shadow-lg m-2' key='add' title='Add Group' img={AddGroupIcon} onClick={() => add(true)} />
 			</div>
 		</div>
 	);
