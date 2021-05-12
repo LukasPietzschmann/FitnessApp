@@ -1,4 +1,4 @@
-# Fitness App
+# Crush It
 A simple Fitness App written with REACT and Python Flask by:
 * **Lukas Pietzschmann** ([@LukasPietzschmann](https://github.com/LukasPietzschmann))
 * **Vincent Ugrai** ([@Gremmling](https://github.com/Gremmling))

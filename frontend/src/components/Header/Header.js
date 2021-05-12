@@ -20,7 +20,7 @@ function Header({ className }) {
 		<nav className={`navbar navbar-light shadow ${className}`} style={{backgroundColor: '#1995d1'}}>
 			<a className='navbar-brand' href='/'>
 				<img className='align-center mr-2' src={logo} height='40rem' alt='Logo' />
-				<text className='text-light'>App-Name</text>
+				<text className='text-light'>Crush It</text>
 			</a>
 			<a href='/profile'>
 				<img className='rounded-circle' src={userData && userData.img ? userData.img : profilPic} height='50rem' width='50rem' alt='Profile picture' style={{objectFit: 'cover'}} />
