@@ -2,12 +2,12 @@
 	--animDur: 0.2s;
 }
 
-.card {
+.card.hover-card {
 	transform: scale(1);
 	transition: var(--animDur);
 }
 
-.card:hover {
+.card:hover.hover-card {
 	transform: scale(1.1);
 	transition: var(--animDur);
 	cursor: pointer;
