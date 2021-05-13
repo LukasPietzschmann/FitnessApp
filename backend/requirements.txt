@@ -4,3 +4,4 @@ pymongo
 dnspython
 flask_cors
 python-dotenv
+requests

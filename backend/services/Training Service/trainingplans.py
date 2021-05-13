@@ -73,4 +73,3 @@ api.add_resource(WorkoutPlan, '/gitworkoutPlan/<string:unit_id>')
 
 if __name__ == '__main__':
     load_dotenv()
-    app.run(debug=True)

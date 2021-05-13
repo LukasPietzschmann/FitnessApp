@@ -242,4 +242,4 @@ api.add_resource(GroupName, '/group/<string:group_id>/name')
 
 if __name__ == '__main__':
 	load_dotenv()
-	app.run(debug=True)
+	app.run(debug=True, port=env.get("USER_GROUP_PORT"))
