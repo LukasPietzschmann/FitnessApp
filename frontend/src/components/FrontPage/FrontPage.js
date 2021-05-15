@@ -4,6 +4,7 @@ import AccountHeader from './AccountHeader';
 import Sport from '../../image/sport.png';
 import Shopping from '../../image/shopping.png';
 import Group from '../../image/group.png';
+import CurrentPlan from './CurrentPlan';
 
 function FrontPage({ className }) {
 	const cards = [
@@ -30,6 +31,7 @@ function FrontPage({ className }) {
 	return (
 		<div className={`${className}`}>
 			<AccountHeader className='mt-2' />
+			<CurrentPlan className='mx-5 mt-5 p-2' />
 			<div className='d-flex justify-content-around align-items-center' style={{ height: '70vh' }}>
 				{cards.map(({ title, desc, target, img }, i) => <FrontPageCard className='shadow-lg m-3' key={i} title={title} desc={desc} target={target} img={img} />)}
 			</div>
