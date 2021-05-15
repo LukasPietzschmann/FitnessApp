@@ -40,27 +40,34 @@ function Group({ className, match }) {
 		}
 	]
 	return (
-		<div className='mt-4 ml-4 mr-4'>
-			<h1 className='display-3 text-center'>{group && group.gname}</h1>
-			<div className='float-left d-inline-flex' style={{ height: '50rem', width: '120vh' }}>
-				{cards.map(({ title, img}, i) => <PlanCard className='shadow-lg ml-1' key={i} title={title} img={img} />)}
+		group && <div className='m-3'>
+			<h1 className='display-3 text-center' onChange={e => console.log(e.target.value)}>{group.gname}</h1>
+			<div className='row'>
+				<div className='col-9 d-flex flex-wrap justify-content-around'>
+					{cards.map(({ title, img }, i) => <PlanCard className='shadow-lg m-2' key={i} title={title} img={img} />)}
+				</div>
+				<div className='col'>
+					<img className='img-fluid rounded row-auto mb-4' alt={`${group.gname} Picture`} src={group.img} />
+					<div className='row-auto mb-4'>
+						<ul className='list-group'>
+							{memberNames.map(member => <li className='list-group-item' key={member}>{member}</li>)}
+						</ul>
+					</div>
+					<div className='btn-group-vertical d-flex'>
+						<button className='btn btn-block btn-primary' onClick={() => {
+							let link = `${process.env.REACT_APP_FRONTEND_BASE}groups/${group._id}/join`;
+							navigator.clipboard.writeText(link)
+								.then(() => console.log('Async: Copying to clipboard was successful!'))
+								.catch((err) => console.error('Async: Could not copy text: ', err));
+						}}>Copy Invitation Link</button>
+						<button className='btn btn-block btn-outline-danger' onClick={() => {
+							axiosInstance.delete(`/group/${group._id}/${uid}`, { headers: { Token: token } })
+								.then(res => window.location.href = "/")
+								.catch(err => console.error(err.response));
+						}}>Leave Group</button>
+					</div>
+				</div>
 			</div>
-			<div>
-				<ul className='list-group'>
-					{memberNames.map(member => <li className='list-group-item' key={member}>{member}</li>)}
-				</ul>
-			</div>
-			<button className='btn btn-outline-primary' onClick={() => {
-				let link = `${process.env.REACT_APP_FRONTEND_BASE}groups/${group._id}/join`;
-				navigator.clipboard.writeText(link)
-					.then(() => console.log('Async: Copying to clipboard was successful!'))
-					.catch((err) => console.error('Async: Could not copy text: ', err));
-			}}>Copy Invitation Link</button>
-			<button className='btn btn-outline-danger' onClick={() => {
-				axiosInstance.delete(`/group/${group._id}/${uid}`, { headers: { Token: token } })
-					.then(res => window.location.href = "/")
-					.catch(err => console.error(err.response));
-			}}>Leave Group</button>
 		</div>
 	);
 }
