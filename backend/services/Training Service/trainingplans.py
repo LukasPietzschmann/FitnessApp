@@ -52,24 +52,32 @@ class MakeWorkoutPlan(Resource):
         except errors.DuplicateKeyError:
              return "Duplicate ID: WorkoutPlanname is already in Use", 400
         return {"pid": pid}, 200
-    
+
 class WorkoutPlan(Resource):
     @needs_authentication
-    def get(self, Wplan_id):
-        res = plans.find_one({"_id": Wplan_id})
+    def get(self, plan_id):
+        res = plans.find_one({"_id": plan_id})
         if not res:
             return "No valid WorkoutPlanID", 404
+        new_units = []
+        for unit in res["units"]:
+            udata = units.find_one({"_id": unit["_id"]})
+            if(not udata):
+                break
+            new_units.append({**unit, **udata})
+        res["units"] = new_units
         return res, 200
 
     @needs_authentication
-    def put(self, Wplan_id):
-        if not plans.find_one({"_id": Wplan_id}):
+    def put(self, plan_id):
+        if not plans.find_one({"_id": plan_id}):
             return "No valid WorkoutPlanID", 404
         body = req.get_json() if req.content_type == "application/json" else json.loads(req.get_data().decode("utf-8"))
-        plans.update_one({"_id": Wplan_id}, {"$set": body})
-        return self.get(Wplan_id)
+        plans.update_one({"_id": plan_id}, {"$set": body})
+        return self.get(plan_id)
 
-api.add_resource(WorkoutPlan, '/gitworkoutPlan/<string:unit_id>')
+api.add_resource(WorkoutPlan, '/workoutPlan/<string:plan_id>')
 
 if __name__ == '__main__':
     load_dotenv()
+    app.run(debug=True, port=env.get("WORKOUT_PORT"))
