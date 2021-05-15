@@ -1,4 +1,5 @@
 from flask import Flask, request as req
+from flask.globals import request
 from flask.helpers import make_response
 from flask_restful import Api, Resource
 from flask_cors import CORS
@@ -197,7 +198,8 @@ class MakeGroup(Resource):
 		try:
 			groups.insert_one({
 				"_id": gid,
-				**body
+				**body,
+				"members": [request.headers.get("uid")] #FIXME das wirkt irgendwie nicht optimal die uid so zu bekommen
 			})
 		except errors.DuplicateKeyError:
 			return "Duplicate ID: Groupname is already in Use", 400
