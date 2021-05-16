@@ -223,8 +223,14 @@ class AddUserToGroup(Resource):
 			return "No valid GroupID", 404
 		if not users.find_one({"_id": user_id}):
 			return "No valid UserID", 404
+	
 		groups.update({"_id": group_id}, {"$pull": {"members": user_id}})
+		test = group["members"]
+		DeleteFlag = len(test)
+		if(DeleteFlag == 1):
+			groups.delete_one({"_id": group_id})
 		#TODO wenn keine Benutzer mehr drin sind -> Gruppe löschen
+		
 		return None, 200
 
 
