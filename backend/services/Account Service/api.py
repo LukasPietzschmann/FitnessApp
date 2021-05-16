@@ -235,11 +235,20 @@ class GroupName(Resource):
 			return "No valid GroupID", 404
 		return res["gname"], 200
 
+#Enables the Front End to access the picture of a group
+class GroupPicture(Resource):
+	def get(self, group_id):
+		res = groups.find_one({"_id": group_id})
+		if not res:
+			return "No valid GroupID", 404
+		return res["img"], 200
 
 api.add_resource(Group, '/group/<string:group_id>')
 api.add_resource(MakeGroup, '/group')
 api.add_resource(AddUserToGroup, '/group/<string:group_id>/<string:user_id>')
 api.add_resource(GroupName, '/group/<string:group_id>/name')
+api.add_resource(GroupPicture, '/group/<string:group_id>/img')
+
 
 
 if __name__ == '__main__':

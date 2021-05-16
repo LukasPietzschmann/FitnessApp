@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react';
 import { axiosInstance } from '../../constants';
 import useUser from '../../hooks/useUser';
 
-
+//Ich versuch mich mal daran, das aufzuhübschen. (Johannes S)
 function GroupInvitation({ className, match }) {
 	const [token, uid, logout] = useUser();
 	const [groupName, setName] = useState('');
+	//const [groupPicture, setName] = useState('');
 
 	useEffect(() => {
 		axiosInstance.get(`/group/${match.params.group_id}/name`)

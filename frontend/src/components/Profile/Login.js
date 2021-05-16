@@ -38,9 +38,9 @@ function Login({ className, style }) {
 			<div className='text-center'>
 				<button className='btn btn-success btn-disabled' disabled={token && uid} onClick={() => {
 					axiosInstance.post('/login', {uname: uname, password: passwd}, {withCredentials: true})
-						.then(() => window.location.href = '/')
+						.then((r) => {window.location.href = '/';console.log(r)})
 						.catch(err => {
-							console.error(err.response);
+							console.error(err);
 							if (err.response && err.response.status === 400)
 								setError(err.response.data);
 						});
