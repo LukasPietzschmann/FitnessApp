@@ -1,3 +1,7 @@
+# FIXME Behebe möglichen fehler mit Flask:
+# https://github.com/flask-restful/flask-restful/pull/913
+# import flask.scaffold
+# flask.helpers._endpoint_from_view_func = flask.scaffold._endpoint_from_view_func
 from flask import Flask, request as req
 from flask.globals import request
 from flask.helpers import make_response
@@ -223,14 +227,14 @@ class AddUserToGroup(Resource):
 			return "No valid GroupID", 404
 		if not users.find_one({"_id": user_id}):
 			return "No valid UserID", 404
-	
+
 		groups.update({"_id": group_id}, {"$pull": {"members": user_id}})
 		test = group["members"]
 		DeleteFlag = len(test)
 		if(DeleteFlag == 1):
 			groups.delete_one({"_id": group_id})
 		#TODO wenn keine Benutzer mehr drin sind -> Gruppe löschen
-		
+
 		return None, 200
 
 
