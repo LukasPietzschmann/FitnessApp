@@ -1,4 +1,7 @@
-from flask import Flask, request, make_response
+# FIXME Behebe möglichen fehler mit Flask:
+# https://github.com/flask-restful/flask-restful/pull/913
+# import flask.scaffold
+# flask.helpers._endpoint_from_view_func = flask.scaffold._endpoint_from_view_funcfrom flask import Flask, request, make_response
 from flask_cors import CORS
 from dotenv import load_dotenv
 from os import environ as env
