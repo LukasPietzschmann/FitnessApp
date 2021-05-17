@@ -9,7 +9,6 @@ import json
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 
-#TODO implement support for WorkoutPlan Service. Should be just an additional if
 @app.route('/<path:path>', methods=["GET", "POST", "PUT", "DELETE"])
 def proxy(path):
 	base = env.get("API_BASE")
@@ -18,6 +17,8 @@ def proxy(path):
 	method = {"GET": requests.get, "POST": requests.post, "PUT": requests.put, "DELETE": requests.delete}
 	if path.startswith("user") or path.startswith("group") or path.startswith("login") or path.startswith("logout"):
 		port = env.get("USER_GROUP_PORT")
+	elif path.startswith("workoutPlan"):
+		port = env.get("WORKOUT_PORT")
 	else:
 		return "The Proxy is not aware of this URL", 404
 	if request.method in ["POST", "PUT"]:
