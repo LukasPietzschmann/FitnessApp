@@ -71,18 +71,28 @@ function Register({ className, style }) {
 			</small>
 			<div className='text-center'>
 				<button className='btn btn-success' onClick={() => {
-					uploadToBlob(`${uname}-profile-pic.jpg`, image.file).then(({url, deleteBlob}) => {
-						axiosInstance.post('/user', { uname: uname, password: passwd, name: name, mail: mail, address: home, img: url}, { withCredentials: true })
-							.then(() => window.location.href = '/login')
-							.catch(err => {
-								console.error(err, err.response);
-								deleteBlob(); //FIXME wenn der uname schon vorhanden war, wird das Bild des Benutzers mit dem uname gelöscht
-								if (err.response && err.response.status === 400)
-									setError(err.response.data);
-							});
-					})
+					new Promise((resolve, reject) => {
+						if (image)
+							uploadToBlob(`${uname}-profile-pic.jpg`, image.file).then(({ url, deleteBlob }) => {
+								axiosInstance.post('/user', { uname: uname, password: passwd, name: name, mail: mail, address: home, img: url })
+									.then(resolve)
+									.catch(err => {
+										deleteBlob();
+										reject(err);
+									});
+							})
+						else
+							axiosInstance.post('/user', { uname: uname, password: passwd, name: name, mail: mail, address: home })
+								.then(resolve)
+								.catch(err => reject(err));
+					}).then(res => window.location.href = '/login')
+						.catch(err => {
+							console.log(err, err.response);
+							if (err.response && err.response.status === 400)
+								setError(err.response.data);
+						})
 				}}>Register</button>
-				</div>
+			</div>
 			<div className='d-inline text-danger m-2'>{error}</div>
 			<div className='text-center m-4'><a href='/login'>You already have an Account? Login here!</a></div>
 		</div>
