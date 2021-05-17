@@ -26,7 +26,7 @@ def needs_authentication(func):
     def wrapper(*args, **kw):
         if (token := req.headers.get("token")) == None:
             return "No Token was spezified", 401
-        uid = (kw["user_id"] if "user_id" in kw else None) or req.headers.get("uid")
+        uid = kw["user_id"] if "user_id" in kw else req.headers.get("uid")
         if uid == None:
             return "No uid was spezified", 401
         if not authenticate(uid, token):

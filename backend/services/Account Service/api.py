@@ -32,7 +32,7 @@ def needs_authentication(func):
 	def wrapper(*args, **kw):
 		if (token := req.headers.get("token")) == None:
 			return "No Token was spezified", 401
-		uid = req.headers.get("uid") or (kw["user_id"] if "user_id" in kw else (args[1] if len(args) > 2 else None))
+		uid = kw["user_id"] if "user_id" in kw else req.headers.get("uid")
 		if uid == None:
 			return "No uid was spezified", 401
 		if not authenticate(uid, token):
@@ -155,7 +155,7 @@ api.add_resource(Logout, '/logout/<string:user_id>')
 def needs_to_be_in_group(func):
 	def wrapper(*args, **kw):
 		gid = kw["group_id"] if "group_id" in kw else (args[1] if len(args) > 2 else None)
-		uid = req.headers.get("uid") or (kw["user_id"] if "user_id" in kw else (args[2] if len(args) > 3 else None))
+		uid = kw["user_id"] if "user_id" in kw else req.headers.get("uid")
 		res = groups.find_one({"_id": gid})
 		if res == None:
 			return "No valid GroupID", 404
