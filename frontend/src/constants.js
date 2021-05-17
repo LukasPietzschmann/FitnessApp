@@ -5,4 +5,10 @@ const axiosInstance = axios.create({
 	timeout: 2000
 });
 
+axiosInstance.interceptors.response.use(config => config, err => {
+	if (err.code === 'ECONNABORTED')
+		alert('The Connection timed out')
+	return Promise.reject(err);
+})
+
 export { axiosInstance };
