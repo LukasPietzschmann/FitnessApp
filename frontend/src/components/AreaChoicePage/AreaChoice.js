@@ -3,6 +3,7 @@ import upperBody from '../../image/upperBody.jpg';
 import fullBody from '../../image/fullBody.jpg'
 import AreaChoiceCard from './AreaChoiceCard';
 
+import Card from '../Cards/Card';
 
 function AreaChoice({ className }) {
 	const cards = [
@@ -26,8 +27,13 @@ function AreaChoice({ className }) {
 
 	return (
 		<div className={`${className}`}>
-			<div className='d-flex justify-content-around align-items-center' style={{height: '85vh'}}>
-			{cards.map(({ title, img, target }, i) => <AreaChoiceCard className='shadow-lg' key={i} title={title} target={target} img={img} />)}
+			<h1 className='display-3 text-center'>Categories</h1>
+			<div className='d-flex justify-content-around align-items-center flex-wrap' style={{ height: '85vh' }}>
+				{categories.map(({ _id, name, img }) => {return (
+					<Card className='shadow-lg m-3' key={_id} onClick={() => window.location.href = `/area/${_id}`} img={img}>
+						<h5 className='text-center'>{name}</h5>
+					</Card>
+				)})}
 			</div>
 		</div>
 	);

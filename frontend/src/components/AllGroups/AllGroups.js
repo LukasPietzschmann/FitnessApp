@@ -3,11 +3,11 @@ import { useEffect, useState } from 'react';
 import { axiosInstance } from '../../constants';
 import useUser from '../../hooks/useUser';
 import Modal from '../Modal/Modal';
-import GroupCard from './GroupCard.js';
 
 import JoinGroupIcon from '../../image/join_group.svg';
 import AddGroupIcon from '../../image/add.svg';
 import uploadToBlob from '../../tools/uploadToBlob';
+import Card from '../Cards/Card';
 
 function JoinGroup({ join, joinLink, setJoinLink }) {
 	const [token, uid, logout] = useUser();
@@ -119,6 +119,7 @@ function AllGroups({ className }) {
 
 	return (
 		<div className={`${className}`}>
+			<h1 className='display-3 text-center'>Groups</h1>
 			<Modal showModal={j} showModalHook={r => {
 				join(r);
 				setJoinLink('');
@@ -133,9 +134,14 @@ function AllGroups({ className }) {
 				<AddGroup gname={gname} setName={setName} image={image} setImage={setImage} add={add} />
 			</Modal>
 			<div className='d-inline-flex mt-3 ml-3'>
-				{groups.map(({ gname, img, _id }, i) => <GroupCard className='shadow-lg m-2' key={i} title={gname} target={`/groups/${_id}`} img={img} />)}
-				<GroupCard className='shadow-lg m-2' key='join' title='Join Group' img={JoinGroupIcon} onClick={() => join(true)} />
-				<GroupCard className='shadow-lg m-2' key='add' title='Add Group' img={AddGroupIcon} onClick={() => add(true)} />
+				{groups.map(({ gname, img, _id }, i) => {return (
+					<Card className='shadow-lg m-3' key={i} onClick={() => window.location.href = `/groups/${_id}`} img={img} >
+						<h5 className='text-center'>{gname}</h5>
+					</Card>
+				)
+				})}
+				<Card className='shadow-lg m-2' img={JoinGroupIcon} onClick={() => join(true)}><h5 className='text-center'>Join Group</h5></Card>
+				<Card className='shadow-lg m-2' img={AddGroupIcon} onClick={() => add(true)}><h5 className='text-center'>Add Group</h5></Card>
 			</div>
 		</div>
 	);

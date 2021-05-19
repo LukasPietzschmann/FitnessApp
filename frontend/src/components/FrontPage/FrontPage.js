@@ -1,5 +1,5 @@
-import FrontPageCard from './FrontPageCard';
 import AccountHeader from './AccountHeader';
+import Card from '../Cards/Card';
 
 import Sport from '../../image/sport.png';
 import Shopping from '../../image/shopping.png';
@@ -33,7 +33,12 @@ function FrontPage({ className }) {
 			<AccountHeader className='mt-2' />
 			<CurrentPlan className='mx-5 mt-5 p-2' />
 			<div className='d-flex justify-content-around align-items-center' style={{ height: '70vh' }}>
-				{cards.map(({ title, desc, target, img }, i) => <FrontPageCard className='shadow-lg m-3' key={i} title={title} desc={desc} target={target} img={img} />)}
+				{cards.map(({ target, img, title, desc }, i) => { return (
+					<Card className='shadow-lg m-3' key={i} onClick={() => window.location.href = target} img={img}>
+						<h5 className='card-title'>{title}</h5>
+						<p className='card-text'>{desc}</p>
+					</Card>
+				)})}
 			</div>
 		</div>
 	);

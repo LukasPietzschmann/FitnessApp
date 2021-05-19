@@ -6,7 +6,6 @@ import FrontPage from './components/FrontPage/FrontPage';
 import AreaChoice from './components/AreaChoicePage/AreaChoice';
 import ExerciseAreaTypes from './components/ExerciseAreaTypes/ExerciseAreaTypes';
 import Header from './components/Header/Header';
-import ExerciseTypes from './components/ExerciseTypes/ExerciseTypes';
 import Profile from './components/Profile/Profile';
 import Login from './components/Profile/Login';
 import Register from './components/Profile/Register';

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { axiosInstance } from '../../constants';
 import useUser from '../../hooks/useUser';
 import chest_press from '../../image/chest-press.jpg';
-import PlanCard from './PlanCard.js';
+import Card from '../Cards/Card';
 
 
 function Group({ className, match }) {
@@ -44,7 +44,9 @@ function Group({ className, match }) {
 			<h1 className='display-3 text-center' onChange={e => console.log(e.target.value)}>{group.gname}</h1>
 			<div className='row'>
 				<div className='col-9 d-flex flex-wrap justify-content-around'>
-					{cards.map(({ title, img }, i) => <PlanCard className='shadow-lg m-2' key={i} title={title} img={img} />)}
+					{cards.map(({ title, img }, i) => {return (
+						<Card className='shadow-lg m-2' key={i} img={img}><h5 className='text-center'>{title}</h5></Card>)
+					})}
 				</div>
 				<div className='col'>
 					<img className='img-fluid rounded row-auto mb-4' alt={`${group.gname} Picture`} src={group.img} />

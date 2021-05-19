@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import ExerciseAreaTypesCard from './ExerciseAreaTypesCard';
 
 function ExerciseAreaTypes({ className, id }) {
 	const [cards, setCards] = useState([]);
+import Card from '../Cards/Card';
 
 	useEffect(() => {
 		if (id === 'upper') {
@@ -56,7 +56,12 @@ function ExerciseAreaTypes({ className, id }) {
 	return (
 		<div>
 			<div className='d-flex flex-column justify-content-around align-items-center' style={{ height: '80vh' }}>
-				{cards.map(({ title, target }, i) => <ExerciseAreaTypesCard className='shadow-lg bg-light' key={i} title={title} target={target} />)}
+				{plans.map(({ name, units }, i) => {
+					return (
+					<Card className='shadow-lg bg-light' key={i}>
+						<h5>{`${name} with ${units.length} Units`}</h5>
+					</Card>
+				)})}
 			</div>
 		</div>
 	);
