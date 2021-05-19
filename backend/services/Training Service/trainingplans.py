@@ -14,6 +14,7 @@ api = Api(app)
 client = MongoClient(env.get("MONGODB_CON_STR"))
 units = client.Training.TrainingUnits
 plans = client.Training.TrainingPlans
+categories = client.Training.Category
 users = client.GroupAndUser.User
 
 def needs_authentication(func):
@@ -77,6 +78,23 @@ class WorkoutPlan(Resource):
         return self.get(plan_id)
 
 api.add_resource(WorkoutPlan, '/workoutPlan/<string:plan_id>')
+
+
+class Categories(Resource):
+    @needs_authentication
+    def get(self):
+        return list(categories.find())
+
+
+class PlansInCategory(Resource):
+    @needs_authentication
+    def get(self, category_id):
+        return list(plans.find({"category": category_id}))
+
+
+api.add_resource(Categories, "/category")
+api.add_resource(PlansInCategory, "/category/<string:category_id>")
+
 
 if __name__ == '__main__':
     load_dotenv()

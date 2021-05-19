@@ -39,30 +39,11 @@ function App() {
 				<Route exact path='/'>
 					<FrontPage className='' />
 				</Route>
-				<Route exact path='/areaChoice/UpperBody' >
-					<ExerciseAreaTypes id='upper' />
-				</Route>
-				<Route exact path='/areaChoice/LowerBody'>
-					<ExerciseAreaTypes id='lower' />
-				</Route>
-				<Route exact path='/areaChoice/FullBody'>
-					<ExerciseAreaTypes id='full' />
-				</Route>
-
-				<Route exact path='/areaChoice/UpperBody/Chest' >
-					<ExerciseTypes id='chest' />
-				</Route>
-				<Route exact path='/areaChoice/LowerBody/Legs'>
-					<ExerciseTypes id='legs' />
-				</Route>
-				<Route exact path='/areaChoice/FullBody/Booty'>
-					<ExerciseTypes id='booty' />
-				</Route>
 				<Route exact path='/groups' component={AllGroups} />
 				<Route exact path='/groups/:group_id' component={Group} />
 				<Route exact path='/groups/:group_id/join' component={GroupInvitation} />
-				<Route exact path='/areaChoice' component={AreaChoice} />
-				<Route exact path='/areaChoice/test' component={Test} />
+				<Route exact path='/area' component={AreaChoice} />
+				<Route exact path='/area/:area_id' component={ExerciseAreaTypes} />
 
 				<Route exact path='/profile'>
 					<Profile className='mx-3' />

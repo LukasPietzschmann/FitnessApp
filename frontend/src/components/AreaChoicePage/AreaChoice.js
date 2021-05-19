@@ -1,29 +1,19 @@
-import legs from '../../image/legs.png';
-import upperBody from '../../image/upperBody.jpg';
-import fullBody from '../../image/fullBody.jpg'
-import AreaChoiceCard from './AreaChoiceCard';
+import { useEffect, useState } from 'react';
+
+import useUser from '../../hooks/useUser';
+import { axiosInstance } from '../../constants';
 
 import Card from '../Cards/Card';
 
 function AreaChoice({ className }) {
-	const cards = [
-		{
-			title: 'Upper body',
-			img: upperBody,
-			target: '/areaChoice/UpperBody'
-		},
-		{
-			title: 'Lower body',
-			img: legs,
-			target: '/areaChoice/LowerBody'
-		},
-		{
-			title: 'Full body',
-			img: fullBody,
-			target: '/areaChoice/FullBody'
-		}
+	const [token, uid, logout] = useUser();
+	const [categories, setCats] = useState([]);
 
-	];
+	useEffect(() => {
+		axiosInstance.get('/category', { headers: { Token: token, uid: uid } })
+			.then(({ data }) => setCats(data))
+			.catch(err => console.log(err));
+	}, []);
 
 	return (
 		<div className={`${className}`}>

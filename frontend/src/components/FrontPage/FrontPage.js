@@ -11,7 +11,7 @@ function FrontPage({ className }) {
 		{
 			title: 'Sports',
 			desc: 'Create a new workout plan to keep your body fit and in shape!',
-			target: '/areaChoice',
+			target: '/area',
 			img: Sport
 		},
 		{
@@ -23,7 +23,7 @@ function FrontPage({ className }) {
 		{
 			title: 'Shopping',
 			desc: 'Shop new equipment to discover new training methods!',
-			target: '/areaChoice',
+			target: '/area',
 			img: Shopping
 		}
 	];

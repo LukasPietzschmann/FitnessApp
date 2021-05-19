@@ -1,56 +1,17 @@
 import { useState, useEffect } from 'react';
 
-function ExerciseAreaTypes({ className, id }) {
-	const [cards, setCards] = useState([]);
+import { axiosInstance } from '../../constants';
+import useUser from '../../hooks/useUser';
 import Card from '../Cards/Card';
 
+function ExerciseAreaTypes({ className, match }) {
+	const [token, uid, logout] = useUser();
+	const [plans, setPlans] = useState([]);
+
 	useEffect(() => {
-		if (id === 'upper') {
-			setCards([
-				{
-					title: 'Chest',
-					target: '/areaChoice/UpperBody/Chest'
-				},
-				{
-					title: 'Back',
-					target: '/areaChoice/UpperBody/Chest'
-				}
-			]);
-		}
-
-		else if (id === 'lower') {
-			setCards([
-				{
-					title: 'Legs',
-					target: '/areaChoice/LowerBody/Legs'
-				},
-				{
-					title: 'Booty',
-					target: '/areaChoice/LowerBody/Booty'
-				}
-			]);
-		}
-
-		else if (id === 'full') {
-			setCards([
-				{
-					title: 'Chest',
-					target: '/areaChoice/FullBody/Chest'
-				},
-				{
-					title: 'Arms',
-					target: '/areaChoice/FullBody/test'
-				},
-				{
-					title: 'Legs',
-					target: '/areaChoice/FullBody/Legs'
-				},
-				{
-					title: 'Booty',
-					target: '/areaChoice/FullBody/Booty'
-				}
-			]);
-		}
+		axiosInstance.get(`/category/${match.params.area_id}`, { headers: { Token: token, uid: uid } })
+			.then(({ data }) => setPlans(data))
+			.catch(err => console.error(err));
 	}, []);
 
 	return (
