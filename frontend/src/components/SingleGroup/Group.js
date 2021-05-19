@@ -42,7 +42,7 @@ function Group({ className, match }) {
 	return (
 		group && <div className='m-3'>
 			<h1 className='display-3 text-center' onChange={e => console.log(e.target.value)}>{group.gname}</h1>
-			<div className='row'>
+			<div className='row align-items-start'>
 				<div className='col-9 d-flex flex-wrap justify-content-around'>
 					{cards.map(({ title, img }, i) => {return (
 						<Card className='shadow-lg m-2' key={i} img={img}><h5 className='text-center'>{title}</h5></Card>)
