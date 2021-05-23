@@ -170,9 +170,7 @@ class UserPlans(Resource):
 		body = req.get_json() if req.content_type == "application/json" else json.loads(req.get_data().decode("utf-8"))
 		if not "pid" in body:
 			return "A PlanID (pid) id required", 400
-		if (pid := body["pid"]) in res["plans"]:
-			return None, 200
-		users.update_one({"_id": user_id}, {"$addToSet": {"plans": str(pid)}}) #TODO vorher sollte noch überprüft werden ob die pid valide ist.
+		users.update_one({"_id": user_id}, {"$addToSet": {"plans": str(body["pid"])}}) #TODO vorher sollte noch überprüft werden ob die pid valide ist.
 		return None, 200
 
 
