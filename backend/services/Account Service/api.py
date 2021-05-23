@@ -14,6 +14,7 @@ from os import environ as env
 import json
 import secrets
 import string
+import requests
 
 
 app = Flask(__name__)
@@ -148,8 +149,36 @@ class GroupsWithUser(Resource):
 		return list(gres), 200
 
 
+class UserPlans(Resource):
+	@needs_authentication
+	def get(self, user_id):
+		if not (res := users.find_one({"_id": user_id})):
+			return "No valid UserID", 404
+		plans = []
+		for id in res["plans"]:
+			plan = requests.get(f"{env.get('API_BASE')}:5000/workoutPlan/{id}", headers={"uid": user_id, "Token": req.headers.get("Token")})
+				#FIXME: Port 5000 (Proxy Port) sollte variabel sein! Der sollte auch in der .env Datei stehen.
+			if plan.status_code != 200:
+				return "/user/<id>/plans konnte /workoutPlan/<id> nicht erreichen, oder es wurde ein unerwartetes Ergebnis zurück gegeben", 500
+			plans.append(plan.json())
+		return plans, 200
+
+	@needs_authentication
+	def post(self, user_id):
+		if not (res := users.find_one({"_id": user_id})):
+			return "No valid UserID", 404
+		body = req.get_json() if req.content_type == "application/json" else json.loads(req.get_data().decode("utf-8"))
+		if not "pid" in body:
+			return "A PlanID (pid) id required", 400
+		if (pid := body["pid"]) in res["plans"]:
+			return None, 200
+		users.update_one({"_id": user_id}, {"$addToSet": {"plans": str(pid)}}) #TODO vorher sollte noch überprüft werden ob die pid valide ist.
+		return None, 200
+
+
 api.add_resource(User, '/user/<string:user_id>')
-api.add_resource(GroupsWithUser, '/user/<string:user_id>/groups')
+api.add_resource(GroupsWithUser, '/user/<string:user_id>/groups') #FIXME hier vielleicht nen Post hinzufügen um den Benutzer zur Gruppe hinzuzufügen. Wie in /user/<id>/plans
+api.add_resource(UserPlans, '/user/<string:user_id>/plans')
 api.add_resource(UserName, '/user/<string:user_id>/name')
 api.add_resource(Register, '/user')
 api.add_resource(Login, '/login')
