@@ -57,7 +57,7 @@ class UserName(Resource):
 
 class User(Resource):
 	@needs_authentication
-	def get(self, user_id):
+	def get(self, user_id): #TODO nicht alles zurückgeben. Gruppen und Pläne z.B nicht. Dafür gibts extra Endpunkte
 		res = users.find_one({"_id": user_id})
 		if not res:
 			return "No valid UserID", 404
@@ -262,7 +262,6 @@ class AddUserToGroup(Resource):
 		DeleteFlag = len(test)
 		if(DeleteFlag == 1):
 			groups.delete_one({"_id": group_id})
-		#TODO wenn keine Benutzer mehr drin sind -> Gruppe löschen
 
 		return None, 200
 
