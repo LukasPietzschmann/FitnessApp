@@ -25,7 +25,7 @@ function Accordion({ className, title, children, condition=true, conditionWarnin
 
 	return (
 		<div className={`${className}`}>
-			<h6 role='button' className='shadow bg-white rounded card-header accordion' onClick={toggleAccordion} >
+			<h6 role='button' className={`${isActive ? 'shadow' : ''} bg-white rounded card-header accordion`} onClick={toggleAccordion} >
 				{title}
 				<Arrow className={`${rotated}`} />
 				<div className='text-danger text-uppercase font-weight-light'>
