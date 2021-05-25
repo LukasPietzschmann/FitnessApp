@@ -14,6 +14,7 @@ import Group from './components/SingleGroup/Group';
 import GroupInvitation from './components/SingleGroup/GroupInvitation';
 import NotFound from './components/NotFound';
 import useUser from './hooks/useUser';
+import Plan from './components/Plan/Plan';
 
 function App() {
 	const [token, uid, logout] = useUser();
@@ -44,7 +45,7 @@ function App() {
 				<Route exact path='/groups/:group_id/join' component={GroupInvitation} />
 				<Route exact path='/area' component={AreaChoice} />
 				<Route exact path='/area/:area_id' component={ExerciseAreaTypes} />
-
+				<Route exact path='/plan/:plan_id' component={Plan} />
 				<Route exact path='/profile'>
 					<Profile className='mx-3' />
 				</Route>

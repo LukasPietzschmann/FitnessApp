@@ -12,7 +12,7 @@ function CurrentPlan({ className }) {
 	useEffect(() => {
 		axiosInstance.get(`/user/${uid}`, { headers: { Token: token } })
 			.then(({ data }) => {
-				if (!data.plans)
+				if (!data.plans || data.plans.length < 1)
 					return;
 				axiosInstance.get(`/workoutPlan/${data.plans[0]}`, { headers: { Token: token, uid: uid } })
 					.then(({ data }) => setCurrPlan(data))
@@ -36,7 +36,7 @@ function CurrentPlan({ className }) {
 	return (
 		<div className={`card ${className}`}>
 			{currPlan ?
-				<div className='row'>
+				<div className='row' onClick={() => window.location.href = `/plan/${currPlan._id}`} style={{cursor: 'pointer'}}>
 					<ProgressCircle className='col-2 align-self-center' percentage={finishedPerc} />
 					<div className='col'>
 						<div className='row'>
