@@ -19,7 +19,7 @@ function Plan({ className, match }) {
 				<>
 					<h1 className='display-3 text-center'>{plan.name}</h1>
 					<div className='mx-5'>
-						{plan.units.map(({name, rep}, i) => <UnitCard key={i} className='m-3' name={name} rep={rep} />)}
+						{plan.units.map(({ _id, name, rep, finished }, i) => <UnitCard key={i} className='m-3' unit_id={_id} plan_id={plan._id} name={name} rep={rep} finished={finished} />)}
 					</div>
 				</>
 				: ''}

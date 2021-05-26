@@ -186,6 +186,28 @@ class UserPlan(Resource):
 			return "No valid PlanID", 404
 		return plans[0], 200
 
+	@needs_authentication
+	def put(self, user_id, plan_id):
+		if not (res := users.find_one({"_id": user_id})):
+			return "No valid UserID", 404
+		if not "plans" in res:
+			return "No valid PlanID", 404
+		plans = [plan for plan in res["plans"] if plan["_id"] == plan_id]
+		if len(plans) < 1:
+			return "No valid PlanID", 404
+
+		body = req.get_json() if req.content_type == "application/json" else json.loads(req.get_data().decode("utf-8"))
+		if not "unit_id" in body:
+			return "A unitID (unit_id) id required", 400
+		if not "finished" in body:
+			return "The finished Field is required", 400
+		users.update_one(
+			{"_id": user_id},
+			{"$set": {"plans.$[plan].units.$[unit].finished": body["finished"]}},
+			array_filters=[{"plan._id": plan_id}, {"unit._id": body["unit_id"]}]
+		)
+		return users.find_one({"_id": user_id}), 200
+
 
 api.add_resource(User, '/user/<string:user_id>')
 api.add_resource(GroupsWithUser, '/user/<string:user_id>/groups') #FIXME hier vielleicht nen Post hinzufügen um den Benutzer zur Gruppe hinzuzufügen. Wie in /user/<id>/plans
