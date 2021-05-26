@@ -10,11 +10,10 @@ function CurrentPlan({ className }) {
 	const [finishedPerc, setFinished] = useState(0);
 
 	useEffect(() => {
-		axiosInstance.get(`/user/${uid}`, { headers: { Token: token } })
+		axiosInstance.get(`/user/${uid}/plans`, { headers: { Token: token } })
 			.then(({ data }) => {
-				if (!data.plans || data.plans.length < 1)
-					return;
-				setCurrPlan(data.plans[0]);
+				if(data.length > 0)
+					setCurrPlan(data[0]);
 			})
 			.catch(err => console.error(err.response));
 	}, []);

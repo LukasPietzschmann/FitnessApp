@@ -154,14 +154,9 @@ class UserPlans(Resource):
 	def get(self, user_id):
 		if not (res := users.find_one({"_id": user_id})):
 			return "No valid UserID", 404
-		plans = []
-		for id in res["plans"]:
-			plan = requests.get(f"{env.get('API_BASE')}:5000/workoutPlan/{id}", headers={"uid": user_id, "Token": req.headers.get("Token")})
-				#FIXME: Port 5000 (Proxy Port) sollte variabel sein! Der sollte auch in der .env Datei stehen.
-			if plan.status_code != 200:
-				return "/user/<id>/plans konnte /workoutPlan/<id> nicht erreichen, oder es wurde ein unerwartetes Ergebnis zurück gegeben", 500
-			plans.append(plan.json())
-		return plans, 200
+		if not "plans" in res:
+			return [], 200
+		return res["plans"], 200
 
 	@needs_authentication
 	def post(self, user_id):
@@ -179,9 +174,23 @@ class UserPlans(Resource):
 		return None, 200
 
 
+class UserPlan(Resource):
+	@needs_authentication
+	def get(self, user_id, plan_id):
+		if not (res := users.find_one({"_id": user_id})):
+			return "No valid UserID", 404
+		if not "plans" in res:
+			return "No valid PlanID", 404
+		plans = [plan for plan in res["plans"] if plan["_id"] == plan_id]
+		if len(plans) < 1:
+			return "No valid PlanID", 404
+		return plans[0], 200
+
+
 api.add_resource(User, '/user/<string:user_id>')
 api.add_resource(GroupsWithUser, '/user/<string:user_id>/groups') #FIXME hier vielleicht nen Post hinzufügen um den Benutzer zur Gruppe hinzuzufügen. Wie in /user/<id>/plans
 api.add_resource(UserPlans, '/user/<string:user_id>/plans')
+api.add_resource(UserPlan, '/user/<string:user_id>/plans/<string:plan_id>')
 api.add_resource(UserName, '/user/<string:user_id>/name')
 api.add_resource(Register, '/user')
 api.add_resource(Login, '/login')
