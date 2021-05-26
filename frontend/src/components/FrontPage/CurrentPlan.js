@@ -14,9 +14,7 @@ function CurrentPlan({ className }) {
 			.then(({ data }) => {
 				if (!data.plans || data.plans.length < 1)
 					return;
-				axiosInstance.get(`/workoutPlan/${data.plans[0]}`, { headers: { Token: token, uid: uid } })
-					.then(({ data }) => setCurrPlan(data))
-					.catch(err => console.error(err.response));
+				setCurrPlan(data.plans[0]);
 			})
 			.catch(err => console.error(err.response));
 	}, []);
