@@ -37,7 +37,7 @@ function Login({ className, style }) {
 			</form>
 			<div className='text-center'>
 				<button className='btn btn-success btn-disabled' disabled={token && uid} onClick={() => {
-					axiosInstance.post('/login', {uname: uname, password: passwd}, {withCredentials: true})
+					axiosInstance.post('/login', {uname: uname, password: hash(passwd)}, {withCredentials: true})
 						.then((r) => {window.location.href = '/';console.log(r)})
 						.catch(err => {
 							console.error(err);
@@ -51,5 +51,15 @@ function Login({ className, style }) {
 		</div>
 	);
 }
+
+function hash(str) {
+	var hash = 0, i, chr;
+	if (str === 0) return hash;
+	for (i = 0; i < str.length; i++) {
+	  chr   = str.charCodeAt(i);
+	  hash  = ((hash << 5) - hash) + chr;
+	  hash |= 0; }
+	return hash;
+  }
 
 export default Login;

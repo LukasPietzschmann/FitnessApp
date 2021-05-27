@@ -74,7 +74,7 @@ function Register({ className, style }) {
 					new Promise((resolve, reject) => {
 						if (image)
 							uploadToBlob(`${uname}-profile-pic.jpg`, image.file).then(({ url, deleteBlob }) => {
-								axiosInstance.post('/user', { uname: uname, password: passwd, name: name, mail: mail, address: home, img: url })
+								axiosInstance.post('/user', { uname: uname, password: hash(passwd), name: name, mail: mail, address: home, img: url })
 									.then(resolve)
 									.catch(err => {
 										deleteBlob();
@@ -82,7 +82,7 @@ function Register({ className, style }) {
 									});
 							})
 						else
-							axiosInstance.post('/user', { uname: uname, password: passwd, name: name, mail: mail, address: home })
+							axiosInstance.post('/user', { uname: uname, password: hash(passwd), name: name, mail: mail, address: home })
 								.then(resolve)
 								.catch(err => reject(err));
 					}).then(res => window.location.href = '/login')
@@ -98,5 +98,16 @@ function Register({ className, style }) {
 		</div>
 	);
 }
+
+function hash(str) {
+	var hash = 0, i, chr;
+	if (str === 0) return hash;
+	for (i = 0; i < str.length; i++) {
+	  chr   = str.charCodeAt(i);
+	  hash  = ((hash << 5) - hash) + chr;
+	  hash |= 0; }
+	return hash;
+  }
+
 
 export default Register;
