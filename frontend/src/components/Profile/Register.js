@@ -49,8 +49,16 @@ function Register({ className, style }) {
 						<input className='d-none' id='select-file' type='file' onInput={e => {
 							let file = e.target.files[0];
 							let reader = new FileReader();
-							reader.onload = e => setImage({ file: file, url: URL.createObjectURL(file), name: file.name, rawBytes: e.target.result });
-							reader.readAsBinaryString(file);
+							var size = file.size;
+							setError("")
+							if(size <= 1e6) {
+								reader.onload = e => setImage({ file: file, url: URL.createObjectURL(file), name: file.name, rawBytes: e.target.result });
+								reader.readAsBinaryString(file);
+							}
+							else {
+								setError("Image File cannot be larger than 1mb")
+							}
+							
 						}}/>
 						<button className='btn btn-outline-secondary' onClick={e => {
 							document.getElementById('select-file').click();
