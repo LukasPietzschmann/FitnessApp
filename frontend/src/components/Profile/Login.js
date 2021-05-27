@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import useUser from '../../hooks/useUser';
-import { axiosInstance } from '../../constants';
+import { axiosInstance, hash } from '../../constants';
 
 function Login({ className, style }) {
 	const [uname, setUName] = useState('');
@@ -52,14 +52,5 @@ function Login({ className, style }) {
 	);
 }
 
-function hash(str) {
-	var hash = 0, i, chr;
-	if (str === 0) return hash;
-	for (i = 0; i < str.length; i++) {
-	  chr   = str.charCodeAt(i);
-	  hash  = ((hash << 5) - hash) + chr;
-	  hash |= 0; }
-	return hash;
-  }
 
 export default Login;
