@@ -5,3 +5,4 @@ dnspython
 flask_cors
 python-dotenv
 requests
+bs4
