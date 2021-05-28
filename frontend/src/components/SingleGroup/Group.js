@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react';
 import { axiosInstance } from '../../constants';
 import useUser from '../../hooks/useUser';
-import chest_press from '../../image/chest-press.jpg';
 import Card from '../Cards/Card';
+import PlanCard from './PlanCard';
 
 
 function Group({ className, match }) {
 	const [token, uid, logout] = useUser();
 	const [group, setGroup] = useState(null);
 	const [memberNames, setMemberNames] = useState([]);
+	const [plans, setPlans] = useState([]);
 
 	useEffect(() => {
 		axiosInstance.get(`/group/${match.params.group_id}`, { headers: { Token: token, uid: uid } })
@@ -19,34 +20,19 @@ function Group({ className, match }) {
 				Promise.allSettled(pArr).then(results => setMemberNames(results.map(({ value }) => value.data)));
 			})
 			.catch(err => console.error(err));
+		axiosInstance.get(`/group/${match.params.group_id}/plans`, { headers: { Token: token, uid: uid } })
+			.then(({ data }) => setPlans(data))
+			.catch(err => console.error(err));
 	}, []);
 
-	const cards = [
-		{
-			title: 'test1',
-			img: chest_press
-		},
-		{
-			title: 'test2',
-			img: chest_press
-		},
-		{
-			title: 'test3',
-			img: chest_press
-		},
-		{
-			title: 'test4',
-			img: chest_press
-		}
-	]
 	return (
 		group && <div className='m-3'>
 			<h1 className='display-3 text-center' onChange={e => console.log(e.target.value)}>{group.gname}</h1>
-			<div className='row'>
+			<div className='row align-items-start'>
 				<div className='col-9 d-flex flex-wrap justify-content-around'>
-					{cards.map(({ title, img }, i) => {return (
-						<Card className='shadow-lg m-2' key={i} img={img}><h5 className='text-center'>{title}</h5></Card>)
-					})}
+					{plans.map(({ name, units, _id }, i) => {return (
+						<PlanCard key={_id} name={name} units={units} id={_id} />
+					)})}
 				</div>
 				<div className='col'>
 					<img className='img-fluid rounded row-auto mb-4' alt={`${group.gname} Picture`} src={group.img} />

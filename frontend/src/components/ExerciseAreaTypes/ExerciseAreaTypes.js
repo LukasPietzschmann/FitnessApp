@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 import { axiosInstance } from '../../constants';
 import useUser from '../../hooks/useUser';
-import Card from '../Cards/Card';
+import PlanCard from './PlanCard';
 
 function ExerciseAreaTypes({ className, match }) {
 	const [token, uid, logout] = useUser();
@@ -16,12 +16,9 @@ function ExerciseAreaTypes({ className, match }) {
 
 	return (
 		<div>
-			<div className='d-flex flex-column justify-content-around align-items-center' style={{ height: '80vh' }}>
-				{plans.map(({ name, units }, i) => {
-					return (
-					<Card className='shadow-lg bg-light' key={i}>
-						<h5>{`${name} with ${units.length} Units`}</h5>
-					</Card>
+			<div className='d-flex flex-column flex-wrap justify-content-around align-items-center' style={{ height: '80vh' }}>
+				{plans.map(({ name, units, _id }, i) => {return (
+					<PlanCard className='shadow-lg' name={name} units={units} id={_id} />
 				)})}
 			</div>
 		</div>

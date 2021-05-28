@@ -1,6 +1,5 @@
 import { useState } from 'react';
-
-import { axiosInstance } from '../../constants';
+import { axiosInstance, hash } from '../../constants';
 import uploadToBlob from '../../tools/uploadToBlob';
 
 function Register({ className, style }) {
@@ -50,8 +49,16 @@ function Register({ className, style }) {
 						<input className='d-none' id='select-file' type='file' onInput={e => {
 							let file = e.target.files[0];
 							let reader = new FileReader();
-							reader.onload = e => setImage({ file: file, url: URL.createObjectURL(file), name: file.name, rawBytes: e.target.result });
-							reader.readAsBinaryString(file);
+							var size = file.size;
+							setError("")
+							if(size <= 1e6) {
+								reader.onload = e => setImage({ file: file, url: URL.createObjectURL(file), name: file.name, rawBytes: e.target.result });
+								reader.readAsBinaryString(file);
+							}
+							else {
+								setError("Image File cannot be larger than 1mb")
+							}
+							
 						}}/>
 						<button className='btn btn-outline-secondary' onClick={e => {
 							document.getElementById('select-file').click();
@@ -74,7 +81,7 @@ function Register({ className, style }) {
 					new Promise((resolve, reject) => {
 						if (image)
 							uploadToBlob(`${uname}-profile-pic.jpg`, image.file).then(({ url, deleteBlob }) => {
-								axiosInstance.post('/user', { uname: uname, password: passwd, name: name, mail: mail, address: home, img: url })
+								axiosInstance.post('/user', { uname: uname, password: hash(passwd), name: name, mail: mail, address: home, img: url })
 									.then(resolve)
 									.catch(err => {
 										deleteBlob();
@@ -82,7 +89,7 @@ function Register({ className, style }) {
 									});
 							})
 						else
-							axiosInstance.post('/user', { uname: uname, password: passwd, name: name, mail: mail, address: home })
+							axiosInstance.post('/user', { uname: uname, password: hash(passwd), name: name, mail: mail, address: home })
 								.then(resolve)
 								.catch(err => reject(err));
 					}).then(res => window.location.href = '/login')
@@ -98,5 +105,6 @@ function Register({ className, style }) {
 		</div>
 	);
 }
+
 
 export default Register;

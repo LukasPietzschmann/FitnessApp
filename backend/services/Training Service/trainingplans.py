@@ -89,7 +89,9 @@ class Categories(Resource):
 class PlansInCategory(Resource):
     @needs_authentication
     def get(self, category_id):
-        return list(plans.find({"category": category_id}))
+        def resolve_units(us):
+            return [{**unit, **units.find_one({"_id": unit["_id"]})} for unit in us]
+        return [{**plan, "units": resolve_units(plan["units"])} for plan in list(plans.find({"category": category_id}))]
 
 
 api.add_resource(Categories, "/category")

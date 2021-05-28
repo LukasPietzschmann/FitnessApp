@@ -10,13 +10,10 @@ function CurrentPlan({ className }) {
 	const [finishedPerc, setFinished] = useState(0);
 
 	useEffect(() => {
-		axiosInstance.get(`/user/${uid}`, { headers: { Token: token } })
+		axiosInstance.get(`/user/${uid}/plans`, { headers: { Token: token } })
 			.then(({ data }) => {
-				if (!data.plans)
-					return;
-				axiosInstance.get(`/workoutPlan/${data.plans[0]}`, { headers: { Token: token, uid: uid } })
-					.then(({ data }) => setCurrPlan(data))
-					.catch(err => console.error(err.response));
+				if(data.length > 0)
+					setCurrPlan(data[0]);
 			})
 			.catch(err => console.error(err.response));
 	}, []);
@@ -36,7 +33,7 @@ function CurrentPlan({ className }) {
 	return (
 		<div className={`card ${className}`}>
 			{currPlan ?
-				<div className='row'>
+				<div className='row' onClick={() => window.location.href = `/plan/${currPlan._id}`} style={{cursor: 'pointer'}}>
 					<ProgressCircle className='col-2 align-self-center' percentage={finishedPerc} />
 					<div className='col'>
 						<div className='row'>

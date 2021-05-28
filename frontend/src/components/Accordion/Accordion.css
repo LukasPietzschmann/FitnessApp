@@ -1,0 +1,22 @@
+:root {
+	--animation_duration: 0.4s;
+}
+
+.accordion:hover, .active {
+	background-color: #ccc;
+	transition: box-shadow var(--animation_duration) ease-in-out;
+}
+
+.accordion_content {
+	overflow: auto;
+	transition: max-height var(--animation_duration) ease;
+}
+
+.accordion_icon {
+	float: right;
+	transition: transform var(--animation_duration) ease;
+}
+
+.rotate {
+	transform: rotate(90deg);
+}

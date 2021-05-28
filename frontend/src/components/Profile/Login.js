@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import useUser from '../../hooks/useUser';
-import { axiosInstance } from '../../constants';
+import { axiosInstance, hash } from '../../constants';
 
 function Login({ className, style }) {
 	const [uname, setUName] = useState('');
@@ -37,7 +37,7 @@ function Login({ className, style }) {
 			</form>
 			<div className='text-center'>
 				<button className='btn btn-success btn-disabled' disabled={token && uid} onClick={() => {
-					axiosInstance.post('/login', {uname: uname, password: passwd}, {withCredentials: true})
+					axiosInstance.post('/login', {uname: uname, password: hash(passwd)}, {withCredentials: true})
 						.then((r) => {window.location.href = '/';console.log(r)})
 						.catch(err => {
 							console.error(err);
@@ -51,5 +51,6 @@ function Login({ className, style }) {
 		</div>
 	);
 }
+
 
 export default Login;
