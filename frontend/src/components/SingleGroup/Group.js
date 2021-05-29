@@ -2,28 +2,52 @@ import { useEffect, useState } from 'react';
 import { axiosInstance } from '../../constants';
 import useUser from '../../hooks/useUser';
 import Card from '../Cards/Card';
+import useWebSocket, { ReadyState } from 'react-use-websocket';
 import PlanCard from './PlanCard';
 
 
 function Group({ className, match }) {
 	const [token, uid, logout] = useUser();
+	const {lastMessage, readyState} = useWebSocket('ws://localhost:4000');
 	const [group, setGroup] = useState(null);
 	const [memberNames, setMemberNames] = useState([]);
+	const [members, setMembers] = useState([]);
 	const [plans, setPlans] = useState([]);
 
 	useEffect(() => {
 		axiosInstance.get(`/group/${match.params.group_id}`, { headers: { Token: token, uid: uid } })
 			.then(({ data }) => {
 				setGroup(data);
-				let pArr = [];
-				data.members.map(member => pArr.push(axiosInstance.get(`/user/${member}/name`)));
-				Promise.allSettled(pArr).then(results => setMemberNames(results.map(({ value }) => value.data)));
+				setMembers(data.members)
 			})
 			.catch(err => console.error(err));
+	}, []);
+
+	useEffect(() => {
 		axiosInstance.get(`/group/${match.params.group_id}/plans`, { headers: { Token: token, uid: uid } })
 			.then(({ data }) => setPlans(data))
 			.catch(err => console.error(err));
 	}, []);
+
+	useEffect(() => {
+		let pArr = [];
+		members.map(member => pArr.push(axiosInstance.get(`/user/${member}/name`)));
+		Promise.allSettled(pArr).then(results => setMemberNames(results.map(({ value }) => value.data)));
+	}, [members]);
+
+	useEffect(() => {
+		if (!lastMessage)
+			return
+		const data = JSON.parse(lastMessage.data)
+		if (!data.target.startsWith('group.members.') || data.body.group != match.params.group_id)
+			return
+		if (data.target.startsWith('group.members.add')) {
+			if (!members.includes(data.body.member))
+				setMembers([...members, data.body.member])
+		} else if (data.target.startsWith('group.members.remove')) {
+			setMembers(members.filter(elem => elem != data.body.member))
+		}
+	}, [lastMessage]);
 
 	return (
 		group && <div className='m-3'>

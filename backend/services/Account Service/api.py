@@ -2,6 +2,7 @@
 # https://github.com/flask-restful/flask-restful/pull/913
 # import flask.scaffold
 # flask.helpers._endpoint_from_view_func = flask.scaffold._endpoint_from_view_func
+import datetime
 from flask import Flask, request as req
 from flask.globals import request
 from flask.helpers import make_response
@@ -25,6 +26,7 @@ api = Api(app)
 client = MongoClient(env.get("MONGODB_CON_STR"))
 users = client.GroupAndUser.User
 groups = client.GroupAndUser.Group
+events = client.Events.Events
 
 
 def needs_authentication(func):
@@ -281,6 +283,7 @@ class AddUserToGroup(Resource):
 		if not users.find_one({"_id": user_id}):
 			return "No valid UserID", 404
 		groups.update_one({"_id": group_id}, {"$addToSet": {"members": user_id}})
+		events.insert_one({"_id": str(datetime.datetime.now()), "target": "group.members.add", "body": {"member": user_id, "group": group_id}})
 		return None, 200
 
 	@needs_authentication
@@ -292,6 +295,7 @@ class AddUserToGroup(Resource):
 			return "No valid UserID", 404
 
 		groups.update({"_id": group_id}, {"$pull": {"members": user_id}})
+		events.insert_one({"_id": str(datetime.datetime.now()), "target": "group.members.remove", "body": {"member": user_id, "group": group_id}})
 		test = group["members"]
 		DeleteFlag = len(test)
 		if(DeleteFlag == 1):
