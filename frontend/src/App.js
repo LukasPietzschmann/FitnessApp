@@ -15,6 +15,7 @@ import GroupInvitation from './components/SingleGroup/GroupInvitation';
 import NotFound from './components/NotFound';
 import useUser from './hooks/useUser';
 import Plan from './components/Plan/Plan';
+import TestWS from './components/TestWS';
 
 function App() {
 	const [token, uid, logout] = useUser();
@@ -40,6 +41,7 @@ function App() {
 				<Route exact path='/'>
 					<FrontPage className='' />
 				</Route>
+				<Route exact path='/test' component={TestWS}/>
 				<Route exact path='/groups' component={AllGroups} />
 				<Route exact path='/groups/:group_id' component={Group} />
 				<Route exact path='/groups/:group_id/join' component={GroupInvitation} />
