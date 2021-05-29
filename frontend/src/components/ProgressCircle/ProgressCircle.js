@@ -23,7 +23,7 @@ function Circle({ colour, pct }) {
 	);
 };
 
-function ProgressCircle({ percentage, colour = 'blue', className }) {
+function ProgressCircle({ percentage, colour = 'green', text='', className }) {
 	const pct = cleanPercentage(percentage);
 	return (
 		<div className={className}>
@@ -32,6 +32,7 @@ function ProgressCircle({ percentage, colour = 'blue', className }) {
 					<Circle colour='lightgrey' />
 					<Circle colour={colour} pct={pct} />
 				</g>
+				<text x="50%" y="50%" dominant-baseline="central" text-anchor="middle">{text}</text>
 			</svg>
 		</div>
 	);

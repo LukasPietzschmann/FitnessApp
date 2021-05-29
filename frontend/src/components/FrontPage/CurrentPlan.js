@@ -31,22 +31,17 @@ function CurrentPlan({ className }) {
 	}, [currPlan]);
 
 	return (
-		<div className={`card ${className}`}>
+		<div className={`${className}`}>
 			{currPlan ?
-				<div className='row' onClick={() => window.location.href = `/plan/${currPlan._id}`} style={{cursor: 'pointer'}}>
-					<ProgressCircle className='col-2 align-self-center' percentage={finishedPerc} />
-					<div className='col'>
-						<div className='row'>
-							<h1 className='col'>{currPlan.name}</h1>
-						</div>
-						<div className='row justify-content-start'>
-							{currPlan.units.map(({ name, rep, finished }, i) =>
-								<div className={`col ${finished ? 'text-success' : ''}`} key={i} >{name} ({rep} Wiederholung{rep > 1 ? 'en' : ''})</div>)}
-						</div>
-					</div>
+				<div className='d-flex justify-content-center' onClick={() => window.location.href = `/plan/${currPlan._id}`} style={{cursor: 'pointer'}}>
+					<ProgressCircle percentage={finishedPerc} text={currPlan.name} />
 				</div>
 				:
-				<h2 className='text-center'>Looks like you're lazy. There are no Plans!</h2>}
+				<div className='text-center'>
+					<h2>Looks like you're lazy. There are currently no Plans!</h2>
+					<a className='h4' href='/area'>Go ahed and add one!</a>
+				</div>
+					}
 		</div>
 	);
 }
