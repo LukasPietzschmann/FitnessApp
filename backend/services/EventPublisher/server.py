@@ -40,7 +40,7 @@ async def clear_events():
 	while True:
 		if(len(clients) == 0):
 			events.delete_many({})
-			await asyncio.sleep(10)
+		await asyncio.sleep(10)
 
 
 async def handler(websocket: WebSocketServerProtocol, path):
