@@ -1,5 +1,5 @@
 :root {
-	--animDur: 0.2s;
+	--animDur: 0.15s;
 }
 
 .card.hover-card {
@@ -10,6 +10,7 @@
 }
 
 .card.hover-card > img {
+	filter: grayscale(20%);
 	transform: scale(1);
 	transition: var(--animDur);
 }
@@ -24,6 +25,7 @@
 
 .card:hover.hover-card > img {
 	transform: scale(1.105);
+	filter: grayscale(0%);
 	transition: var(--animDur);
 	cursor: pointer;
 }
