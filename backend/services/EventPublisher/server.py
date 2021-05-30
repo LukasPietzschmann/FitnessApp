@@ -36,6 +36,13 @@ async def consumer(queue: Queue):
 		await work_item["client"].send(work_item["event"])
 
 
+async def clear_events():
+	while True:
+		if(len(clients) == 0):
+			events.delete_many({})
+			await asyncio.sleep(10)
+
+
 async def handler(websocket: WebSocketServerProtocol, path):
 	clients.add(websocket)
 	print(f"Client {websocket.remote_address} added")
@@ -50,4 +57,5 @@ if __name__ == "__main__":
 
 	event_loop.run_until_complete(websockets.serve(handler, "localhost", env.get("WEBSOCKET_PORT")))
 	event_loop.run_until_complete(asyncio.gather(consumer(queue), producer(queue)))
+	event_loop.run_until_complete(clear_events())
 	event_loop.run_forever()
