@@ -6,7 +6,9 @@ const axiosInstance = axios.create({
 });
 
 axiosInstance.interceptors.response.use(config => config, err => {
-	if (err.code === 'ECONNABORTED')
+	if (err.message === 'Network Error')
+		alert('It looks like some service hasn\'t been started yet')
+	else if (err.code === 'ECONNABORTED')
 		alert('The Connection timed out')
 	return Promise.reject(err);
 })
