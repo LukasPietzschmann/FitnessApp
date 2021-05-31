@@ -3,8 +3,8 @@ import { useEffect, useState } from 'react';
 import { axiosInstance, hash } from '../../constants';
 import useUser from '../../hooks/useUser';
 import profilPic from '../../image/sample-profile.png';
-import Login from './Login';
 import Modal from '../Modal/Modal';
+import CurrentPlan from '../FrontPage/CurrentPlan';
 
 function ChangePassword({ password, uid, token, setChangePassword, setUserInfo }) {
 	const [newPassword, setNewPassword] = useState('');
@@ -40,7 +40,7 @@ function ChangePassword({ password, uid, token, setChangePassword, setUserInfo }
 				</div>
 			</div>
 			<div className='row justify-content-between mt-3'>
-				<button className='btn btn-success ml-3' disabled={newPassword == '' && oldPassword == ''} onClick={() => {
+				<button className='btn btn-success ml-3' disabled={newPassword === '' && oldPassword === ''} onClick={() => {
 					if (hash(oldPassword) !== password) {
 						setError('Old Password is wrong!');
 						return;
@@ -73,8 +73,15 @@ function Profile({ className }) {
 	const [userName, setUserName] = useState('');
 	const [wholeName, setWholeName] = useState('');
 	const [eMail, setEMail] = useState('');
-	const [adress, setAdress] = useState('');
+	const [address, setaddress] = useState('');
 	const [changePassword, setChangePassword] = useState(false);
+	const [groups, setGroups] = useState([]);
+
+	useEffect(() => {
+		axiosInstance.get(`/user/${uid}/groups`, { headers: { Token: token } })
+			.then(({ data }) => setGroups(data))
+			.catch(err => console.error(err));
+	}, [uid, token]);
 
 	useEffect(() => {
 		if (uid && token) {
@@ -94,6 +101,7 @@ function Profile({ className }) {
 
 
 	return (
+	<div>
 		<div className='row ml-2'>
 			<Modal closeOnClickOutside={false} showModal={logoutModal} showModalHook={setLogout}>
 				<h1 className='display-4 mb-3'>Are you sure?</h1>
@@ -136,18 +144,41 @@ function Profile({ className }) {
 				</div>
 				<div className='row mt-3'>
 					<label className=''>Address:</label>
-					<input className='border form-control' placeholder={userInfo.address} value={adress} onChange={e => setAdress(e.target.value)}/>
+					<input className='border form-control' placeholder={userInfo.address} value={address} onChange={e => setaddress(e.target.value)}/>
 				</div>
 				<div className='row mt-3'>
 					<button className='btn btn-block btn-outline-dark' onClick={() => setChangePassword(true)}>Change Password</button>
 				</div>
 				<div className='row mt-3 justify-content-between'>
-					<button className='btn btn-success' disabled={userName == '' && wholeName == '' && eMail == '' && adress == ''}>Save</button>
+						<button className='btn btn-success' disabled={userName === '' && wholeName === '' && eMail === '' && address === ''} onClick={() => {
+							const dict = { 'uname': userName, 'name': wholeName, 'address': address, 'mail': eMail };
+							const filtered = Object.fromEntries(Object.entries(dict).filter(([k, v]) => v !== '' ));
+							axiosInstance.put(`/user/${uid}`, filtered, { headers: { Token: token, uid: uid } })
+							.then(({ data }) => {
+								setUserInfo(data);
+							})
+							.catch(err => console.error(err));
+					}}>Save</button>
 					<button className='btn btn-danger' onClick={() => setLogout(true)}>Logout</button>
 				</div>
 			</div>
+			<div className='col-5 ml-5 mt-4'>
+				<div>
+					<h3>Groups:</h3>
+				</div>
+				<div className='list-group mt-3'>
+						{groups.map(({gname, _id}) => { return(
+							<div key={_id + gname} className='list-group-item list-group-item-action'>{gname}</div>
+						)})}
+				</div>
+			</div>
 		</div>
-
+		<div className='row mt-3 d-flex flex-column'>
+			<div className='col d-flex justify-content-center'>
+				<CurrentPlan />
+			</div>
+		</div>
+	</div>
 	);
 }
 
