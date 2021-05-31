@@ -28,12 +28,12 @@ function UnitCard({ className, unit_id, plan_id, name, rep, finished }) {
 					)})}
 				</ul>
 				{!isFinished ? <button className='btn btn-success btn-block' onClick={() => {
-					axiosInstance.put(`/user/${uid}/plans/${plan_id}`, { "unit_id": unit_id, "finished": true }, { headers: { Token: token } })
+					axiosInstance.put(`/user/${uid}/plan`, { "unit_id": unit_id, "finished": true }, { headers: { Token: token } })
 						.then(res => setFinished(true))
 						.catch(err => console.error(err.response));
 				}}>Mark as done</button> :
 					<button className='btn btn-dark btn-block' onClick={() => {
-						axiosInstance.put(`/user/${uid}/plans/${plan_id}`, { "unit_id": unit_id, "finished": false }, { headers: { Token: token } })
+						axiosInstance.put(`/user/${uid}/plan`, { "unit_id": unit_id, "finished": false }, { headers: { Token: token } })
 							.then(res => setFinished(false))
 							.catch(err => console.error(err.response));
 					}}>Mark as undone (only for testing!)</button>}

@@ -8,6 +8,7 @@ function PlanCard({ className, name, units, id }) {
 	const [token, uid, logout] = useUser();
 	const [groups, setGroups] = useState([]);
 	const [addToGroup, setAddToGroup] = useState(false);
+	const [error, setError] = useState('');
 
 	useEffect(() => {
 		axiosInstance.get(`/user/${uid}/groups`, { headers: { Token: token } })
@@ -23,12 +24,25 @@ function PlanCard({ className, name, units, id }) {
 				<div className='list-group mt-3'>
 					{groups.map(({gname, _id}) => { return(
 						<button key={_id + gname} className='list-group-item list-group-item-action' onClick={() => {
-							axiosInstance.post(`/group/${_id}/plans`, { "pid": id }, { headers: { Token: token, uid: uid } })
+							axiosInstance.post(`/group/${_id}/plan`, { "pid": id }, { headers: { Token: token, uid: uid } })
 								.then(res => window.location.href = `/groups/${_id}`)
-								.catch(err => console.error(err));
+								.catch(err => {
+									if (err.response && err.response.status == 428)
+										setError('This Plan could not be added this Group, as you\'re already working on a Plan!');
+									else
+										console.error(err);
+								});
 						}}>{gname}</button>
 					)})}
 				</div>
+			</Modal>
+			<Modal showModal={error !== ''} showModalHook={e => {
+				if (!e)
+					setError('');
+			}}>
+				<h2 className='text-danger text-center'>
+					{error}
+				</h2>
 			</Modal>
 			<div className='card-body'>
 				<div className='row'>
@@ -41,9 +55,14 @@ function PlanCard({ className, name, units, id }) {
 			</div>
 			<div className='btn-group'>
 				<div className='card-footer btn' onClick={() => {
-					axiosInstance.post(`/user/${uid}/plans`, { "pid": id }, { headers: { Token: token } })
+					axiosInstance.post(`/user/${uid}/plan`, { "pid": id }, { headers: { Token: token } })
 						.then(res => window.location.href = '/')
-						.catch(err => console.error(err));
+						.catch(err => {
+							if (err.response && err.response.status == 428)
+								setError('This Plan could not be added to your Profile, as you\'re already working on a Plan!');
+							else
+								console.error(err);
+						});
 				}}>Add to Profile</div>
 				<div className='card-footer btn' onClick={() => setAddToGroup(true)}>Add to Group</div>
 			</div>

@@ -8,7 +8,7 @@ function Plan({ className, match }) {
 	const [plan, setPlan] = useState();
 
 	useEffect(() => {
-		axiosInstance.get(`/user/${uid}/plans/${match.params.plan_id}`, { headers: { Token: token, uid: uid } })
+		axiosInstance.get(`/user/${uid}/plan`, { headers: { Token: token, uid: uid } })
 			.then(({ data }) => setPlan(data))
 			.catch(err => console.error(err));
 	}, []);
