@@ -55,15 +55,15 @@ class UserName(Resource):
 		if not res:
 			return "No valid UserID", 404
 		return res["uname"], 200
-
+	
 
 class User(Resource):
 	@needs_authentication
-	def get(self, user_id): #TODO nicht alles zurückgeben. Gruppen und Pläne z.B nicht. Dafür gibts extra Endpunkte
+	def get(self, user_id): 
 		res = users.find_one({"_id": user_id})
 		if not res:
 			return "No valid UserID", 404
-		return res, 200
+		return {**res, "groups" : "user/{user_id}/groups","plans" : "user/<string:user_id>/plans"}, 200
 
 
 	@needs_authentication
