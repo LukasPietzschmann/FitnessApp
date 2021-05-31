@@ -63,6 +63,7 @@ class User(Resource):
 		res = users.find_one({"_id": user_id})
 		if not res:
 			return "No valid UserID", 404
+		del res["tokens"]
 		return {**res, "groups" : "user/{user_id}/groups","plans" : "user/<string:user_id>/plans"}, 200
 
 
