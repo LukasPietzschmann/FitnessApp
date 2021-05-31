@@ -11,6 +11,7 @@ import json
 load_dotenv()
 client = MongoClient(env.get("MONGODB_CON_STR"))
 events = client.Events.Events
+users = client.GroupAndUser.User
 
 
 clients = set()
@@ -44,6 +45,25 @@ async def clear_events():
 
 
 async def handler(websocket: WebSocketServerProtocol, path):
+	async def close_con():
+		print(f"Client {websocket.remote_address} was disconnected, as it isnt authenticated")
+		await websocket.close(code=1011, reason="The first Request has to contain the uid and a token to authenticate against")
+
+	print(f"Client {websocket.remote_address} connected, but not authenticated")
+	auth_msg = await websocket.recv()
+	try:
+		auth_msg = json.loads(auth_msg)
+	except:
+		await close_con()
+		return
+	if not ("token" in auth_msg and "uid" in auth_msg):
+		await close_con()
+		return
+	res = users.find_one({"_id": auth_msg["uid"]})
+	if not (res and "tokens" in res and str(auth_msg["token"]) in res["tokens"]):
+		await close_con()
+		return
+
 	clients.add(websocket)
 	print(f"Client {websocket.remote_address} added")
 	await websocket.wait_closed()

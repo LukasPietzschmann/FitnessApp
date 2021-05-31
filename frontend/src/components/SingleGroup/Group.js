@@ -2,17 +2,21 @@ import { useEffect, useState } from 'react';
 import { axiosInstance } from '../../constants';
 import useUser from '../../hooks/useUser';
 import Card from '../Cards/Card';
-import useWebSocket, { ReadyState } from 'react-use-websocket';
+import useWebSocket from 'react-use-websocket';
 import PlanCard from './PlanCard';
 
 
 function Group({ className, match }) {
 	const [token, uid, logout] = useUser();
-	const {lastMessage, readyState} = useWebSocket('ws://localhost:4000');
+	const {lastMessage, sendJsonMessage} = useWebSocket('ws://localhost:4000');
 	const [group, setGroup] = useState(null);
 	const [memberNames, setMemberNames] = useState([]);
 	const [members, setMembers] = useState([]);
 	const [plans, setPlans] = useState([]);
+
+	useEffect(() => {
+		sendJsonMessage({'uid': uid, 'token': token});
+	}, [uid, token]);
 
 	useEffect(() => {
 		axiosInstance.get(`/group/${match.params.group_id}`, { headers: { Token: token, uid: uid } })
