@@ -242,7 +242,7 @@ class Group(Resource):
 		res = groups.find_one({"_id": group_id})
 		if not res:
 			return "No valid GroupID", 404
-		return res, 200
+		return {**res, "groups" : "group/<string:group_id>/plans"}, 200
 
 
 	@needs_authentication
