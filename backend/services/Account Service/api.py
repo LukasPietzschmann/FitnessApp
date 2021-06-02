@@ -28,7 +28,11 @@ users = client.GroupAndUser.User
 groups = client.GroupAndUser.Group
 events = client.Events.Events
 
-
+#Function to authenticate the logged in user, if required.
+#authenticate checks if the submitted token of the user matched their user_id and returns true if it does and false if not. It's called by the wrapper.
+#wrapper first checks if a token was given, then if a valid user_id was given. If both are true, it uses authenticate. If the user is successfully authenticated,
+#the calling function will be executed and the result returned.
+#If any of the checks returns false, a corresponding error code is returned to the caller. (Author: LP)
 def needs_authentication(func):
 	def authenticate(user_id, token) -> bool:
 		res = users.find_one({"_id": user_id})
