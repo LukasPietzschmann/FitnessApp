@@ -93,7 +93,11 @@ class User(Resource):
 			users.delete_one({"_id": user_id})
 			return res, 200
 
-
+# Class used to register a new User.
+# First reads out the body of the request and saves it into the variable body.
+# Then it checks if the body contains both a Username and a Password. If either is missing, it respondes with an error and stops.
+# If both are provided, it trys to create a new User in the database with the data from the request. 
+# If the user-id is already in use, the function returns an error and stops. If no error is given, it returns the user_id.
 class Register(Resource):
 	def post(self):
 		body = req.get_json() if req.content_type == "application/json" else json.loads(req.get_data().decode("utf-8"))
