@@ -143,7 +143,8 @@ class Login(Resource):
 		response.set_cookie(key="UID", value=res["_id"], secure=False, max_age=360 * 60 * 60 * 24)
 		return response
 
-
+# This class handels the loggout. 
+# After checking that the caller has the right authorisation, it deletes the token of the current session from the list in the database
 class Logout(Resource):
 	@needs_authentication
 	def post(self, user_id):
