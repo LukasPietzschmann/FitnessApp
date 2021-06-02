@@ -116,7 +116,13 @@ class Register(Resource):
 			return "Duplicate ID: Account name is already in Use", 400
 		return {"uid": uid}, 200
 
-
+# This class handels logging in. 
+# After loading the request body into the variable body, it first checks if it contains a Username and a Password, throwing an error if either or both are missing. 
+# Then it loads the value of uname and password into variables of the same name. 
+# Then it tries to load the user of the given name from the database. If the user doesn't exist, it throws an error.
+# Then it checks if the submitted password matches the password in the database. If it doesn't, it throws an error.
+# If the password is correct, the function creates a new token and adds it to the database. 
+# It then creates the request to the caller, setting two cookies used for authoriation. These cookies are set to expire after around a year.
 class Login(Resource):
 	def post(self):
 		body = req.get_json() if req.content_type == "application/json" else json.loads(req.get_data().decode("utf-8"))
