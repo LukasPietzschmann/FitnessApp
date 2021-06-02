@@ -52,7 +52,7 @@ def needs_authentication(func):
 			return func(*args, **kw)
 	return wrapper
 
-
+#Class containing a get function. Returns the Username belonging to a given user-id.
 class UserName(Resource):
 	def get(self, user_id):
 		res = users.find_one({"_id": user_id})
