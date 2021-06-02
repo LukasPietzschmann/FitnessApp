@@ -144,7 +144,7 @@ class Login(Resource):
 		return response
 
 # This class handels the logout. 
-# After checking that the caller has the right authorisation, it deletes the token of the current session from the list in the database
+# After checking that the caller has the right authorisation, it deletes the token of the current session from the list in the database.
 class Logout(Resource):
 	@needs_authentication
 	def post(self, user_id):
