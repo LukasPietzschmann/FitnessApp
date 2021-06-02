@@ -28,11 +28,11 @@ users = client.GroupAndUser.User
 groups = client.GroupAndUser.Group
 events = client.Events.Events
 
-#Function to authenticate the logged in user, if required.
-#authenticate checks if the submitted token of the user matched their user_id and returns true if it does and false if not. It's called by the wrapper.
-#wrapper first checks if a token was given, then if a valid user_id was given. If both are true, it uses authenticate. If the user is successfully authenticated,
-#the calling function will be executed and the result returned.
-#If any of the checks returns false, a corresponding error code is returned to the caller. (Author: LP)
+# Function to authenticate the logged in user, if required.
+# authenticate checks if the submitted token of the user matched their user_id and returns true if it does and false if not. It's called by the wrapper.
+# wrapper first checks if a token was given, then if a valid user_id was given. If both are true, it uses authenticate. If the user is successfully authenticated,
+# the calling function will be executed and the result returned.
+# If any of the checks returns false, a corresponding error code is returned to the caller. (Author: LP)
 def needs_authentication(func):
 	def authenticate(user_id, token) -> bool:
 		res = users.find_one({"_id": user_id})
@@ -52,7 +52,7 @@ def needs_authentication(func):
 			return func(*args, **kw)
 	return wrapper
 
-#Class containing a get function. Returns the Username belonging to a given user-id.
+# Class containing a get function. Returns the Username belonging to a given user-id.
 class UserName(Resource):
 	def get(self, user_id):
 		res = users.find_one({"_id": user_id})
@@ -60,8 +60,10 @@ class UserName(Resource):
 			return "No valid UserID", 404
 		return res["uname"], 200
 	
-
+# Class providing the get, put, and delete functionality for the User objects.
 class User(Resource):
+	# Uses needs_authentication and returns all data belonging to the specified user.
+	# The list of groups and associated training plans are provided as links to the respecitve calls to save space in the reply.
 	@needs_authentication
 	def get(self, user_id): 
 		res = users.find_one({"_id": user_id})
@@ -70,7 +72,7 @@ class User(Resource):
 		del res["tokens"]
 		return {**res, "groups" : "user/{user_id}/groups","plans" : "user/<string:user_id>/plans"}, 200
 
-
+	# Uses needs_authentication and updates the data of the specified user.
 	@needs_authentication
 	def put(self, user_id):
 		if not users.find_one({"_id": user_id}):
@@ -81,7 +83,7 @@ class User(Resource):
 		users.update_one({"_id": user_id}, {"$set": body})
 		return self.get(user_id)
 
-
+	# Uses needs_authentication and deletes the specified user.
 	@needs_authentication
 	def delete(self, user_id):
 		res = users.find_one({"_id": user_id})
