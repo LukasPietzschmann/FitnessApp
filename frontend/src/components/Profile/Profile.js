@@ -74,8 +74,9 @@ function Profile({ className }) {
 	const [wholeName, setWholeName] = useState('');
 	const [eMail, setEMail] = useState('');
 	const [address, setaddress] = useState('');
-	const [changePassword, setChangePassword] = useState(false);
+	const [changePassword, showChangePassword] = useState(false);
 	const [groups, setGroups] = useState([]);
+	const [deleteProfil, showDeleteProfile] = useState(false);
 
 	useEffect(() => {
 		axiosInstance.get(`/user/${uid}/groups`, { headers: { Token: token } })
@@ -101,81 +102,95 @@ function Profile({ className }) {
 
 
 	return (
-	<div>
-		<div className='row ml-2'>
-			<Modal closeOnClickOutside={false} showModal={logoutModal} showModalHook={setLogout}>
-				<h1 className='display-4 mb-3'>Are you sure?</h1>
-				<button className='btn btn-success' onClick={() => {
-					axiosInstance.post(`/logout/${uid}`, null, { headers: { Token: token } })
-					.then(_ => {
-						logout();
-						window.location.href = '/login';
-					})
-					.catch(err => console.error(err));
-				}}>Yes, logout</button>
-				<button className='btn btn-danger float-right' onClick={() => setLogout(false)}>No</button>
-			</Modal>
+	<div className='container-fluid'>
+		<div className=''>
+			<div className='row ml-2'>
+				<Modal closeOnClickOutside={false} showModal={logoutModal} showModalHook={setLogout}>
+					<h2 className=' mb-3 text-center'>Are you sure?</h2>
+					<button className='btn btn-success' onClick={() => {
+						axiosInstance.post(`/logout/${uid}`, null, { headers: { Token: token } })
+						.then(_ => {
+							logout();
+							window.location.href = '/login';
+						})
+						.catch(err => console.error(err));
+					}}>Yes, logout</button>
+					<button className='btn btn-danger float-right' onClick={() => setLogout(false)}>No</button>
+				</Modal>
 
-			<Modal Modal closeOnClickOutside={false} showModal={changePassword} showModalHook={setChangePassword}>
-				<ChangePassword uid={uid} token={token} password={userInfo.password} setChangePassword={setChangePassword} setUserInfo={setUserInfo}/>
-			</Modal>
+				<Modal Modal closeOnClickOutside={false} showModal={changePassword} showModalHook={showChangePassword}>
+					<ChangePassword uid={uid} token={token} password={userInfo.password} setChangePassword={showChangePassword} setUserInfo={setUserInfo}/>
+				</Modal>
 
-			<div className='col-auto m-4'>
-				<div className='row'><img className='rounded-circle' src={userData && userData.img ? userData.img : profilPic} height='100rem' width='100rem' alt='Profile picture' style={{ objectFit: 'cover' }} />
-				</div>
-			</div>
-			<div className='col-5 m-4'>
-				<div className='row mt-3'>
-					<label className=''>Username:</label>
-					<div className='input-group'>
-						<div className='input-group-prepend'>
-							<span className='input-group-text'>@</span>
-						</div>
-						<input className='border form-control' placeholder={userInfo.uname} value={userName} onChange={e => setUserName(e.target.value)}/>
+				<Modal Modal closeOnClickOutside={false} showModal={deleteProfil} showModalHook={showDeleteProfile}>
+					<h2 className='mb-3 text-center'>Are you Sure?</h2>
+						<button className='btn btn-danger' onClick={() => {
+							axiosInstance.delete(`/user/${uid}`, { headers: { Token: token } })
+								.then(_ => {
+									logout();
+									window.location.href = '/register';
+								})
+								.catch(err => console.error(err));
+
+						}}>Yes, delete my Account</button>
+						<button className='btn btn-success float-right' onClick={() => showDeleteProfile(false)}>No</button>
+				</Modal>
+
+				<div className='col-auto m-4'>
+					<div className='row'><img className='rounded-circle' src={userData && userData.img ? userData.img : profilPic} height='100rem' 	width='100rem' alt='Profile picture' style={{ objectFit: 'cover' }} />
 					</div>
 				</div>
-				<div className='row mt-3'>
-					<label className=''>Name:</label>
-					<input className='border form-control' placeholder={userInfo.name} value={wholeName} onChange={e => setWholeName(e.target.value)}/>
-				</div>
-				<div className='row mt-3'>
-					<label className=''>E-Mail:</label>
-					<input className='border form-control' placeholder={userInfo.mail} value={eMail} onChange={e => setEMail(e.target.value)}/>
-				</div>
-				<div className='row mt-3'>
-					<label className=''>Address:</label>
-					<input className='border form-control' placeholder={userInfo.address} value={address} onChange={e => setaddress(e.target.value)}/>
-				</div>
-				<div className='row mt-3'>
-					<button className='btn btn-block btn-outline-dark' onClick={() => setChangePassword(true)}>Change Password</button>
-				</div>
-				<div className='row mt-3 justify-content-between'>
+				<div className='col-5 m-4'>
+					<div className='row mt-3'>
+						<label className=''>Username:</label>
+						<div className='input-group'>
+							<div className='input-group-prepend'>
+								<span className='input-group-text'>@</span>
+							</div>
+							<input className='border form-control' placeholder={userInfo.uname} value={userName} onChange={e => setUserName(e.target.	value)}/>
+						</div>
+					</div>
+					<div className='row mt-3'>
+						<label className=''>Name:</label>
+						<input className='border form-control' placeholder={userInfo.name} value={wholeName} onChange={e => setWholeName(e.target.value)}/	>
+					</div>
+					<div className='row mt-3'>
+						<label className=''>E-Mail:</label>
+						<input className='border form-control' placeholder={userInfo.mail} value={eMail} onChange={e => setEMail(e.target.value)}/>
+					</div>
+					<div className='row mt-3'>
+						<label className=''>Address:</label>
+						<input className='border form-control' placeholder={userInfo.address} value={address} onChange={e => setaddress(e.target.value)}/>
+					</div>
+					<div className='row mt-3'>
+						<button className='btn btn-block btn-outline-dark' onClick={() => showChangePassword(true)}>Change Password</button>
+					</div>
+					<div className='row mt-3 justify-content-between'>
 						<button className='btn btn-success' disabled={userName === '' && wholeName === '' && eMail === '' && address === ''} onClick={() => {
-							const dict = { 'uname': userName, 'name': wholeName, 'address': address, 'mail': eMail };
-							const filtered = Object.fromEntries(Object.entries(dict).filter(([k, v]) => v !== '' ));
-							axiosInstance.put(`/user/${uid}`, filtered, { headers: { Token: token, uid: uid } })
-							.then(({ data }) => {
-								setUserInfo(data);
-							})
-							.catch(err => console.error(err));
-					}}>Save</button>
-					<button className='btn btn-danger' onClick={() => setLogout(true)}>Logout</button>
+								const dict = { 'uname': userName, 'name': wholeName, 'address': address, 'mail': eMail };
+								const filtered = Object.fromEntries(Object.entries(dict).filter(([k, v]) => v !== '' ));
+								axiosInstance.put(`/user/${uid}`, filtered, { headers: { Token: token, uid: uid } })
+								.then(({ data }) => {
+									setUserInfo(data);
+								})
+								.catch(err => console.error(err));
+						}}>Save</button>
+						<div>
+							<button className='btn btn-outline-danger mr-2' onClick={() => setLogout(true)}>Logout</button>
+							<button className='btn btn-danger align-self-end' onClick={() => showDeleteProfile(true)}>Delete Profile</button>
+						</div>
+					</div>
 				</div>
-			</div>
-			<div className='col-5 ml-5 mt-4'>
-				<div>
-					<h3>Groups:</h3>
-				</div>
-				<div className='list-group mt-3'>
-						{groups.map(({gname, _id}) => { return(
-							<div key={_id + gname} className='list-group-item list-group-item-action'>{gname}</div>
-						)})}
-				</div>
-			</div>
-		</div>
-		<div className='row mt-3 d-flex flex-column'>
-			<div className='col d-flex justify-content-center'>
-				<CurrentPlan />
+				{groups.length > 0 ? <div className='col-5 ml-5 mt-4'>
+					<div>
+						<h3>Groups:</h3>
+					</div>
+					<div className='list-group mt-3'>
+							{groups.map(({gname, _id}) => { return(
+								<a key={_id + gname} className='list-group-item list-group-item-action' href={`/groups/${_id}`}>{gname}</a>
+							)})}
+					</div>
+				</div> : ''}
 			</div>
 		</div>
 	</div>
