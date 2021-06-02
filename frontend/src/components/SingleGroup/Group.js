@@ -2,17 +2,21 @@ import { useEffect, useState } from 'react';
 import { axiosInstance } from '../../constants';
 import useUser from '../../hooks/useUser';
 import Card from '../Cards/Card';
-import useWebSocket, { ReadyState } from 'react-use-websocket';
+import useWebSocket from 'react-use-websocket';
 import PlanCard from './PlanCard';
 
 
 function Group({ className, match }) {
 	const [token, uid, logout] = useUser();
-	const {lastMessage, readyState} = useWebSocket('ws://localhost:4000');
+	const {lastMessage, sendJsonMessage} = useWebSocket('ws://localhost:4000');
 	const [group, setGroup] = useState(null);
 	const [memberNames, setMemberNames] = useState([]);
 	const [members, setMembers] = useState([]);
-	const [plans, setPlans] = useState([]);
+	const [plan, setPlan] = useState();
+
+	useEffect(() => {
+		sendJsonMessage({'uid': uid, 'token': token});
+	}, [uid, token]);
 
 	useEffect(() => {
 		axiosInstance.get(`/group/${match.params.group_id}`, { headers: { Token: token, uid: uid } })
@@ -24,8 +28,8 @@ function Group({ className, match }) {
 	}, []);
 
 	useEffect(() => {
-		axiosInstance.get(`/group/${match.params.group_id}/plans`, { headers: { Token: token, uid: uid } })
-			.then(({ data }) => setPlans(data))
+		axiosInstance.get(`/group/${match.params.group_id}/plan`, { headers: { Token: token, uid: uid } })
+			.then(({ data }) => setPlan(data))
 			.catch(err => console.error(err));
 	}, []);
 
@@ -52,11 +56,15 @@ function Group({ className, match }) {
 	return (
 		group && <div className='m-3'>
 			<h1 className='display-3 text-center' onChange={e => console.log(e.target.value)}>{group.gname}</h1>
-			<div className='row align-items-start'>
-				<div className='col-9 d-flex flex-wrap justify-content-around'>
-					{plans.map(({ name, units, _id }, i) => {return (
-						<PlanCard key={_id} name={name} units={units} id={_id} />
-					)})}
+			<img className='img-fluid rounded d-sm-none mb-4' alt='Grouppicture' src={group.img} />
+			<div className={`row align-items-start ${!plan ? 'align-items-center' : ''}`}>
+				<div className='col-sm-8'>
+					{plan ?
+						<PlanCard className='my-3' name={plan.name} units={plan.units} id={plan._id} /> :
+						<div className='text-center col-auto card bg-light py-3 m-5'>
+							<h2>Looks like you're all lazy. There is currently no Plan!</h2>
+							<a className='h4' href='/area'>Go ahed and add one!</a>
+						</div>}
 				</div>
 				<div className='col'>
 					<img className='img-fluid rounded row-auto mb-4' alt={`${group.gname} Picture`} src={group.img} />

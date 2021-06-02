@@ -6,19 +6,23 @@ const axiosInstance = axios.create({
 });
 
 axiosInstance.interceptors.response.use(config => config, err => {
-	if (err.code === 'ECONNABORTED')
+	if (err.message === 'Network Error')
+		alert('It looks like some service hasn\'t been started yet')
+	else if (err.code === 'ECONNABORTED')
 		alert('The Connection timed out')
 	return Promise.reject(err);
 })
 
- function hash(str) {
+function hash(str) {
 	var hash = 0, i, chr;
-	if (str === 0) return hash;
+	if (str === 0)
+		return "" + hash;
 	for (i = 0; i < str.length; i++) {
-	  chr   = str.charCodeAt(i);
-	  hash  = ((hash << 5) - hash) + chr;
-	  hash |= 0; }
-	return hash;
-  }
+		chr = str.charCodeAt(i);
+		hash = ((hash << 5) - hash) + chr;
+		hash |= 0;
+	}
+	return "" + hash;
+}
 
 export { axiosInstance, hash };

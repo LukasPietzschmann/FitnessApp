@@ -10,11 +10,8 @@ function CurrentPlan({ className }) {
 	const [finishedPerc, setFinished] = useState(0);
 
 	useEffect(() => {
-		axiosInstance.get(`/user/${uid}/plans`, { headers: { Token: token } })
-			.then(({ data }) => {
-				if(data.length > 0)
-					setCurrPlan(data[0]);
-			})
+		axiosInstance.get(`/user/${uid}/plan`, { headers: { Token: token } })
+			.then(({ data }) => setCurrPlan(data))
 			.catch(err => console.error(err.response));
 	}, []);
 
@@ -33,12 +30,12 @@ function CurrentPlan({ className }) {
 	return (
 		<div className={`${className}`}>
 			{currPlan ?
-				<div className='d-flex justify-content-center' onClick={() => window.location.href = `/plan/${currPlan._id}`} style={{cursor: 'pointer'}}>
+				<div className='d-flex justify-content-center' onClick={() => window.location.href = '/plan'} style={{cursor: 'pointer'}}>
 					<ProgressCircle percentage={finishedPerc} text={currPlan.name} />
 				</div>
 				:
 				<div className='text-center'>
-					<h2>Looks like you're lazy. There are currently no Plans!</h2>
+					<h2>Looks like you're lazy. There is currently no Plan!</h2>
 					<a className='h4' href='/area'>Go ahed and add one!</a>
 				</div>
 					}
