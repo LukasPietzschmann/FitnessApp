@@ -106,7 +106,7 @@ function Profile({ className }) {
 		<div className=''>
 			<div className='row ml-2'>
 				<Modal closeOnClickOutside={false} showModal={logoutModal} showModalHook={setLogout}>
-					<h2 className=' mb-3 text-center'>Are you sure?</h2>
+					<h2 className='mb-3 text-center'>Are you sure?</h2>
 					<button className='btn btn-success' onClick={() => {
 						axiosInstance.post(`/logout/${uid}`, null, { headers: { Token: token } })
 						.then(_ => {
@@ -136,11 +136,12 @@ function Profile({ className }) {
 						<button className='btn btn-success float-right' onClick={() => showDeleteProfile(false)}>No</button>
 				</Modal>
 
-				<div className='col-auto m-4'>
-					<div className='row'><img className='rounded-circle' src={userData && userData.img ? userData.img : profilPic} height='100rem' 	width='100rem' alt='Profile picture' style={{ objectFit: 'cover' }} />
+				<div className='col-sm-auto m-4'>
+					<div className='row justify-content-center justify-content-sm-left'>
+						<img className='rounded-circle' src={userData && userData.img ? userData.img : profilPic} height='100rem' width='100rem' alt='Profile picture' style={{ objectFit: 'cover' }} />
 					</div>
 				</div>
-				<div className='col-5 m-4'>
+				<div className='col-sm-5 m-4'>
 					<div className='row mt-3'>
 						<label className=''>Username:</label>
 						<div className='input-group'>
@@ -181,7 +182,7 @@ function Profile({ className }) {
 						</div>
 					</div>
 				</div>
-				{groups.length > 0 ? <div className='col-5 ml-5 mt-4'>
+				{groups.length > 0 ? <div className='col-sm ml-sm-5 mt-4'>
 					<div>
 						<h3>Groups:</h3>
 					</div>
