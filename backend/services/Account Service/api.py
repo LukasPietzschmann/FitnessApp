@@ -143,7 +143,7 @@ class Login(Resource):
 		response.set_cookie(key="UID", value=res["_id"], secure=False, max_age=360 * 60 * 60 * 24)
 		return response
 
-# This class handels the loggout. 
+# This class handels the logout. 
 # After checking that the caller has the right authorisation, it deletes the token of the current session from the list in the database
 class Logout(Resource):
 	@needs_authentication
@@ -155,7 +155,7 @@ class Logout(Resource):
 		users.update_one({"_id": user_id}, {"$pull": {"tokens": token}})
 		return None, 200
 
-
+# This class returns a list of the groups a given user is a member of.
 class GroupsWithUser(Resource):
 	@needs_authentication
 	# FIXME Wenn im Header eine uid angegeben ist (mit dem korrekten Token) dann
@@ -214,7 +214,7 @@ class UserPlan(Resource):
 		)
 		return users.find_one({"_id": user_id}), 200
 
-
+# Adds the paths to the API
 api.add_resource(User, '/user/<string:user_id>')
 api.add_resource(GroupsWithUser, '/user/<string:user_id>/groups') #FIXME hier vielleicht nen Post hinzufügen um den Benutzer zur Gruppe hinzuzufügen. Wie in /user/<id>/plans
 api.add_resource(UserPlan, '/user/<string:user_id>/plan')
@@ -223,7 +223,7 @@ api.add_resource(Register, '/user')
 api.add_resource(Login, '/login')
 api.add_resource(Logout, '/logout/<string:user_id>')
 
-
+# Wrapper that makes sure that the caller is a member of the given group.
 def needs_to_be_in_group(func):
 	def wrapper(*args, **kw):
 		gid = kw["group_id"] if "group_id" in kw else (args[1] if len(args) > 2 else None)
@@ -236,8 +236,11 @@ def needs_to_be_in_group(func):
 		return "The given User is no Member of the given Group", 400
 	return wrapper
 
-
+# This class handels groups.
 class Group(Resource):
+	# Function used to get the data of a group. Uses needs_authentication and needs_to_be_in_group.
+	# First checks if the group_id from the request body is valid, returning an error if it isn't.
+	# If it passes the checks, the functions returns the entry of the given group to the caller.
 	@needs_authentication
 	@needs_to_be_in_group
 	def get(self, group_id):
@@ -246,7 +249,10 @@ class Group(Resource):
 			return "No valid GroupID", 404
 		return res, 200
 
-
+	# Function used to update the data of a group. Uses needs_authentication and needs_to_be_in_group.
+	# First checks if the group_id from the request body is valid, returning an error it it isn't. 
+	# Then it checks if the request body contains the group name, returning an error if it does. The reason for that is that the group name can't be changed.
+	# If it doesn't contain the group name, it updates the entry of the group with the provided data and returns the group_id to the caller.
 	@needs_authentication
 	@needs_to_be_in_group
 	def put(self, group_id):
@@ -258,7 +264,10 @@ class Group(Resource):
 		groups.update_one({"_id": group_id}, {"$set": body})
 		return self.get(group_id)
 
-
+# This class handels the creation of new groups. Uses need_authentication. Loads the request body into a new variable. 
+# Then it checks if the body contains a group name, returning an error if not. 
+# If it does, it creates a group_id using the group name and then tries to insert the new group into the database.
+# If the group_id is already in use, the function returns an error. Otherwise, it retunrs the group_id.
 class MakeGroup(Resource):
 	@needs_authentication
 	def post(self):
@@ -277,8 +286,11 @@ class MakeGroup(Resource):
 			return "Duplicate ID: Groupname is already in Use", 400
 		return {"gid": gid}, 200
 
-
+# This class handels adding and removing users from groups.
 class AddUserToGroup(Resource):
+	# Function used to add a user to a group. Uses needs_authentication. 
+	# First checks if the group_id and the user_id from the request body are valid, throwing corresponding errors if either aren't valid. 
+	# If it passes the checks, the given user is added to the group.
 	@needs_authentication
 	def post(self, group_id, user_id):
 		if not (group := groups.find_one({"_id": group_id})):
@@ -288,7 +300,12 @@ class AddUserToGroup(Resource):
 		groups.update_one({"_id": group_id}, {"$addToSet": {"members": user_id}})
 		events.insert_one({"_id": str(datetime.datetime.now()), "target": "group.members.add", "body": {"member": user_id, "group": group_id}})
 		return None, 200
-
+    
+	# Function used to add a user to a group. Uses needs_authentication and needs_to_be_in_group.
+	# First checks if the group_id and the user_id from the request body are valid, throwing corresponding errors if either aren't valid. 
+	# If it passes the checks, the given user is removed to the group. 
+	# After removing the user, the function tests how many people were in the group when the function was called. 
+	# If there was only one member, the group would be empty at this point. In which case the group will be deleted. (Authors: and JS)
 	@needs_authentication
 	@needs_to_be_in_group
 	def delete(self, group_id, user_id):
@@ -306,7 +323,7 @@ class AddUserToGroup(Resource):
 
 		return None, 200
 
-
+# Returns the name of the group with the specified group_id. (Author: JS)
 class GroupName(Resource):
 	def get(self, group_id):
 		res = groups.find_one({"_id": group_id})
@@ -314,14 +331,13 @@ class GroupName(Resource):
 			return "No valid GroupID", 404
 		return res["gname"], 200
 
-#Enables the Front End to access the picture of a group
+# Enables the Front End to access the picture of a group. (Author: JS)
 class GroupPicture(Resource):
 	def get(self, group_id):
 		res = groups.find_one({"_id": group_id})
 		if not res:
 			return "No valid GroupID", 404
 		return res["img"], 200
-
 
 class GroupPlan(Resource):
 	@needs_authentication
@@ -368,7 +384,7 @@ class GroupPlan(Resource):
 		)
 		return groups.find_one({"_id": group_id}), 200
 
-
+# Adds the paths to the API
 api.add_resource(Group, '/group/<string:group_id>')
 api.add_resource(MakeGroup, '/group')
 api.add_resource(AddUserToGroup, '/group/<string:group_id>/<string:user_id>')
