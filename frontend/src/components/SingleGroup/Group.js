@@ -1,21 +1,22 @@
 import { useEffect, useState } from 'react';
 import { axiosInstance } from '../../constants';
 import useUser from '../../hooks/useUser';
-import Card from '../Cards/Card';
 import useWebSocket from 'react-use-websocket';
-import PlanCard from './PlanCard';
+import UnitCard from './UnitCard';
 
 
 function Group({ className, match }) {
-	const [token, uid, logout] = useUser();
-	const {lastMessage, sendJsonMessage} = useWebSocket('ws://localhost:4000');
+	const [token, uid] = useUser();
+	const { lastMessage, sendJsonMessage } = useWebSocket('ws://localhost:4000');
 	const [group, setGroup] = useState(null);
 	const [memberNames, setMemberNames] = useState([]);
 	const [members, setMembers] = useState([]);
 	const [plan, setPlan] = useState();
+	const [copied, setCopied] = useState(false);
+	const [finishedPerUnit, setFinishedPerUnit] = useState([]);
 
 	useEffect(() => {
-		sendJsonMessage({'uid': uid, 'token': token});
+		sendJsonMessage({ 'uid': uid, 'token': token });
 	}, [uid, token]);
 
 	useEffect(() => {
@@ -25,13 +26,13 @@ function Group({ className, match }) {
 				setMembers(data.members)
 			})
 			.catch(err => console.error(err));
-	}, []);
+	}, [token, uid, match.params.group_id]);
 
 	useEffect(() => {
 		axiosInstance.get(`/group/${match.params.group_id}/plan`, { headers: { Token: token, uid: uid } })
 			.then(({ data }) => setPlan(data))
 			.catch(err => console.error(err));
-	}, []);
+	}, [token, uid, match.params.group_id]);
 
 	useEffect(() => {
 		let pArr = [];
@@ -40,16 +41,36 @@ function Group({ className, match }) {
 	}, [members]);
 
 	useEffect(() => {
+		if (plan)
+			setFinishedPerUnit(plan.units.map(({ finished }) => finished.filter(({ finished }) => finished).map(({ uid }) => uid)));
+	}, [plan]);
+
+	useEffect(() => {
 		if (!lastMessage)
 			return
 		const data = JSON.parse(lastMessage.data)
-		if (!data.target.startsWith('group.members.') || data.body.group != match.params.group_id)
-			return
-		if (data.target.startsWith('group.members.add')) {
-			if (!members.includes(data.body.member))
-				setMembers([...members, data.body.member])
-		} else if (data.target.startsWith('group.members.remove')) {
-			setMembers(members.filter(elem => elem != data.body.member))
+		if (data.target.startsWith('group.members.') && data.body.group === match.params.group_id) {
+			if (data.target.startsWith('group.members.add')) {
+				if (!members.includes(data.body.member))
+					setMembers([...members, data.body.member])
+			} else if (data.target.startsWith('group.members.remove')) {
+				setMembers(members.filter(elem => elem !== data.body.member))
+			}
+		} else if (data.target.startsWith('group.plan.finished') && data.body.group === match.params.group_id) {
+			if (data.target.startsWith('group.plan.finished.add')) {
+				const tempF = finishedPerUnit;
+				const i = plan.units.findIndex(({ _id }) => _id == data.body.unit);
+				if (finishedPerUnit[i].includes(data.body.member))
+					return
+				tempF[i].push(data.body.member);
+				setFinishedPerUnit([...tempF]);
+			} else if (data.target.startsWith('group.plan.finished.remove')) {
+				const tempF = finishedPerUnit;
+				const i = plan.units.findIndex(({ _id }) => _id == data.body.unit);
+				const j = tempF.indexOf(data.body.member);
+				tempF[i].splice(j, 1);
+				setFinishedPerUnit([...tempF]);
+			}
 		}
 	}, [lastMessage]);
 
@@ -60,14 +81,23 @@ function Group({ className, match }) {
 			<div className={`row align-items-start ${!plan ? 'align-items-center' : ''}`}>
 				<div className='col-sm-8'>
 					{plan ?
-						<PlanCard className='my-3' name={plan.name} units={plan.units} id={plan._id} /> :
+						<div className={className}>
+							{plan && finishedPerUnit && plan.units.map(({ rep, name, _id }, i) => {
+								return (
+									<div key={_id} className='m-3'>
+										<UnitCard name={name} rep={rep} unit_id={_id} finished={finishedPerUnit} i={i} group_id={match.params.group_id} />
+									</div>
+								)
+							})}
+						</div>
+						:
 						<div className='text-center col-auto card bg-light py-3 m-5'>
 							<h2>Looks like you're all lazy. There is currently no Plan!</h2>
 							<a className='h4' href='/area'>Go ahed and add one!</a>
 						</div>}
 				</div>
-				<div className='col'>
-					<img className='img-fluid rounded row-auto mb-4' alt={`${group.gname} Picture`} src={group.img} />
+				<div className='col-sm-4'>
+					<img className='img-fluid rounded row-auto d-none d-sm-inline-block mb-4' alt='Grouppicture' src={group.img} />
 					<div className='row-auto mb-4'>
 						<ul className='list-group'>
 							{memberNames.map(member => <li className='list-group-item' key={member}>{member}</li>)}
@@ -77,9 +107,9 @@ function Group({ className, match }) {
 						<button className='btn btn-block btn-primary' onClick={() => {
 							let link = `${process.env.REACT_APP_FRONTEND_BASE}groups/${group._id}/join`;
 							navigator.clipboard.writeText(link)
-								.then(() => console.log('Async: Copying to clipboard was successful!'))
+								.then(() => setCopied(true))
 								.catch((err) => console.error('Async: Could not copy text: ', err));
-						}}>Copy Invitation Link</button>
+						}}>Copy Invitation Link {copied ? '(Copied!)' : ''}</button>
 						<button className='btn btn-block btn-outline-danger' onClick={() => {
 							axiosInstance.delete(`/group/${group._id}/${uid}`, { headers: { Token: token } })
 								.then(res => window.location.href = "/")
