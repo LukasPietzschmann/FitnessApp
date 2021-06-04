@@ -381,8 +381,9 @@ class GroupPlan(Resource):
 		groups.update_one(
 			{"_id": group_id},
 			{"$set": {"plan.units.$[unit].finished.$[user].finished": body["finished"]}},
-			array_filters=[{"unit._id": body["unit_id"]}, {"user.uid": req.headers.get("uid")}]
+			array_filters=[{"unit._id": body["unit_id"]}, {"user.uid": (uid := req.headers.get("uid"))}] #TODO uid nicht aus dem header sondern body nehmen
 		)
+		events.insert_one({"_id": str(datetime.datetime.now()), "target": f"group.plan.finished.{'add' if body['finished'] else 'remove'}", "body": {"member": uid, "group": group_id, "unit": body["unit_id"]}})
 		return groups.find_one({"_id": group_id}), 200
 
 # Adds the paths to the API
