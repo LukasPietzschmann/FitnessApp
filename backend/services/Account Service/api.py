@@ -299,6 +299,7 @@ class AddUserToGroup(Resource):
 		if not users.find_one({"_id": user_id}):
 			return "No valid UserID", 404
 		groups.update_one({"_id": group_id}, {"$addToSet": {"members": user_id}})
+		groups.update_one({"_id": group_id}, {"$addToSet": {"plan.units.$[unit].finished": {"uid": user_id, "finished": False}}}, array_filters=[{"unit._id": {"$regex": ".*"}}])
 		events.insert_one({"_id": str(datetime.datetime.now()), "target": "group.members.add", "body": {"member": user_id, "group": group_id}})
 		return None, 200
     
@@ -316,6 +317,7 @@ class AddUserToGroup(Resource):
 			return "No valid UserID", 404
 
 		groups.update({"_id": group_id}, {"$pull": {"members": user_id}})
+		groups.update_one({"_id": group_id}, {"$pull": {"plan.units.$[unit].finished": {"uid": user_id}}}, array_filters=[{"unit._id": {"$regex": ".*"}}])
 		events.insert_one({"_id": str(datetime.datetime.now()), "target": "group.members.remove", "body": {"member": user_id, "group": group_id}})
 		test = group["members"]
 		DeleteFlag = len(test)
