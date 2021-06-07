@@ -153,7 +153,7 @@ function Profile({ className }) {
 							<div className='input-group-prepend'>
 								<span className='input-group-text'>@</span>
 							</div>
-							<input className='border form-control' placeholder={userInfo.uname} value={userName} onChange={e => setUserName(e.target.	value)}/>
+							<input className='border bg-light form-control' disabled placeholder={userInfo.uname} value={userName} onChange={e => setUserName(e.target.	value)}/>
 						</div>
 					</div>
 					<div className='row mt-3'>
