@@ -1,0 +1,52 @@
+version: "3.9"
+services: 
+    frontend:
+        build: 
+            context: ./frontend
+            dockerfile: Dockerfile
+        ports: 
+            -   "80:3000"
+        restart: unless-stopped
+
+    wikihow:
+        build: 
+            context: backend
+            dockerfile: ./services/WikiHow Service/Dockerfile
+        ports: 
+            -   ${WIKI_HOW_PORT}:${WIKI_HOW_PORT}
+        restart: unless-stopped
+
+    training:
+        build: 
+            context: backend
+            dockerfile: ./services/Training Service/Dockerfile
+        ports: 
+            -   ${WORKOUT_PORT}:${WORKOUT_PORT}
+        restart: unless-stopped
+        stdin_open: true
+        tty: true
+
+    eventpublisher:
+        build: 
+            context: backend
+            dockerfile: ./services/EventPublisher/Dockerfile
+        ports: 
+            -   ${WEBSOCKET_PORT}:${WEBSOCKET_PORT}
+        restart: unless-stopped
+
+    accountservice:
+        build: 
+            context: backend
+            dockerfile: ./services/Account Service/Dockerfile
+        ports: 
+            -   ${USER_GROUP_PORT}:${USER_GROUP_PORT}
+        restart: unless-stopped
+    proxy:
+        build: 
+            context: backend/
+            dockerfile: ./proxy/Dockerfile
+        ports: 
+            -   "5000:5000"
+        restart: unless-stopped
+
+
