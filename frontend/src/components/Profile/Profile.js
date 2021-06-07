@@ -5,6 +5,8 @@ import useUser from '../../hooks/useUser';
 import profilPic from '../../image/sample-profile.png';
 import Modal from '../Modal/Modal';
 import CurrentPlan from '../FrontPage/CurrentPlan';
+import hoverEditImg from './changeImgHover.css';
+import editPen from '../../image/editPen.png';
 
 function ChangePassword({ password, uid, token, setChangePassword, setUserInfo }) {
 	const [newPassword, setNewPassword] = useState('');
@@ -77,6 +79,8 @@ function Profile({ className }) {
 	const [changePassword, showChangePassword] = useState(false);
 	const [groups, setGroups] = useState([]);
 	const [deleteProfil, showDeleteProfile] = useState(false);
+	const [error, setError] = useState('');
+	const [image, setImage] = useState(null);
 
 	useEffect(() => {
 		axiosInstance.get(`/user/${uid}/groups`, { headers: { Token: token } })
@@ -137,8 +141,9 @@ function Profile({ className }) {
 				</Modal>
 
 				<div className='col-sm-auto m-4'>
-					<div className='row justify-content-center justify-content-sm-left'>
-						<img className='rounded-circle' src={userData && userData.img ? userData.img : profilPic} height='100rem' width='100rem' alt='Profile picture' style={{ objectFit: 'cover' }} />
+					<div className='row justify-content-center justify-content-sm-left hoverEditContainer'>
+							<img className='rounded-circle hoverEditImg' src={image ? image.url : (userData && userData.img ? userData.img : profilPic)} height='100rem' width='100rem' alt='Profile picture' style={{ objectFit: 'cover' }} />
+							<img className='rounded-circle hoverEditPen' height='60rem' width='60rem' src={editPen} alt='edit Pen' onClick={() => document.getElementById('select-file').click() }/>
 					</div>
 				</div>
 				<div className='col-sm-5 m-4'>
@@ -148,7 +153,7 @@ function Profile({ className }) {
 							<div className='input-group-prepend'>
 								<span className='input-group-text'>@</span>
 							</div>
-							<input className='border form-control' placeholder={userInfo.uname} value={userName} onChange={e => setUserName(e.target.	value)}/>
+							<input className='border bg-light form-control' disabled placeholder={userInfo.uname} value={userName} onChange={e => setUserName(e.target.	value)}/>
 						</div>
 					</div>
 					<div className='row mt-3'>
@@ -166,8 +171,27 @@ function Profile({ className }) {
 					<div className='row mt-3'>
 						<button className='btn btn-block btn-outline-dark' onClick={() => showChangePassword(true)}>Change Password</button>
 					</div>
+					<div className='row mt-3'>
+						<div className='text-center text-danger mb-2'>{error}</div>
+						<input className='d-none' id='select-file' type='file' accept='image/jpg, image/jpeg' onInput={e => {
+							let file = e.target.files[0];
+							let reader = new FileReader();
+							var size = file.size;
+							setError('')
+							if(size <= 1e6) {
+								reader.onload = e => setImage({ file: file, url: URL.createObjectURL(file), name: file.name, rawBytes: e.target.result });
+								reader.readAsBinaryString(file);
+							}
+							else
+								setError('Image File cannot be larger than 1mb')
+						}} />
+					</div>
 					<div className='row mt-3 justify-content-between'>
-						<button className='btn btn-success' disabled={userName === '' && wholeName === '' && eMail === '' && address === ''} onClick={() => {
+						<button className='btn btn-success' disabled={userName === '' && wholeName === '' && eMail === '' && address === '' && !image} onClick={() => {
+								if (image) {
+									//uploadUserPic(uname, image.file).catch(err => console.error(err));
+
+								}
 								const dict = { 'uname': userName, 'name': wholeName, 'address': address, 'mail': eMail };
 								const filtered = Object.fromEntries(Object.entries(dict).filter(([k, v]) => v !== '' ));
 								axiosInstance.put(`/user/${uid}`, filtered, { headers: { Token: token, uid: uid } })

@@ -17,7 +17,7 @@ function Header({ className }) {
 	}, [uid, token]);
 
 	return (
-		<nav className={`navbar navbar-light shadow ${className}`} style={{backgroundColor: '#1995d1'}}>
+		<nav className={`navbar navbar-light shadow bg-primary ${className}`}>
 			<a className='navbar-brand' href='/'>
 				<img className='align-center mr-2' src={logo} height='40rem' alt='Logo' />
 				<text className='text-light'>Crush It</text>
