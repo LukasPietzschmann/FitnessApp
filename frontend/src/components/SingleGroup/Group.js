@@ -3,7 +3,52 @@ import { axiosInstance } from '../../constants';
 import useUser from '../../hooks/useUser';
 import useWebSocket from 'react-use-websocket';
 import UnitCard from './UnitCard';
+import Modal from '../Modal/Modal';
 
+function EditGroup({ showEditGroup, gname, id, setGroup}) {
+	const [error, setError] = useState('');
+	const [image, setImage] = useState(null);
+	const [token, uid, logout] = useUser();
+
+	return (
+		<div>
+			<div className='text-center text-danger mb-2'>{error}</div>
+			{image && <img className='img-fluid rounded mb-3 shadow' style={{ objectFit: 'cover' }} src={image.url} width='400rem' />}
+			{image && <hr />}
+			<form>
+				<div className='form-group'>
+					<label>New Group Picture</label>
+					<div className='border p-1'>
+						<input className='d-none' id='select-file' type='file' accept='image/jpg, image/jpeg' onInput={e => {
+							let file = e.target.files[0];
+							let reader = new FileReader();
+							var size = file.size;
+							if(size <= 1e6) {
+								reader.onload = e => setImage({ file: file, url: URL.createObjectURL(file), name: file.name, rawBytes: e.target.result });
+								reader.readAsBinaryString(file);
+							}
+							else
+								setError('Image File cannot be larger than 1mb')
+						}} />
+						<button className='btn btn-outline-secondary' onClick={e => {
+							document.getElementById('select-file').click();
+							e.preventDefault();
+						}}>Select Picture</button>
+						{image && <img className='rounded-circle ml-3' style={{ objectFit: 'cover' }} src={image.url} width='40em' height='40em' />}
+						<span className='ml-3 text-muted'>{image ? image.name : 'Nothing selected'}</span>
+						{image && <div className='btn float-right' onClick={e => {
+							setImage(null);
+							document.getElementById('select-file').value = '';
+						}}>X</div>}
+					</div>
+				</div>
+			</form>
+			<button className='btn btn-success' disabled={!image} onClick={() => {
+			}}>Save</button>
+			<button className='btn btn-outline-danger float-right' onClick={() => { showEditGroup(false); setError(''); setImage(null) }} >Cancel</button>
+		</div>
+	);
+}
 
 function Group({ className, match }) {
 	const [token, uid] = useUser();
@@ -14,6 +59,7 @@ function Group({ className, match }) {
 	const [plan, setPlan] = useState();
 	const [copied, setCopied] = useState(false);
 	const [finishedPerUnit, setFinishedPerUnit] = useState([]);
+	const [editGroup, showEditGroup] = useState(false);
 
 	useEffect(() => {
 		sendJsonMessage({ 'uid': uid, 'token': token });
@@ -76,6 +122,10 @@ function Group({ className, match }) {
 
 	return (
 		group && <div className='m-3'>
+			<Modal closeOnClickOutside={false} showModal={editGroup} showModalHook={showEditGroup}>
+				<EditGroup showEditGroup={showEditGroup} gname={group.gname} id={group._id} setGroup={setGroup}/>
+			</Modal>
+
 			<h1 className='display-3 text-center' onChange={e => console.log(e.target.value)}>{group.gname}</h1>
 			<img className='img-fluid rounded d-sm-none mb-4' alt='Grouppicture' src={group.img} />
 			<div className={`row align-items-start ${!plan ? 'align-items-center' : ''}`}>
@@ -98,6 +148,7 @@ function Group({ className, match }) {
 				</div>
 				<div className='col-sm-4'>
 					<img className='img-fluid rounded row-auto d-none d-sm-inline-block mb-4' alt='Grouppicture' src={group.img} />
+					<button className='btn btn-block mb-3 btn-primary' onClick={() => showEditGroup(true)}>Edit Group</button>
 					<div className='row-auto mb-4'>
 						<ul className='list-group'>
 							{memberNames.map(member => <li className='list-group-item' key={member}>{member}</li>)}
