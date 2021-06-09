@@ -7,6 +7,7 @@ import Modal from '../Modal/Modal';
 import CurrentPlan from '../FrontPage/CurrentPlan';
 import hoverEditImg from './changeImgHover.css';
 import editPen from '../../image/editPen.png';
+import getBase64ImageData from '../../tools/getBase64ImageData';
 
 function ChangePassword({ password, uid, token, setChangePassword, setUserInfo }) {
 	const [newPassword, setNewPassword] = useState('');
@@ -175,26 +176,23 @@ function Profile({ className }) {
 						<div className='text-center text-danger mb-2'>{error}</div>
 						<input className='d-none' id='select-file' type='file' accept='image/jpg, image/jpeg' onInput={e => {
 							let file = e.target.files[0];
-							let reader = new FileReader();
 							var size = file.size;
-							setError('')
-							if(size <= 1e6) {
-								reader.onload = e => setImage({ file: file, url: URL.createObjectURL(file), name: file.name, rawBytes: e.target.result });
-								reader.readAsBinaryString(file);
+							if (size > 1e6) {
+								setError('Image File cannot be larger than 1mb');
+								return ;
 							}
-							else
-								setError('Image File cannot be larger than 1mb')
+								getBase64ImageData(URL.createObjectURL(file)).then(data =>
+									setImage({ file: file, url: URL.createObjectURL(file), name: file.name, rawBytes: data }));
 						}} />
 					</div>
 					<div className='row mt-3 justify-content-between'>
 						<button className='btn btn-success' disabled={userName === '' && wholeName === '' && eMail === '' && address === '' && !image} onClick={() => {
-								if (image) {
-									//uploadUserPic(uname, image.file).catch(err => console.error(err));
-
-								}
-								const dict = { 'uname': userName, 'name': wholeName, 'address': address, 'mail': eMail };
-								const filtered = Object.fromEntries(Object.entries(dict).filter(([k, v]) => v !== '' ));
-								axiosInstance.put(`/user/${uid}`, filtered, { headers: { Token: token, uid: uid } })
+							const dict = { 'uname': userName, 'name': wholeName, 'address': address, 'mail': eMail };
+							if (image)
+								dict.rawImg = image.rawBytes;
+							const filtered = Object.fromEntries(Object.entries(dict).filter(([k, v]) => v !== ''));
+							console.log(filtered);
+							axiosInstance.put(`/user/${uid}`, filtered, { headers: { Token: token, uid: uid } })
 								.then(({ data }) => {
 									setUserInfo(data);
 								})

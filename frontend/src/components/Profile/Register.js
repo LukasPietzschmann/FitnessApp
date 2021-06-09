@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { axiosInstance, hash } from '../../constants';
-import uploadToBlob from '../../tools/uploadToBlob';
+import getBase64ImageData from '../../tools/getBase64ImageData';
 
 function Register({ className, style }) {
 	const [uname, setUName] = useState('');
@@ -48,17 +48,14 @@ function Register({ className, style }) {
 					<div className='border p-1'>
 						<input className='d-none' id='select-file' type='file' onInput={e => {
 							let file = e.target.files[0];
-							let reader = new FileReader();
 							var size = file.size;
-							setError("")
-							if(size <= 1e6) {
-								reader.onload = e => setImage({ file: file, url: URL.createObjectURL(file), name: file.name, rawBytes: e.target.result });
-								reader.readAsBinaryString(file);
+							if(size > 1e6) {
+								setError('Image File cannot be larger than 1mb')
+								return;
 							}
-							else {
-								setError("Image File cannot be larger than 1mb")
-							}
-							
+							getBase64ImageData(URL.createObjectURL(file)).then(data =>
+								setImage({ file: file, url: URL.createObjectURL(file), name: file.name, rawBytes: data }));
+
 						}}/>
 						<button className='btn btn-outline-secondary' onClick={e => {
 							document.getElementById('select-file').click();
@@ -80,14 +77,9 @@ function Register({ className, style }) {
 				<button className='btn btn-success' onClick={() => {
 					new Promise((resolve, reject) => {
 						if (image)
-							uploadToBlob(`${uname}-profile-pic.jpg`, image.file).then(({ url, deleteBlob }) => {
-								axiosInstance.post('/user', { uname: uname, password: hash(passwd), name: name, mail: mail, address: home, img: url })
-									.then(resolve)
-									.catch(err => {
-										deleteBlob();
-										reject(err);
-									});
-							})
+							axiosInstance.post('/user', { uname: uname, password: hash(passwd), name: name, mail: mail, address: home, rawImg: image.rawBytes })
+								.then(resolve)
+								.catch(err => reject(err));
 						else
 							axiosInstance.post('/user', { uname: uname, password: hash(passwd), name: name, mail: mail, address: home })
 								.then(resolve)

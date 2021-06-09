@@ -4,11 +4,12 @@ import useUser from '../../hooks/useUser';
 import useWebSocket from 'react-use-websocket';
 import UnitCard from './UnitCard';
 import Modal from '../Modal/Modal';
+import getBase64ImageData from '../../tools/getBase64ImageData';
 
-function EditGroup({ showEditGroup, gname, id, setGroup}) {
+function EditGroup({ showEditGroup, id }) {
 	const [error, setError] = useState('');
 	const [image, setImage] = useState(null);
-	const [token, uid, logout] = useUser();
+	const [token, uid] = useUser();
 
 	return (
 		<div>
@@ -21,14 +22,13 @@ function EditGroup({ showEditGroup, gname, id, setGroup}) {
 					<div className='border p-1'>
 						<input className='d-none' id='select-file' type='file' accept='image/jpg, image/jpeg' onInput={e => {
 							let file = e.target.files[0];
-							let reader = new FileReader();
 							var size = file.size;
-							if(size <= 1e6) {
-								reader.onload = e => setImage({ file: file, url: URL.createObjectURL(file), name: file.name, rawBytes: e.target.result });
-								reader.readAsBinaryString(file);
+							if (size > 1e6) {
+								setError('Image File cannot be larger than 1mb');
+								return;
 							}
-							else
-								setError('Image File cannot be larger than 1mb')
+							getBase64ImageData(URL.createObjectURL(file)).then(data =>
+								setImage({ file: file, url: URL.createObjectURL(file), name: file.name, rawBytes: data }));
 						}} />
 						<button className='btn btn-outline-secondary' onClick={e => {
 							document.getElementById('select-file').click();
@@ -44,6 +44,13 @@ function EditGroup({ showEditGroup, gname, id, setGroup}) {
 				</div>
 			</form>
 			<button className='btn btn-success' disabled={!image} onClick={() => {
+				axiosInstance.put(`/group/${id}`, { 'rawImg': image.rawBytes }, { headers: { Token: token, uid: uid }})
+					.then(_ => {
+						showEditGroup(false);
+						window.location.reload();
+					})
+					.catch(err => console.error(err.response));
+
 			}}>Save</button>
 			<button className='btn btn-outline-danger float-right' onClick={() => { showEditGroup(false); setError(''); setImage(null) }} >Cancel</button>
 		</div>
@@ -123,7 +130,7 @@ function Group({ className, match }) {
 	return (
 		group && <div className='m-3'>
 			<Modal closeOnClickOutside={false} showModal={editGroup} showModalHook={showEditGroup}>
-				<EditGroup showEditGroup={showEditGroup} gname={group.gname} id={group._id} setGroup={setGroup}/>
+				<EditGroup showEditGroup={showEditGroup} id={group._id}/>
 			</Modal>
 
 			<h1 className='display-3 text-center' onChange={e => console.log(e.target.value)}>{group.gname}</h1>

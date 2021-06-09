@@ -6,8 +6,8 @@ import Modal from '../Modal/Modal';
 
 import JoinGroupIcon from '../../image/join_group.svg';
 import AddGroupIcon from '../../image/add.svg';
-import uploadToBlob from '../../tools/uploadToBlob';
 import Card from '../Cards/Card';
+import getBase64ImageData from '../../tools/getBase64ImageData';
 
 function JoinGroup({ join, joinLink, setJoinLink }) {
 	const [token, uid, logout] = useUser();
@@ -43,7 +43,7 @@ function JoinGroup({ join, joinLink, setJoinLink }) {
 
 function AddGroup({ add, gname, setName, image, setImage }) {
 	const [error, setError] = useState('');
-	const [token, uid, logout] = useUser();
+	const [token, uid] = useUser();
 
 	return (
 		<div>
@@ -64,17 +64,13 @@ function AddGroup({ add, gname, setName, image, setImage }) {
 					<div className='border p-1'>
 						<input className='d-none' id='select-file' type='file' onInput={e => {
 							let file = e.target.files[0];
-							let reader = new FileReader();
 							var size = file.size;
-							setError("")
-							if(size <= 1e6) {
-								reader.onload = e => setImage({ file: file, url: URL.createObjectURL(file), name: file.name, rawBytes: e.target.result });
-								reader.readAsBinaryString(file);
+							if(size > 1e6) {
+								setError('Image File cannot be larger than 1mb');
+								return;
 							}
-							else {
-								setError("Image File cannot be larger than 1mb")
-							}
-							
+							getBase64ImageData(URL.createObjectURL(file)).then(data =>
+								setImage({ file: file, url: URL.createObjectURL(file), name: file.name, rawBytes: data }));
 						}} />
 						<button className='btn btn-outline-secondary' onClick={e => {
 							document.getElementById('select-file').click();
@@ -93,16 +89,9 @@ function AddGroup({ add, gname, setName, image, setImage }) {
 				<sup className='text-danger'>*</sup> required
 			</small>
 			<button className='btn btn-success' disabled={!gname} onClick={() => {
-				uploadToBlob(`${gname}-group-pic.jpg`, image.file).then(({ url, deleteBlob }) => {
-					axiosInstance.post('/group', { gname: gname, img: url }, { withCredentials: true, headers: { Token: token, uid: uid } })
-						.then(({data}) => window.location.href = `/groups/${data.gid}`)
-						.catch(err => {
-							console.error(err, err.response);
-							deleteBlob(); //FIXME wenn der uname schon vorhanden war, wird das Bild der Gruppe mit dem uname gelöscht
-							if (err.response && err.response.status === 400)
-								setError(err.response.data);
-						});
-				})
+				axiosInstance.post(`/group`, {'gname': gname, 'rawImg': image.rawBytes }, {headers: { Token: token, uid: uid }})
+					.then(({data}) => window.location.href = `/groups/${data.gid}`)
+					.catch(err => console.error(err));
 			}}>Add Group</button>
 			<button className='btn btn-outline-danger float-right' onClick={() => { add(false); setError(''); setImage(null); setName('') }} >Cancel</button>
 		</div>

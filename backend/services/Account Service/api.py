@@ -12,6 +12,8 @@ from pymongo import MongoClient, errors
 from hashlib import sha1
 from dotenv import load_dotenv
 from os import environ as env
+from azure.storage.blob import BlobServiceClient
+import base64
 import datetime
 import json
 import secrets
@@ -53,6 +55,14 @@ def needs_authentication(func):
 			return func(*args, **kw)
 	return wrapper
 
+
+def uploadBlob(image, name):
+	blob_service_client = BlobServiceClient(env.get("BLOB_CON_STRING"))
+	blob_client = blob_service_client.get_blob_client(container="images", blob=name)
+	blob_client.upload_blob(base64.b64decode(image), overwrite=True)
+	return f"https://fitnessappblob.blob.core.windows.net/images/{name}"
+
+
 # Class containing a get function. Returns the Username belonging to a given user-id.
 class UserName(Resource):
 	def get(self, user_id):
@@ -81,6 +91,9 @@ class User(Resource):
 		body = req.get_json() if req.content_type == "application/json" else json.loads(req.get_data().decode("utf-8"))
 		if "uname" in body:
 			return "Username (uname) can't be updated", 400
+		if "rawImg" in body:
+			body["img"] = uploadBlob(body["rawImg"], f"{user_id}-user.png")
+			del body["rawImg"]
 		users.update_one({"_id": user_id}, {"$set": body})
 		return self.get(user_id)
 
@@ -108,6 +121,9 @@ class Register(Resource):
 			return "A Password (passord) is required", 400
 
 		uid = str(int(sha1(body["uname"].encode("utf-8")).hexdigest(), 16) % (10 ** 10))
+		if "rawImg" in body:
+			body["img"] = uploadBlob(body["rawImg"], f"{uid}-user.png")
+			del body["rawImg"]
 		try:
 			users.insert_one({
 				"_id": uid,
@@ -227,7 +243,7 @@ api.add_resource(Logout, '/logout/<string:user_id>')
 # Wrapper that makes sure that the caller is a member of the given group.
 def needs_to_be_in_group(func):
 	def wrapper(*args, **kw):
-		gid = kw["group_id"] if "group_id" in kw else (args[1] if len(args) > 2 else None)
+		gid = kw["group_id"] if "group_id" in kw else (args[1] if len(args) >= 2 else None)
 		uid = kw["user_id"] if "user_id" in kw else req.headers.get("uid")
 		res = groups.find_one({"_id": gid})
 		if res == None:
@@ -262,6 +278,9 @@ class Group(Resource):
 		body = req.get_json() if req.content_type == "application/json" else json.loads(req.get_data().decode("utf-8"))
 		if "gname" in body:
 			return "Groupname (gname) can't be updated", 400
+		if "rawImg" in body:
+			body["img"] = uploadBlob(body["rawImg"], f"{group_id}-group.png")
+			del body["rawImg"]
 		groups.update_one({"_id": group_id}, {"$set": body})
 		return self.get(group_id)
 
@@ -277,6 +296,9 @@ class MakeGroup(Resource):
 			return "A Groupname (gname) is required", 400
 
 		gid = str(int(sha1(body["gname"].encode("utf-8")).hexdigest(), 16) % (10 ** 10))
+		if "rawImg" in body:
+			body["img"] = uploadBlob(body["rawImg"], f"{gid}-group.png")
+			del body["rawImg"]
 		try:
 			groups.insert_one({
 				"_id": gid,
