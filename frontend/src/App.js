@@ -16,6 +16,7 @@ import NotFound from './components/NotFound';
 import useUser from './hooks/useUser';
 import Plan from './components/Plan/Plan';
 import TestWS from './components/TestWS';
+import Licenses from './components/Licenses';
 
 function App() {
 	const [token, uid, logout] = useUser();
@@ -29,6 +30,9 @@ function App() {
 					</Route>
 					<Route exact path='/register'>
 						<Register className='mx-auto mt-5' style={{ width: 'clamp(400px, 35vw, 1000px)' }} />
+					</Route>
+					<Route exact path='/Licenses'>
+						<Licenses className='m-5'/>
 					</Route>
 					<Route component={NotFound}/>
 				</Switch>
@@ -56,6 +60,9 @@ function App() {
 				</Route>
 				<Route exact path='/register'>
 					<Register className='mx-auto mt-5' style={{ width: 'clamp(400px, 35vw, 1000px)' }} />
+				</Route>
+				<Route exact path='/Licenses'>
+					<Licenses className='m-5'/>
 				</Route>
 				<Route component={NotFound} />
 			</Switch>

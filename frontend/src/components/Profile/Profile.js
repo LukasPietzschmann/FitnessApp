@@ -217,7 +217,10 @@ function Profile({ className }) {
 					</div>
 				</div> : ''}
 			</div>
-		</div>
+			</div>
+			<footer className='w-100 text-center' style={{position: 'fixed', bottom: 0, left: 0}}>
+				This Site was built using <a href='/Licenses'>Open Source Software</a>
+			</footer>
 	</div>
 	);
 }
