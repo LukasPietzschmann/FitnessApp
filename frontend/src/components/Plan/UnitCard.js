@@ -3,10 +3,9 @@ import { axiosInstance } from '../../constants';
 import useUser from '../../hooks/useUser';
 import Accordion from '../Accordion/Accordion';
 
-function UnitCard({ className, unit_id, name, rep, finished }) {
+function UnitCard({ className, unit_id, name, rep, finished, updateFinished }) {
 	const [token, uid] = useUser();
 	const [data, setData] = useState(null);
-	const [isFinished, setFinished] = useState(finished);
 
 	useEffect(() => {
 		axiosInstance.get(`/wikiHow/${name}`)
@@ -16,7 +15,7 @@ function UnitCard({ className, unit_id, name, rep, finished }) {
 
 	return (
 		<div className={`card ${className}`}>
-			{data ? <Accordion className={`${isFinished ? 'border border-success' : ''} bg-light`} title={`${name} (${rep} Iteration${rep > 1 ? 's' : ''}) ${isFinished ? '✓' : ''}`} >
+			{data ? <Accordion className={`${finished ? 'border border-success' : ''} bg-light`} title={`${name} (${rep} Iteration${rep > 1 ? 's' : ''}) ${finished ? '✓' : ''}`} >
 				<ul className='list-group'>
 					{data.map(({ summary, description }, i) => { return (
 						<div key={i} className='card my-2'>
@@ -27,14 +26,14 @@ function UnitCard({ className, unit_id, name, rep, finished }) {
 						</div>
 					)})}
 				</ul>
-				{!isFinished ? <button className='btn btn-success btn-block' onClick={() => {
+				{!finished ? <button className='btn btn-success btn-block' onClick={() => {
 					axiosInstance.put(`/user/${uid}/plan`, { "unit_id": unit_id, "finished": true }, { headers: { Token: token } })
-						.then(_ => setFinished(true))
+						.then(_ => updateFinished(true))
 						.catch(err => console.error(err.response));
 				}}>Mark as done</button> :
 					<button className='btn btn-dark btn-block' onClick={() => {
 						axiosInstance.put(`/user/${uid}/plan`, { "unit_id": unit_id, "finished": false }, { headers: { Token: token } })
-							.then(_ => setFinished(false))
+							.then(_ => updateFinished(false))
 							.catch(err => console.error(err.response));
 					}}>Mark as undone (only for testing!)</button>}
 			</Accordion> : 'Loading...'}

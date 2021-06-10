@@ -231,6 +231,15 @@ class UserPlan(Resource):
 		)
 		return users.find_one({"_id": user_id}), 200
 
+	@needs_authentication
+	def delete(self, user_id):
+		if not (res := users.find_one({"_id": user_id})):
+			return "No valid UserID", 404
+		if not "plan" in res:
+			return "No current Plan", 404
+		users.update_one({"_id": user_id}, {"$unset": {"plan": ""}})
+
+
 # Adds the paths to the API
 api.add_resource(User, '/user/<string:user_id>')
 api.add_resource(GroupsWithUser, '/user/<string:user_id>/groups') #FIXME hier vielleicht nen Post hinzufügen um den Benutzer zur Gruppe hinzuzufügen. Wie in /user/<id>/plans
