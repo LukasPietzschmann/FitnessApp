@@ -15,6 +15,8 @@ function UnitCard({ className, name, rep, finished, i, unit_id, group_id }) {
 	}, [name]);
 
 	useEffect(() => {
+		if (!finished || !finished[i])
+			return
 		let pArr = [];
 		finished[i].map(member => pArr.push(axiosInstance.get(`/user/${member}/name`)));
 		Promise.allSettled(pArr).then(results => setFinishedNames(results.map(({ value }) => value.data)));
