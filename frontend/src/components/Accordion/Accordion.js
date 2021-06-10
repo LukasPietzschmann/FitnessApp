@@ -21,7 +21,7 @@ function Accordion({ className, title, children, condition=true, conditionWarnin
 		if (!condition)
 			setActive(false);
 		setDesiredHeight(isActive ? `${contentRef.current.scrollHeight}px` : '0px');
-	}, [condition])
+	}, [condition, isActive])
 
 	return (
 		<div className={`${className}`}>
