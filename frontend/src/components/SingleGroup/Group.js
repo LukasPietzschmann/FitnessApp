@@ -135,6 +135,7 @@ function Group({ className, match }) {
 
 			<h1 className='display-3 text-center' onChange={e => console.log(e.target.value)}>{group.gname}</h1>
 			<img className='img-fluid rounded d-sm-none mb-4' alt='Grouppicture' src={group.img} />
+			<button className='btn btn-block d-sm-none mb-3 btn-primary' onClick={() => showEditGroup(true)}>Edit Group</button>
 			<div className={`row align-items-start ${!plan ? 'align-items-center' : ''}`}>
 				<div className='col-sm-8'>
 					{plan ?
@@ -155,7 +156,7 @@ function Group({ className, match }) {
 				</div>
 				<div className='col-sm-4'>
 					<img className='img-fluid rounded row-auto d-none d-sm-inline-block mb-4' alt='Grouppicture' src={group.img} />
-					<button className='btn btn-block mb-3 btn-primary' onClick={() => showEditGroup(true)}>Edit Group</button>
+					<button className='btn btn-block d-none d-sm-block mb-3 btn-primary' onClick={() => showEditGroup(true)}>Edit Group</button>
 					<div className='row-auto mb-4'>
 						<ul className='list-group'>
 							{memberNames.map(member => <li className='list-group-item' key={member}>{member}</li>)}
