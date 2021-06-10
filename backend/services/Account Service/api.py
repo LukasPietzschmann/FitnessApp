@@ -104,6 +104,11 @@ class User(Resource):
 		if res == 0:
 			return "No Valid UserID", 404
 		else:
+			groups = GroupsWithUser().get(user_id=user_id)[0]
+			for group in groups:
+				print(group)
+			for gid in [group["_id"] for group in groups]:
+				AddUserToGroup().delete(group_id=gid, user_id=user_id)
 			users.delete_one({"_id": user_id})
 			return res, 200
 
