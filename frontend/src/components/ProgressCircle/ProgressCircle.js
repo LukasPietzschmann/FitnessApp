@@ -32,7 +32,7 @@ function ProgressCircle({ percentage, colour = 'green', text='', className }) {
 					<Circle colour='lightgrey' />
 					<Circle colour={colour} pct={pct} />
 				</g>
-				<text x="50%" y="50%" dominant-baseline="central" text-anchor="middle">{text}</text>
+				<text x="50%" y="50%" dominantBaseline="central" textAnchor="middle">{text}</text>
 			</svg>
 		</div>
 	);

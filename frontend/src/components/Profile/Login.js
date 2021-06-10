@@ -8,7 +8,7 @@ function Login({ className, style }) {
 	const [passwd, setPasswd] = useState('');
 	const [error, setError] = useState(null);
 
-	const [token, uid, logout] = useUser();
+	const [token, uid] = useUser();
 
 	useEffect(() => {
 		if (token && uid)

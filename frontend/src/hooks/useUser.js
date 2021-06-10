@@ -1,5 +1,4 @@
 import useCookie from './useCookie';
-import { axiosInstance } from '../constants';
 
 function useUser() {
 	const [token, deletToken] = useCookie('Token');

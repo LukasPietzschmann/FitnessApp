@@ -6,14 +6,14 @@ import { axiosInstance } from '../../constants';
 import Card from '../Cards/Card';
 
 function AreaChoice({ className }) {
-	const [token, uid, logout] = useUser();
+	const [token, uid] = useUser();
 	const [categories, setCats] = useState([]);
 
 	useEffect(() => {
 		axiosInstance.get('/category', { headers: { Token: token, uid: uid } })
 			.then(({ data }) => setCats(data))
 			.catch(err => console.log(err));
-	}, []);
+	}, [token, uid]);
 
 	return (
 		<div className={`${className}`}>

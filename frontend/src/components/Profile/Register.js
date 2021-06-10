@@ -61,9 +61,9 @@ function Register({ className, style }) {
 							document.getElementById('select-file').click();
 							e.preventDefault();
 						}}>Select Picture</button>
-						{image && <img className='rounded-circle ml-3' style={{ objectFit: 'cover' }} src={image.url} width='40em' height='40em' />}
+						{image && <img className='rounded-circle ml-3' style={{ objectFit: 'cover' }} src={image.url} alt='Profile Pic.' width='40em' height='40em' />}
 						<span className='ml-3 text-muted'>{image ? image.name : 'Nothing selected'}</span>
-						{image && <div className='btn float-right' onClick={e => {
+						{image && <div className='btn float-right' onClick={_ => {
 							setImage(null);
 							document.getElementById('select-file').value = '';
 						}}>X</div>}
@@ -84,7 +84,7 @@ function Register({ className, style }) {
 							axiosInstance.post('/user', { uname: uname, password: hash(passwd), name: name, mail: mail, address: home })
 								.then(resolve)
 								.catch(err => reject(err));
-					}).then(res => window.location.href = '/login')
+					}).then(_ => window.location.href = '/login')
 						.catch(err => {
 							console.log(err, err.response);
 							if (err.response && err.response.status === 400)

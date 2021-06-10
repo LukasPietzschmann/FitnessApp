@@ -4,10 +4,9 @@ import { axiosInstance, hash } from '../../constants';
 import useUser from '../../hooks/useUser';
 import profilPic from '../../image/sample-profile.png';
 import Modal from '../Modal/Modal';
-import CurrentPlan from '../FrontPage/CurrentPlan';
-import hoverEditImg from './changeImgHover.css';
 import editPen from '../../image/editPen.png';
 import getBase64ImageData from '../../tools/getBase64ImageData';
+import './changeImgHover.css';
 
 function ChangePassword({ password, uid, token, setChangePassword, setUserInfo }) {
 	const [newPassword, setNewPassword] = useState('');
@@ -107,7 +106,7 @@ function Profile({ className }) {
 
 
 	return (
-	<div className='container-fluid'>
+	<div className={`container-fluid ${className}`} >
 		<div className=''>
 			<div className='row ml-2'>
 				<Modal closeOnClickOutside={false} showModal={logoutModal} showModalHook={setLogout}>
@@ -143,7 +142,7 @@ function Profile({ className }) {
 
 				<div className='col-sm-auto m-4'>
 					<div className='row justify-content-center justify-content-sm-left hoverEditContainer'>
-							<img className='rounded-circle hoverEditImg' src={image ? image.url : (userData && userData.img ? userData.img : profilPic)} height='100rem' width='100rem' alt='Profile picture' style={{ objectFit: 'cover' }} />
+							<img className='rounded-circle hoverEditImg' src={image ? image.url : (userData && userData.img ? userData.img : profilPic)} height='100rem' width='100rem' alt='Profile Pic.' style={{ objectFit: 'cover' }} />
 							<img className='rounded-circle hoverEditPen' height='60rem' width='60rem' src={editPen} alt='edit Pen' onClick={() => document.getElementById('select-file').click() }/>
 					</div>
 				</div>
@@ -154,7 +153,7 @@ function Profile({ className }) {
 							<div className='input-group-prepend'>
 								<span className='input-group-text'>@</span>
 							</div>
-							<input className='border bg-light form-control' disabled placeholder={userInfo.uname} value={userName} onChange={e => setUserName(e.target.	value)}/>
+							<input className='border bg-light form-control' disabled placeholder={userInfo.uname} value={userName} onChange={e => setUserName(e.target.value)}/>
 						</div>
 					</div>
 					<div className='row mt-3'>

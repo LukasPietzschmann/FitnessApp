@@ -1,7 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import Test from './components/Test';
 import FrontPage from './components/FrontPage/FrontPage';
 import AreaChoice from './components/AreaChoicePage/AreaChoice';
 import ExerciseAreaTypes from './components/ExerciseAreaTypes/ExerciseAreaTypes';
@@ -15,11 +14,10 @@ import GroupInvitation from './components/SingleGroup/GroupInvitation';
 import NotFound from './components/NotFound';
 import useUser from './hooks/useUser';
 import Plan from './components/Plan/Plan';
-import TestWS from './components/TestWS';
 import Licenses from './components/Licenses';
 
 function App() {
-	const [token, uid, logout] = useUser();
+	const [token, uid] = useUser();
 
 	if (!(token && uid))
 		return (
@@ -32,9 +30,9 @@ function App() {
 						<Register className='mx-auto mt-5' style={{ width: 'clamp(400px, 35vw, 1000px)' }} />
 					</Route>
 					<Route exact path='/Licenses'>
-						<Licenses className='m-5'/>
+						<Licenses className='m-5' />
 					</Route>
-					<Route component={NotFound}/>
+					<Route component={NotFound} />
 				</Switch>
 			</Router>
 		);
@@ -42,10 +40,7 @@ function App() {
 		<Router>
 			<Header />
 			<Switch>
-				<Route exact path='/'>
-					<FrontPage className='' />
-				</Route>
-				<Route exact path='/test' component={TestWS}/>
+				<Route exact path='/' component={FrontPage}></Route>
 				<Route exact path='/groups' component={AllGroups} />
 				<Route exact path='/groups/:group_id' component={Group} />
 				<Route exact path='/groups/:group_id/join' component={GroupInvitation} />
@@ -62,7 +57,7 @@ function App() {
 					<Register className='mx-auto mt-5' style={{ width: 'clamp(400px, 35vw, 1000px)' }} />
 				</Route>
 				<Route exact path='/Licenses'>
-					<Licenses className='m-5'/>
+					<Licenses className='m-5' />
 				</Route>
 				<Route component={NotFound} />
 			</Switch>

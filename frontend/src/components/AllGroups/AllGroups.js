@@ -10,7 +10,7 @@ import Card from '../Cards/Card';
 import getBase64ImageData from '../../tools/getBase64ImageData';
 
 function JoinGroup({ join, joinLink, setJoinLink }) {
-	const [token, uid, logout] = useUser();
+	const [token, uid] = useUser();
 	const [error, setError] = useState('');
 
 	return (
@@ -32,7 +32,7 @@ function JoinGroup({ join, joinLink, setJoinLink }) {
 				}
 				const gid = match[1];
 				axiosInstance.post(`/group/${gid}/${uid}`, null, { headers: { Token: token } })
-					.then(res => window.location.href = `/groups/${gid}`)
+					.then(_ => window.location.href = `/groups/${gid}`)
 					.catch(err => setError(err.response));
 
 			}}>Join Group</button>
@@ -49,7 +49,7 @@ function AddGroup({ add, gname, setName, image, setImage }) {
 		<div>
 			<div className='text-center text-danger mb-2'>{error}</div>
 			<h1 className='display-4'>{gname}</h1>
-			{image && <img className='img-fluid rounded mb-3 shadow' style={{ objectFit: 'cover' }} src={image.url} width='400rem' />}
+			{image && <img className='img-fluid rounded mb-3 shadow' style={{ objectFit: 'cover' }} src={image.url} alt='Group Pic.' width='400rem' />}
 			{(gname || image) && <hr />}
 			<form>
 				<div className='form-group'>
@@ -76,7 +76,7 @@ function AddGroup({ add, gname, setName, image, setImage }) {
 							document.getElementById('select-file').click();
 							e.preventDefault();
 						}}>Select Picture</button>
-						{image && <img className='rounded-circle ml-3' style={{ objectFit: 'cover' }} src={image.url} width='40em' height='40em' />}
+						{image && <img className='rounded-circle ml-3' style={{ objectFit: 'cover' }} src={image.url} alt='Groupimage' width='40em' height='40em' />}
 						<span className='ml-3 text-muted'>{image ? image.name : 'Nothing selected'}</span>
 						{image && <div className='btn float-right' onClick={e => {
 							setImage(null);
@@ -100,10 +100,10 @@ function AddGroup({ add, gname, setName, image, setImage }) {
 
 
 function AllGroups({ className }) {
-	const [token, uid, logout] = useUser();
+	const [token, uid] = useUser();
 	const [groups, setGroups] = useState([]);
-	const [j, join] = useState(false);
-	const [a, add] = useState(false);
+	const [join, showJoinGroup] = useState(false);
+	const [add, showAddGroup] = useState(false);
 	const [joinLink, setJoinLink] = useState('');
 	const [gname, setName] = useState('');
 	const [image, setImage] = useState(null);
@@ -117,18 +117,18 @@ function AllGroups({ className }) {
 	return (
 		<div className={`${className}`}>
 			<h1 className='display-3 text-center'>Groups</h1>
-			<Modal showModal={j} showModalHook={r => {
-				join(r);
+			<Modal showModal={join} showModalHook={r => {
+				showJoinGroup(r);
 				setJoinLink('');
 			}}>
-				<JoinGroup joinLink={joinLink} setJoinLink={setJoinLink} join={join} />
+				<JoinGroup joinLink={joinLink} setJoinLink={setJoinLink} join={showJoinGroup} />
 			</Modal>
-			<Modal showModal={a} showModalHook={r => {
-				add(r);
+			<Modal showModal={add} showModalHook={r => {
+				showAddGroup(r);
 				setName('');
 				setImage(null);
 			}}>
-				<AddGroup gname={gname} setName={setName} image={image} setImage={setImage} add={add} />
+				<AddGroup gname={gname} setName={setName} image={image} setImage={setImage} add={showAddGroup} />
 			</Modal>
 			<div className='d-inline-flex mt-3 ml-3'>
 				{groups.map(({ gname, img, _id }, i) => {return (
@@ -137,8 +137,8 @@ function AllGroups({ className }) {
 					</Card>
 				)
 				})}
-				<Card className='shadow-lg m-2' img={JoinGroupIcon} onClick={() => join(true)}><h5 className='text-center'>Join Group</h5></Card>
-				<Card className='shadow-lg m-2' img={AddGroupIcon} onClick={() => add(true)}><h5 className='text-center'>Add Group</h5></Card>
+				<Card className='shadow-lg m-2' img={JoinGroupIcon} onClick={() => showJoinGroup(true)}><h5 className='text-center'>Join Group</h5></Card>
+				<Card className='shadow-lg m-2' img={AddGroupIcon} onClick={() => showAddGroup(true)}><h5 className='text-center'>Add Group</h5></Card>
 			</div>
 		</div>
 	);

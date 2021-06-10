@@ -7,7 +7,7 @@ import profilPic from '../../image/sample-profile.png';
 
 
 function Header({ className }) {
-	const [token, uid, logout] = useUser();
+	const [token, uid] = useUser();
 	const [userData, setUserData] = useState(null);
 
 	useEffect(() => {
@@ -20,21 +20,14 @@ function Header({ className }) {
 		<nav className={`navbar navbar-light shadow bg-primary ${className}`}>
 			<a className='navbar-brand' href='/'>
 				<img className='align-center mr-2' src={logo} height='40rem' alt='Logo' />
-				<text className='text-light'>Crush It</text>
+				<span className='text-light'>Crush It</span>
 			</a>
 			<a href='/profile'>
-				<img className='rounded-circle' src={userData && userData.img ? userData.img : profilPic} height='50rem' width='50rem' alt='Profile picture' style={{objectFit: 'cover'}} />
+				<img className='rounded-circle' src={userData && userData.img ? userData.img : profilPic} height='50rem' width='50rem' alt='Profile Pic.' style={{objectFit: 'cover'}} />
 			</a>
 		</nav>
 
 	);
 }
 
-// Green: 0cab43
-// Blue: 1995d1
-//Orange: eb7b05
-// Purple: 7312db
-
-// Lukas Blue 01: a7c5eb
-// Lukas Blue 02: b0deff
 export default Header;

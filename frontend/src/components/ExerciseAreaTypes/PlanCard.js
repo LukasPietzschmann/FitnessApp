@@ -5,7 +5,7 @@ import Modal from '../Modal/Modal';
 import '../Cards/ButtonBehavior.css';
 
 function PlanCard({ className, name, units, id }) {
-	const [token, uid, logout] = useUser();
+	const [token, uid] = useUser();
 	const [groups, setGroups] = useState([]);
 	const [addToGroup, setAddToGroup] = useState(false);
 	const [error, setError] = useState('');
@@ -14,7 +14,7 @@ function PlanCard({ className, name, units, id }) {
 		axiosInstance.get(`/user/${uid}/groups`, { headers: { Token: token } })
 			.then(({ data }) => setGroups(data))
 			.catch(err => console.error(err));
-	}, []);
+	}, [token, uid]);
 
 	return (
 		<div className={`card ${className}`}>
@@ -25,9 +25,9 @@ function PlanCard({ className, name, units, id }) {
 					{groups.map(({gname, _id}) => { return(
 						<button key={_id + gname} className='list-group-item list-group-item-action' onClick={() => {
 							axiosInstance.post(`/group/${_id}/plan`, { "pid": id }, { headers: { Token: token, uid: uid } })
-								.then(res => window.location.href = `/groups/${_id}`)
+								.then(_ => window.location.href = `/groups/${_id}`)
 								.catch(err => {
-									if (err.response && err.response.status == 428)
+									if (err.response && err.response.status === 428)
 										setError('This Plan could not be added this Group, as you\'re already working on a Plan!');
 									else
 										console.error(err);
@@ -56,9 +56,9 @@ function PlanCard({ className, name, units, id }) {
 			<div className='btn-group'>
 				<div className='card-footer btn' onClick={() => {
 					axiosInstance.post(`/user/${uid}/plan`, { "pid": id }, { headers: { Token: token } })
-						.then(res => window.location.href = '/')
+						.then(_ => window.location.href = '/')
 						.catch(err => {
-							if (err.response && err.response.status == 428)
+							if (err.response && err.response.status === 428)
 								setError('This Plan could not be added to your Profile, as you\'re already working on a Plan!');
 							else
 								console.error(err);

@@ -14,7 +14,7 @@ function EditGroup({ showEditGroup, id }) {
 	return (
 		<div>
 			<div className='text-center text-danger mb-2'>{error}</div>
-			{image && <img className='img-fluid rounded mb-3 shadow' style={{ objectFit: 'cover' }} src={image.url} width='400rem' />}
+			{image && <img className='img-fluid rounded mb-3 shadow' style={{ objectFit: 'cover' }} src={image.url} alt='Group Pic.' width='400rem' />}
 			{image && <hr />}
 			<form>
 				<div className='form-group'>
@@ -34,7 +34,7 @@ function EditGroup({ showEditGroup, id }) {
 							document.getElementById('select-file').click();
 							e.preventDefault();
 						}}>Select Picture</button>
-						{image && <img className='rounded-circle ml-3' style={{ objectFit: 'cover' }} src={image.url} width='40em' height='40em' />}
+						{image && <img className='rounded-circle ml-3' style={{ objectFit: 'cover' }} src={image.url} alt='Group Pic.' width='40em' height='40em' />}
 						<span className='ml-3 text-muted'>{image ? image.name : 'Nothing selected'}</span>
 						{image && <div className='btn float-right' onClick={e => {
 							setImage(null);
@@ -112,14 +112,14 @@ function Group({ className, match }) {
 		} else if (data.target.startsWith('group.plan.finished') && data.body.group === match.params.group_id) {
 			if (data.target.startsWith('group.plan.finished.add')) {
 				const tempF = finishedPerUnit;
-				const i = plan.units.findIndex(({ _id }) => _id == data.body.unit);
+				const i = plan.units.findIndex(({ _id }) => _id === data.body.unit);
 				if (finishedPerUnit[i].includes(data.body.member))
 					return
 				tempF[i].push(data.body.member);
 				setFinishedPerUnit([...tempF]);
 			} else if (data.target.startsWith('group.plan.finished.remove')) {
 				const tempF = finishedPerUnit;
-				const i = plan.units.findIndex(({ _id }) => _id == data.body.unit);
+				const i = plan.units.findIndex(({ _id }) => _id === data.body.unit);
 				const j = tempF.indexOf(data.body.member);
 				tempF[i].splice(j, 1);
 				setFinishedPerUnit([...tempF]);

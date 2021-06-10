@@ -1,4 +1,4 @@
-import AccountHeader from './AccountHeader';
+import Greeting from './Greeting';
 import Card from '../Cards/Card';
 
 import Sport from '../../image/sport.png';
@@ -30,7 +30,7 @@ function FrontPage({ className }) {
 
 	return (
 		<div className={`${className}`}>
-			<AccountHeader className='mt-2' />
+			<Greeting className='mt-2' />
 			<CurrentPlan className='my-5' />
 			<div className='d-flex flex-wrap justify-content-around align-items-center' >
 				{cards.map(({ target, img, title, desc }, i) => { return (

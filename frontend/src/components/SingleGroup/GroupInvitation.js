@@ -4,7 +4,7 @@ import useUser from '../../hooks/useUser';
 
 //Ich versuch mich mal daran, das aufzuhübschen. (Johannes S)
 function GroupInvitation({ className, match }) {
-	const [token, uid, logout] = useUser();
+	const [token, uid] = useUser();
 	const [groupName, setName] = useState('');
 	const [groupPicture, setImg] = useState('');
 
@@ -12,11 +12,13 @@ function GroupInvitation({ className, match }) {
 		axiosInstance.get(`/group/${match.params.group_id}/name`)
 			.then(({ data }) => setName(data))
 			.catch(err => console.error(err));
+	}, [match.params.group_id]);
 
+	useEffect(() => {
 		axiosInstance.get(`/group/${match.params.group_id}/img`)
 			.then(({ data }) => setImg(data))
 			.catch(err => console.error(err));
-	}, []);
+	}, [match.params.group_id]);
 
 	if (!token)
 		return (
@@ -31,7 +33,7 @@ function GroupInvitation({ className, match }) {
 			</div>
 			<div className={`card hover-card ${className}`} onClick={() => {
 				axiosInstance.post(`/group/${match.params.group_id}/${uid}`, null, { headers: { Token: token } })
-					.then(res => window.location.href = `/groups/${match.params.group_id}`)
+					.then(_ => window.location.href = `/groups/${match.params.group_id}`)
 
 					.catch(err => console.error(err.response));
 			}}

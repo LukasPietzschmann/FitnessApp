@@ -3,8 +3,8 @@ import { axiosInstance } from '../../constants';
 import useUser from '../../hooks/useUser';
 import Accordion from '../Accordion/Accordion';
 
-function UnitCard({ className, unit_id, plan_id, name, rep, finished }) {
-	const [token, uid, logout] = useUser();
+function UnitCard({ className, unit_id, name, rep, finished }) {
+	const [token, uid] = useUser();
 	const [data, setData] = useState(null);
 	const [isFinished, setFinished] = useState(finished);
 
@@ -12,7 +12,7 @@ function UnitCard({ className, unit_id, plan_id, name, rep, finished }) {
 		axiosInstance.get(`/wikiHow/${name}`)
 			.then(({ data }) => setData(data))
 			.catch(err => console.error(err));
-	}, []);
+	}, [name]);
 
 	return (
 		<div className={`card ${className}`}>
@@ -29,12 +29,12 @@ function UnitCard({ className, unit_id, plan_id, name, rep, finished }) {
 				</ul>
 				{!isFinished ? <button className='btn btn-success btn-block' onClick={() => {
 					axiosInstance.put(`/user/${uid}/plan`, { "unit_id": unit_id, "finished": true }, { headers: { Token: token } })
-						.then(res => setFinished(true))
+						.then(_ => setFinished(true))
 						.catch(err => console.error(err.response));
 				}}>Mark as done</button> :
 					<button className='btn btn-dark btn-block' onClick={() => {
 						axiosInstance.put(`/user/${uid}/plan`, { "unit_id": unit_id, "finished": false }, { headers: { Token: token } })
-							.then(res => setFinished(false))
+							.then(_ => setFinished(false))
 							.catch(err => console.error(err.response));
 					}}>Mark as undone (only for testing!)</button>}
 			</Accordion> : 'Loading...'}

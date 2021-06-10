@@ -4,8 +4,8 @@ import { axiosInstance } from '../../constants';
 
 import useUser from '../../hooks/useUser';
 
-function AccountHeader({ className }) {
-	const [token, uid, logout] = useUser();
+function Greeting({ className }) {
+	const [token, uid] = useUser();
 	const [userInfo, setUserInfo] = useState(null);
 
 	useEffect(() => {
@@ -16,14 +16,11 @@ function AccountHeader({ className }) {
 		}
 	}, [token, uid]);
 
-	if (userInfo)
-		return (
-			<div className={`d-flex justify-content-around ${className}`}>
-				<div className='display-3'>Hello <b>{userInfo.uname}</b>!</div>
-			</div>
-		);
-	else
-		return '';
+	return (
+		<div className={`d-flex justify-content-around ${className}`}>
+			<div className='display-3'>Hello <b>{userInfo ? userInfo.uname : '...'}</b>!</div>
+		</div>
+	);
 }
 
-export default AccountHeader;
+export default Greeting;

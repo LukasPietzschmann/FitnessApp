@@ -5,7 +5,7 @@ import useUser from "../../hooks/useUser";
 import ProgressCircle from "../ProgressCircle/ProgressCircle";
 
 function CurrentPlan({ className }) {
-	const [token, uid, logout] = useUser();
+	const [token, uid] = useUser();
 	const [currPlan, setCurrPlan] = useState();
 	const [finishedPerc, setFinished] = useState(0);
 
@@ -13,7 +13,7 @@ function CurrentPlan({ className }) {
 		axiosInstance.get(`/user/${uid}/plan`, { headers: { Token: token } })
 			.then(({ data }) => setCurrPlan(data))
 			.catch(err => console.error(err.response));
-	}, []);
+	}, [token, uid]);
 
 	useEffect(() => {
 		if (!currPlan)
@@ -38,7 +38,7 @@ function CurrentPlan({ className }) {
 					<h2>Looks like you're lazy. There is currently no Plan!</h2>
 					<a className='h4' href='/area'>Go ahed and add one!</a>
 				</div>
-					}
+			}
 		</div>
 	);
 }
