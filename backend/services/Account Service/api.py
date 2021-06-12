@@ -404,6 +404,7 @@ class GroupPlan(Resource):
 		plan = plan.json()
 		plan["units"] = [{**unit, "finished": [{"uid": member, "finished": False} for member in res["members"]]} for unit in plan["units"]]
 		groups.update_one({"_id": group_id}, {"$set": {"plan": plan}})
+		events.insert_one({"_id": str(datetime.datetime.now()), "target": "group.plan.add", "body": {"group": group_id}})
 		return None, 200
 
 	@needs_authentication
@@ -425,6 +426,15 @@ class GroupPlan(Resource):
 		)
 		events.insert_one({"_id": str(datetime.datetime.now()), "target": f"group.plan.finished.{'add' if body['finished'] else 'remove'}", "body": {"member": uid, "group": group_id, "unit": body["unit_id"]}})
 		return groups.find_one({"_id": group_id}), 200
+
+	@needs_authentication
+	def delete(self, group_id):
+		if not (res := groups.find_one({"_id": group_id})):
+			return "No valid GroupID", 404
+		if not "plan" in res:
+			return "No current Plan", 404
+		groups.update_one({"_id": group_id}, {"$unset": {"plan": ""}})
+		events.insert_one({"_id": str(datetime.datetime.now()), "target": "group.plan.remove", "body": {"group": group_id}})
 
 # Adds the paths to the API
 api.add_resource(Group, '/group/<string:group_id>')

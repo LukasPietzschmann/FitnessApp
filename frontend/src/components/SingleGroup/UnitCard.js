@@ -24,7 +24,7 @@ function UnitCard({ className, name, rep, finished, i, unit_id, group_id }) {
 
 	return (
 		<div className={`card ${className}`}>
-			{data ? <Accordion className={`${finished[i].includes(uid) ? 'border border-success' : ''} bg-light`} title={`${name} (${rep} Iteration${rep > 1 ? 's' : ''}) ${finishedNames.map(e => e)}`} >
+			{data ? <Accordion className={`${finished[i].includes(uid) ? 'border border-success' : ''} bg-light`} title={`${name} (${rep} Iteration${rep > 1 ? 's' : ''}) ${finishedNames.length >= 1 ? "Finished by: " + finishedNames.join(", ") : ''}`} >
 				<ul className='list-group'>
 					{data.map(({ summary, description }, i) => {return (
 						<div key={i} className='card my-2'>

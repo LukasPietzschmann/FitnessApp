@@ -102,7 +102,9 @@ function Group({ className, match }) {
 		if (!lastMessage)
 			return
 		const data = JSON.parse(lastMessage.data)
-		if (data.target.startsWith('group.members.') && data.body.group === match.params.group_id) {
+		if (data.body.group !== match.params.group_id)
+			return
+		if (data.target.startsWith('group.members.')) {
 			if (data.target.startsWith('group.members.add')) {
 				if (!members.includes(data.body.member))
 					setMembers([...members, data.body.member])
@@ -110,21 +112,26 @@ function Group({ className, match }) {
 				setMembers(members.filter(elem => elem !== data.body.member))
 				setFinishedPerUnit(finishedPerUnit.map(unit => unit.filter(member => member !== data.body.member)))
 			}
-		} else if (data.target.startsWith('group.plan.finished') && data.body.group === match.params.group_id) {
-			if (data.target.startsWith('group.plan.finished.add')) {
-				const tempF = finishedPerUnit;
-				const i = plan.units.findIndex(({ _id }) => _id === data.body.unit);
-				if (finishedPerUnit[i].includes(data.body.member))
-					return
-				tempF[i].push(data.body.member);
-				setFinishedPerUnit([...tempF]);
-			} else if (data.target.startsWith('group.plan.finished.remove')) {
-				const tempF = finishedPerUnit;
-				const i = plan.units.findIndex(({ _id }) => _id === data.body.unit);
-				const j = tempF.indexOf(data.body.member);
-				tempF[i].splice(j, 1);
-				setFinishedPerUnit([...tempF]);
-			}
+		} else if (data.target.startsWith('group.plan')) {
+			if (data.target.startsWith('group.plan.finished')) {
+				if (data.target.startsWith('group.plan.finished.add')) {
+					const tempF = finishedPerUnit;
+					const i = plan.units.findIndex(({ _id }) => _id === data.body.unit);
+					if (finishedPerUnit[i].includes(data.body.member))
+						return
+					tempF[i].push(data.body.member);
+					setFinishedPerUnit([...tempF]);
+				} else if (data.target.startsWith('group.plan.finished.remove')) {
+					const tempF = finishedPerUnit;
+					const i = plan.units.findIndex(({ _id }) => _id === data.body.unit);
+					const j = tempF.indexOf(data.body.member);
+					tempF[i].splice(j, 1);
+					setFinishedPerUnit([...tempF]);
+				}
+			} else if (data.target.startsWith('group.plan.remove'))
+				setPlan(null);
+			else if (data.target.startsWith('group.plan.add'))
+				alert("Someone added a new Plan. Reload the Page to view it!");
 		}
 	}, [lastMessage]);
 
@@ -148,6 +155,13 @@ function Group({ className, match }) {
 									</div>
 								)
 							})}
+							{ //TODO: es könnte die Zustimmung aller brauchen, damit der aktuelle Plan beendet werden kann
+								finishedPerUnit.every(finsihed => members.every(member => finsihed.includes(member))) ?
+									<button className='btn btn-block btn-success' onClick={() => {
+										axiosInstance.delete(`/group/${match.params.group_id}/plan`, { headers: { Token: token, uid: uid } })
+											.catch(err => console.error(err));
+									}}>Finish Plan</button> : ''
+							}
 						</div>
 						:
 						<div className='text-center col-auto card bg-light py-3 m-5'>
