@@ -108,6 +108,7 @@ function Group({ className, match }) {
 					setMembers([...members, data.body.member])
 			} else if (data.target.startsWith('group.members.remove')) {
 				setMembers(members.filter(elem => elem !== data.body.member))
+				setFinishedPerUnit(finishedPerUnit.map(unit => unit.filter(member => member !== data.body.member)))
 			}
 		} else if (data.target.startsWith('group.plan.finished') && data.body.group === match.params.group_id) {
 			if (data.target.startsWith('group.plan.finished.add')) {
