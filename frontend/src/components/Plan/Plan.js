@@ -37,7 +37,11 @@ function Plan({ className }) {
 						}}>Finish Plan</button> : ''}
 					</div>
 				</>
-				: ''}
+				:
+				<div className='text-center mt-5'>
+					<h2>Nothing here!</h2>
+					<a className='h4' href='/area'>Go ahead and add a Plan!</a>
+				</div>}
 		</div>
 	);
 }

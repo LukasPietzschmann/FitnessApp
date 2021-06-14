@@ -36,7 +36,7 @@ function CurrentPlan({ className }) {
 				:
 				<div className='text-center'>
 					<h2>Looks like you're lazy. There is currently no Plan!</h2>
-					<a className='h4' href='/area'>Go ahed and add one!</a>
+					<a className='h4' href='/area'>Go ahead and add one!</a>
 				</div>
 			}
 		</div>

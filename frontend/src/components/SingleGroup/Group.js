@@ -166,7 +166,7 @@ function Group({ className, match }) {
 						:
 						<div className='text-center col-auto card bg-light py-3 m-5'>
 							<h2>Looks like you're all lazy. There is currently no Plan!</h2>
-							<a className='h4' href='/area'>Go ahed and add one!</a>
+							<a className='h4' href='/area'>Go ahead and add one!</a>
 						</div>}
 				</div>
 				<div className='col-sm-4'>
