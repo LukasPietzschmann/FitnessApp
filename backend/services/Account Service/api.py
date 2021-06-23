@@ -191,14 +191,14 @@ class GroupsWithUser(Resource):
 		return list(gres), 200
 
 
-class UserPlan(Resource):
+class UserPlanPack(Resource):
 	@needs_authentication
 	def get(self, user_id):
 		if not (res := users.find_one({"_id": user_id})):
 			return "No valid UserID", 404
-		if not "plan" in res:
-			return None, 200
-		return res["plan"], 200
+		if not "planPack" in res:
+			return [], 200
+		return res["planPack"], 200
 
 	@needs_authentication
 	def post(self, user_id):
@@ -207,22 +207,33 @@ class UserPlan(Resource):
 		body = req.get_json() if req.content_type == "application/json" else json.loads(req.get_data().decode("utf-8"))
 		if not "pid" in body:
 			return "A PlanID (pid) id required", 400
-		if "plan" in res:
-			return "Plan could not be added, as there is already a plan", 428
 		plan = requests.get(f"{env.get('API_BASE')}:5000/workoutPlan/{body['pid']}", headers={"uid": user_id, "Token": req.headers.get("Token")})
 		if plan.status_code != 200: #TODO genauere Fehlerabfrage der Response. Bei 404 wollen wir auch 404 zurückgeben
 			return "/user/<id>/plans konnte /workoutPlan/<id> nicht erreichen, oder es wurde ein unerwartetes Ergebnis zurück gegeben", 500
 		plan = plan.json()
 		plan["units"] = [{**unit, "finished": False} for unit in plan["units"]]
-		users.update_one({"_id": user_id}, {"$set": {"plan": plan}})
+		users.update_one({"_id": user_id}, {"$addToSet": {"planPack": plan}})
 		return None, 200
 
+
+class UserPlan(Resource):
 	@needs_authentication
-	def put(self, user_id):
+	def get(self, user_id, plan_id):
 		if not (res := users.find_one({"_id": user_id})):
 			return "No valid UserID", 404
-		if not "plan" in res:
-			return "No current Plan", 404
+		if not "planPack" in res:
+			return "No valid PlanID", 404
+		for plan in res["planPack"]:
+			if (p := plan["_id"]) == plan_id:
+				return p
+		return "No valid PlanID", 404
+
+	@needs_authentication
+	def put(self, user_id, plan_id):
+		if not (res := users.find_one({"_id": user_id})):
+			return "No valid UserID", 404
+		if not "planPack" in res:
+			return "No valid PlanID", 404
 
 		body = req.get_json() if req.content_type == "application/json" else json.loads(req.get_data().decode("utf-8"))
 		if not "unit_id" in body:
@@ -231,24 +242,26 @@ class UserPlan(Resource):
 			return "The finished Field is required", 400
 		users.update_one(
 			{"_id": user_id},
-			{"$set": {"plan.units.$[unit].finished": body["finished"]}},
-			array_filters=[{"unit._id": body["unit_id"]}]
+			{"$set": {"planPack.$[plan].units.$[unit].finished": body["finished"]}},
+			array_filters=[{"unit._id": body["unit_id"]}, {"plan._id": plan_id}]
 		)
 		return users.find_one({"_id": user_id}), 200
 
 	@needs_authentication
-	def delete(self, user_id):
+	def delete(self, user_id, plan_id):
 		if not (res := users.find_one({"_id": user_id})):
 			return "No valid UserID", 404
-		if not "plan" in res:
-			return "No current Plan", 404
-		users.update_one({"_id": user_id}, {"$unset": {"plan": ""}})
+		if not "planPack" in res:
+			return "No valid PlanID", 404
+		users.update_one({"_id": user_id}, {"$pull": {"planPack": {"_id": plan_id}}})
+		return None, 200
 
 
 # Adds the paths to the API
 api.add_resource(User, '/user/<string:user_id>')
 api.add_resource(GroupsWithUser, '/user/<string:user_id>/groups') #FIXME hier vielleicht nen Post hinzufügen um den Benutzer zur Gruppe hinzuzufügen. Wie in /user/<id>/plans
-api.add_resource(UserPlan, '/user/<string:user_id>/plan')
+api.add_resource(UserPlanPack, '/user/<string:user_id>/plan')
+api.add_resource(UserPlan, '/user/<string:user_id>/plan/<string:plan_id>')
 api.add_resource(UserName, '/user/<string:user_id>/name')
 api.add_resource(Register, '/user')
 api.add_resource(Login, '/login')
@@ -335,8 +348,8 @@ class AddUserToGroup(Resource):
 		if not users.find_one({"_id": user_id}):
 			return "No valid UserID", 404
 		groups.update_one({"_id": group_id}, {"$addToSet": {"members": user_id}})
-		if("plan" in group):
-			groups.update_one({"_id": group_id}, {"$addToSet": {"plan.units.$[unit].finished": {"uid": user_id, "finished": False}}}, array_filters=[{"unit._id": {"$regex": ".*"}}])
+		if("planPack" in group):
+			groups.update_one({"_id": group_id}, {"$addToSet": {"planPack.$[].units.$[unit].finished": {"uid": user_id, "finished": False}}}, array_filters=[{"unit._id": {"$regex": ".*"}}])
 		events.insert_one({"_id": str(datetime.datetime.now()), "target": "group.members.add", "body": {"member": user_id, "group": group_id}})
 		return None, 200
     
@@ -354,8 +367,8 @@ class AddUserToGroup(Resource):
 			return "No valid UserID", 404
 
 		groups.update({"_id": group_id}, {"$pull": {"members": user_id}})
-		if("plan" in group):
-			groups.update_one({"_id": group_id}, {"$pull": {"plan.units.$[unit].finished": {"uid": user_id}}}, array_filters=[{"unit._id": {"$regex": ".*"}}])
+		if("planPack" in group):
+			groups.update_one({"_id": group_id}, {"$pull": {"planPack.$[].units.$[unit].finished": {"uid": user_id}}}, array_filters=[{"unit._id": {"$regex": ".*"}}])
 		events.insert_one({"_id": str(datetime.datetime.now()), "target": "group.members.remove", "body": {"member": user_id, "group": group_id}})
 		test = group["members"]
 		DeleteFlag = len(test)
@@ -380,61 +393,80 @@ class GroupPicture(Resource):
 			return "No valid GroupID", 404
 		return res["img"], 200
 
-class GroupPlan(Resource):
+class GroupPlanPack(Resource):
 	@needs_authentication
+	@needs_to_be_in_group
 	def get(self, group_id):
 		if not (res := groups.find_one({"_id": group_id})):
 			return "No valid GroupID", 404
-		if not "plan" in res:
-			return None, 200
-		return res["plan"], 200
+		if not "planPack" in res:
+			return [], 200
+		return res["planPack"], 200
 
 	@needs_authentication
+	@needs_to_be_in_group
 	def post(self, group_id):
 		if not (res := groups.find_one({"_id": group_id})):
 			return "No valid GroupID", 404
 		body = req.get_json() if req.content_type == "application/json" else json.loads(req.get_data().decode("utf-8"))
 		if not "pid" in body:
 			return "A PlanID (pid) id required", 400
-		if "plan" in res:
-			return "Plan could not be added, as there is already a plan", 428
 		plan = requests.get(f"{env.get('API_BASE')}:5000/workoutPlan/{body['pid']}", headers={"uid": req.headers.get("uid"), "Token": req.headers.get("Token")})
 		if plan.status_code != 200: #TODO genauere Fehlerabfrage der Response. Bei 404 wollen wir auch 404 zurückgeben
 			return "/group/<id>/plans konnte /workoutPlan/<id> nicht erreichen, oder es wurde ein unerwartetes Ergebnis zurück gegeben", 500
 		plan = plan.json()
 		plan["units"] = [{**unit, "finished": [{"uid": member, "finished": False} for member in res["members"]]} for unit in plan["units"]]
-		groups.update_one({"_id": group_id}, {"$set": {"plan": plan}})
+		groups.update_one({"_id": group_id}, {"$addToSet": {"planPack": plan}})
 		events.insert_one({"_id": str(datetime.datetime.now()), "target": "group.plan.add", "body": {"group": group_id}})
 		return None, 200
 
+
+class GroupPlan(Resource):
 	@needs_authentication
-	def put(self, group_id):
+	@needs_to_be_in_group
+	def get(self, group_id, plan_id):
 		if not (res := groups.find_one({"_id": group_id})):
 			return "No valid GroupID", 404
-		if not "plan" in res:
-			return "No current Plan", 404
+		if not "planPack" in res:
+			return "No valid PlanID", 404
+		for plan in res["planPack"]:
+			if plan["_id"] == plan_id:
+				return plan
+		return "No valid PlanID", 404
+
+	@needs_authentication
+	@needs_to_be_in_group
+	def put(self, group_id, plan_id):
+		if not (res := groups.find_one({"_id": group_id})):
+			return "No valid GroupID", 404
+		if not "planPack" in res:
+			return "No valid PlanID", 404
 
 		body = req.get_json() if req.content_type == "application/json" else json.loads(req.get_data().decode("utf-8"))
 		if not "unit_id" in body:
 			return "A unitID (unit_id) id required", 400
 		if not "finished" in body:
 			return "The finished Field is required", 400
+
 		groups.update_one(
 			{"_id": group_id},
-			{"$set": {"plan.units.$[unit].finished.$[user].finished": body["finished"]}},
-			array_filters=[{"unit._id": body["unit_id"]}, {"user.uid": (uid := req.headers.get("uid"))}] #TODO uid nicht aus dem header sondern body nehmen
+			{"$set": {"planPack.$[plan].units.$[unit].finished.$[user].finished": body["finished"], "planPack.$[plan].units.$[unit].finished.$[user].timestamp": str(datetime.datetime.now())}},
+			array_filters=[{"plan._id": plan_id}, {"unit._id": body["unit_id"]}, {"user.uid": (uid := req.headers.get("uid"))}] #TODO uid nicht aus dem header sondern body nehmen
 		)
-		events.insert_one({"_id": str(datetime.datetime.now()), "target": f"group.plan.finished.{'add' if body['finished'] else 'remove'}", "body": {"member": uid, "group": group_id, "unit": body["unit_id"]}})
+		events.insert_one({"_id": str(datetime.datetime.now()), "target": f"group.plan.finished.{'add' if body['finished'] else 'remove'}", "body": {"member": uid, "group": group_id, "plan": plan_id, "unit": body["unit_id"]}})
 		return groups.find_one({"_id": group_id}), 200
 
 	@needs_authentication
-	def delete(self, group_id):
+	@needs_to_be_in_group
+	def delete(self, group_id, plan_id):
 		if not (res := groups.find_one({"_id": group_id})):
 			return "No valid GroupID", 404
-		if not "plan" in res:
-			return "No current Plan", 404
-		groups.update_one({"_id": group_id}, {"$unset": {"plan": ""}})
+		if not "planPack" in res:
+			return "No valid PlanID", 404
+		groups.update_one({"_id": group_id}, {"$pull": {"planPack": {"_id": plan_id}}})
 		events.insert_one({"_id": str(datetime.datetime.now()), "target": "group.plan.remove", "body": {"group": group_id}})
+		return None, 200
+
 
 # Adds the paths to the API
 api.add_resource(Group, '/group/<string:group_id>')
@@ -442,7 +474,8 @@ api.add_resource(MakeGroup, '/group')
 api.add_resource(AddUserToGroup, '/group/<string:group_id>/<string:user_id>')
 api.add_resource(GroupName, '/group/<string:group_id>/name')
 api.add_resource(GroupPicture, '/group/<string:group_id>/img')
-api.add_resource(GroupPlan, '/group/<string:group_id>/plan')
+api.add_resource(GroupPlanPack, '/group/<string:group_id>/plan')
+api.add_resource(GroupPlan, '/group/<string:group_id>/plan/<string:plan_id>')
 
 
 

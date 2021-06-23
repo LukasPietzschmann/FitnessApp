@@ -3,6 +3,7 @@ import { axiosInstance } from '../../constants';
 import useUser from '../../hooks/useUser';
 import useWebSocket from 'react-use-websocket';
 import UnitCard from './UnitCard';
+import GroupPlan from './GroupPlan';
 import Modal from '../Modal/Modal';
 import getBase64ImageData from '../../tools/getBase64ImageData';
 import Group_Icon from '../../image/Group_Icon.png';
@@ -64,9 +65,8 @@ function Group({ className, match }) {
 	const [group, setGroup] = useState(null);
 	const [memberNames, setMemberNames] = useState([]);
 	const [members, setMembers] = useState([]);
-	const [plan, setPlan] = useState();
+	const [planPack, setPlanPack] = useState([]);
 	const [copied, setCopied] = useState(false);
-	const [finishedPerUnit, setFinishedPerUnit] = useState([]);
 	const [editGroup, showEditGroup] = useState(false);
 
 	useEffect(() => {
@@ -84,7 +84,7 @@ function Group({ className, match }) {
 
 	useEffect(() => {
 		axiosInstance.get(`/group/${match.params.group_id}/plan`, { headers: { Token: token, uid: uid } })
-			.then(({ data }) => setPlan(data))
+			.then(({ data }) => setPlanPack(data))
 			.catch(err => console.error(err));
 	}, [token, uid, match.params.group_id]);
 
@@ -95,75 +95,43 @@ function Group({ className, match }) {
 	}, [members]);
 
 	useEffect(() => {
-		if (plan)
-			setFinishedPerUnit(plan.units.map(({ finished }) => finished.filter(({ finished }) => finished).map(({ uid }) => uid)));
-	}, [plan]);
-
-	useEffect(() => {
 		if (!lastMessage)
 			return
 		const data = JSON.parse(lastMessage.data)
 		if (data.body.group !== match.params.group_id)
-			return
-		if (data.target.startsWith('group.members.')) {
+			return;
+		if (data.target.startsWith('group.plan.')) {
+			if (data.body.group !== match.params.group_id)
+				return;
+			if (data.target.startsWith('group.plan.add') || data.target.startsWith('group.plan.remove'))
+				alert("Your PlanPack changed, reload the Page to refresh the Pack!");
+		}
+		else if (data.target.startsWith('group.members.')) {
 			if (data.target.startsWith('group.members.add')) {
 				if (!members.includes(data.body.member))
 					setMembers([...members, data.body.member])
-			} else if (data.target.startsWith('group.members.remove')) {
+			} else if (data.target.startsWith('group.members.remove'))
 				setMembers(members.filter(elem => elem !== data.body.member))
-				setFinishedPerUnit(finishedPerUnit.map(unit => unit.filter(member => member !== data.body.member)))
-			}
-		} else if (data.target.startsWith('group.plan')) {
-			if (data.target.startsWith('group.plan.finished')) {
-				if (data.target.startsWith('group.plan.finished.add')) {
-					const tempF = finishedPerUnit;
-					const i = plan.units.findIndex(({ _id }) => _id === data.body.unit);
-					if (finishedPerUnit[i].includes(data.body.member))
-						return
-					tempF[i].push(data.body.member);
-					setFinishedPerUnit([...tempF]);
-				} else if (data.target.startsWith('group.plan.finished.remove')) {
-					const tempF = finishedPerUnit;
-					const i = plan.units.findIndex(({ _id }) => _id === data.body.unit);
-					const j = tempF.indexOf(data.body.member);
-					tempF[i].splice(j, 1);
-					setFinishedPerUnit([...tempF]);
-				}
-			} else if (data.target.startsWith('group.plan.remove'))
-				setPlan(null);
-			else if (data.target.startsWith('group.plan.add'))
-				alert("Someone added a new Plan. Reload the Page to view it!");
 		}
 	}, [lastMessage]);
 
 	return (
-		group && <div className='m-3'>
+		group && <div className={`m-3 ${className}`}>
 			<Modal closeOnClickOutside={false} showModal={editGroup} showModalHook={showEditGroup}>
-				<EditGroup showEditGroup={showEditGroup} id={group._id}/>
+				<EditGroup showEditGroup={showEditGroup} id={group._id} />
 			</Modal>
 			<div className='text-center'>
 				<h1 className='display-3 d-inline' onChange={e => console.log(e.target.value)}>{group.gname}</h1>
 			</div>
 			<img className='img-fluid rounded d-sm-none mb-4' alt='Grouppicture' src={group.img} />
 			<button className='btn btn-block d-sm-none mb-3 btn-primary' onClick={() => showEditGroup(true)}>Edit Group</button>
-			<div className={`row align-items-start ${!plan ? 'align-items-center' : ''}`}>
+			<div className={`row align-items-start ${!planPack ? 'align-items-center' : ''}`}>
 				<div className='col-sm-8'>
-					{plan ?
-						<div className={className}>
-							{plan && finishedPerUnit && plan.units.map(({ rep, name, _id }, i) => {
-								return (
-									<div key={_id} className='m-3'>
-										<UnitCard name={name} rep={rep} unit_id={_id} finished={finishedPerUnit} i={i} group_id={match.params.group_id} />
-									</div>
-								)
-							})}
-							{ //TODO: es könnte die Zustimmung aller brauchen, damit der aktuelle Plan beendet werden kann
-								finishedPerUnit.every(finsihed => members.every(member => finsihed.includes(member))) ?
-									<button className='btn btn-block btn-success' onClick={() => {
-										axiosInstance.delete(`/group/${match.params.group_id}/plan`, { headers: { Token: token, uid: uid } })
-											.catch(err => console.error(err));
-									}}>Finish Plan</button> : ''
-							}
+					{planPack && planPack.length > 0 ?
+						<div>
+							{planPack.map(({_id, name, units}) => {return (
+								<GroupPlan className='my-3' key={_id} group_id={match.params.group_id} plan_id={_id} name={name} units={units} members={members}/>
+							)})}
 						</div>
 						:
 						<div className='text-center col-auto card bg-light py-3 m-5'>

@@ -3,7 +3,7 @@ import { axiosInstance } from '../../constants';
 import useUser from '../../hooks/useUser';
 import Accordion from '../Accordion/Accordion';
 
-function UnitCard({ className, name, rep, finished, i, unit_id, group_id }) {
+function UnitCard({ className, name, rep, finished, i, unit_id, group_id, plan_id }) {
 	const [token, uid] = useUser();
 	const [finishedNames, setFinishedNames] = useState([]);
 	const [data, setData] = useState(null);
@@ -36,12 +36,12 @@ function UnitCard({ className, name, rep, finished, i, unit_id, group_id }) {
 					)})}
 				</ul>
 				{!finished[i].includes(uid) ? <button className='btn btn-success btn-block' onClick={() => {
-					axiosInstance.put(`/group/${group_id}/plan`, { "unit_id": unit_id, "uid": uid, "finished": true }, { headers: { Token: token, uid: uid } })
+					axiosInstance.put(`/group/${group_id}/plan/${plan_id}`, { "unit_id": unit_id, "uid": uid, "finished": true }, { headers: { Token: token, uid: uid } })
 						.then(res => console.log(res))
 						.catch(err => console.error(err.response));
 				}}>Mark as done</button> :
 					<button className='btn btn-dark btn-block' onClick={() => {
-						axiosInstance.put(`/group/${group_id}/plan`, { "unit_id": unit_id, "uid": uid, "finished": false }, { headers: { Token: token, uid: uid } })
+						axiosInstance.put(`/group/${group_id}/plan/${plan_id}`, { "unit_id": unit_id, "uid": uid, "finished": false }, { headers: { Token: token, uid: uid } })
 							.then(res => console.log(res))
 							.catch(err => console.error(err.response));
 					}}>Mark as undone (only for testing!)</button>}

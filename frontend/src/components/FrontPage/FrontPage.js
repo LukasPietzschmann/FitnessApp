@@ -31,7 +31,7 @@ function FrontPage({ className }) {
 	return (
 		<div className={`${className}`}>
 			<Greeting className='mt-2' />
-			<CurrentPlan className='my-5' />
+			{/* <CurrentPlan className='my-5' /> */}
 			<div className='d-flex flex-wrap justify-content-around align-items-center' >
 				{cards.map(({ target, img, title, desc }, i) => { return (
 					<Card className='shadow-lg m-3' key={i} onClick={() => window.location.href = target} img={img}>

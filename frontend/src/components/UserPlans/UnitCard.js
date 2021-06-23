@@ -3,7 +3,7 @@ import { axiosInstance } from '../../constants';
 import useUser from '../../hooks/useUser';
 import Accordion from '../Accordion/Accordion';
 
-function UnitCard({ className, unit_id, name, rep, finished, updateFinished }) {
+function UnitCard({ className, unit_id, plan_id, name, rep, finished, updateFinished }) {
 	const [token, uid] = useUser();
 	const [data, setData] = useState(null);
 
@@ -27,12 +27,12 @@ function UnitCard({ className, unit_id, name, rep, finished, updateFinished }) {
 					)})}
 				</ul>
 				{!finished ? <button className='btn btn-success btn-block' onClick={() => {
-					axiosInstance.put(`/user/${uid}/plan`, { "unit_id": unit_id, "finished": true }, { headers: { Token: token } })
+					axiosInstance.put(`/user/${uid}/plan/${plan_id}`, { "unit_id": unit_id, "finished": true }, { headers: { Token: token } })
 						.then(_ => updateFinished(true))
 						.catch(err => console.error(err.response));
 				}}>Mark as done</button> :
 					<button className='btn btn-dark btn-block' onClick={() => {
-						axiosInstance.put(`/user/${uid}/plan`, { "unit_id": unit_id, "finished": false }, { headers: { Token: token } })
+						axiosInstance.put(`/user/${uid}/plan/${plan_id}`, { "unit_id": unit_id, "finished": false }, { headers: { Token: token } })
 							.then(_ => updateFinished(false))
 							.catch(err => console.error(err.response));
 					}}>Mark as undone (only for testing!)</button>}
