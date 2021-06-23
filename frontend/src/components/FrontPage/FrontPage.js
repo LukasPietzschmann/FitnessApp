@@ -23,7 +23,7 @@ function FrontPage({ className }) {
 		{
 			title: 'Shopping',
 			desc: 'Shop new equipment to discover new training methods!',
-			target: '/area',
+			target: '/shop',
 			img: Shopping
 		}
 	];

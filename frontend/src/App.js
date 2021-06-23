@@ -15,6 +15,7 @@ import NotFound from './components/NotFound';
 import useUser from './hooks/useUser';
 import Plan from './components/Plan/Plan';
 import Licenses from './components/Licenses';
+import ShopSearch from './components/Shop/ShopSearch';
 
 function App() {
 	const [token, uid] = useUser();
@@ -42,6 +43,7 @@ function App() {
 			<Switch>
 				<Route exact path='/' component={FrontPage}></Route>
 				<Route exact path='/groups' component={AllGroups} />
+				<Route exact path='/shop' component={ShopSearch} />
 				<Route exact path='/groups/:group_id' component={Group} />
 				<Route exact path='/groups/:group_id/join' component={GroupInvitation} />
 				<Route exact path='/area' component={AreaChoice} />
