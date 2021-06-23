@@ -130,7 +130,7 @@ function AllGroups({ className }) {
 			}}>
 				<AddGroup gname={gname} setName={setName} image={image} setImage={setImage} add={showAddGroup} />
 			</Modal>
-			<div className='d-inline-flex mt-3 ml-3'>
+			<div className='d-inline-flex flex-wrap justify-content-center mt-3 ml-3'>
 				{groups.map(({ gname, img, _id }, i) => {return (
 					<Card className='shadow-lg m-3' key={i} onClick={() => window.location.href = `/groups/${_id}`} img={img} >
 						<h5 className='text-center'>{gname}</h5>
