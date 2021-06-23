@@ -1,3 +1,5 @@
+#Author: Johannes Wimmer
+
 FROM node:12
 ENV NODE_ENV=production
 

@@ -1,3 +1,7 @@
+/**
+ * @author Lukas Pietzschmann
+ */
+
 import './ButtonBehavior.css';
 
 function Card({ className, img = '', onClick, children }) {

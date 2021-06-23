@@ -1,3 +1,7 @@
+/**
+ * @author Lukas Pietzschmann, Vincent Ugrai
+ */
+
 import { useEffect, useState } from 'react';
 
 import useUser from '../../hooks/useUser';

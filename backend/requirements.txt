@@ -1,3 +1,7 @@
+'''
+Authors: Lukas Pietzschmann, Vincent Ugrai
+'''
+
 flask
 flask-restful
 pymongo

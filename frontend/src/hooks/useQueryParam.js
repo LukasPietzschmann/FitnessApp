@@ -1,3 +1,7 @@
+/**
+ * @author Lukas Pietzschmann
+ */
+
 function useQueryParam(queryString, param) {
 	if (queryString.length === 0)
 		return undefined;

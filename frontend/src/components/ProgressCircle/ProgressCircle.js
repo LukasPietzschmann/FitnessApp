@@ -1,3 +1,7 @@
+/**
+ * @author Lukas Pietzschmann
+ */
+
 function cleanPercentage(percentage) {
 	const tooLow = !Number.isFinite(+percentage) || percentage < 0;
 	const tooHigh = percentage > 100;

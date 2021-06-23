@@ -1,3 +1,7 @@
+/**
+ * @author Lukas Pietzschmann
+ */
+
 import { useEffect, useState } from 'react';
 import useWebSocket from 'react-use-websocket';
 import { axiosInstance } from '../../constants';

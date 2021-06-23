@@ -1,3 +1,7 @@
+'''
+Authors: Lukas Pietzschmann, Johannes Schenker, Vincent Ugrai, Leon Schugk
+'''
+
 # FIXME Behebe möglichen fehler mit Flask:
 # https://github.com/flask-restful/flask-restful/pull/913
 # import flask.scaffold
@@ -70,13 +74,13 @@ class UserName(Resource):
 		if not res:
 			return "No valid UserID", 404
 		return res["uname"], 200
-	
+
 # Class providing the get, put, and delete functionality for the User objects.
 class User(Resource):
 	# Uses needs_authentication and returns all data belonging to the specified user.
 	# The list of groups and associated training plans are provided as links to the respecitve calls to save space in the reply.
 	@needs_authentication
-	def get(self, user_id): 
+	def get(self, user_id):
 		res = users.find_one({"_id": user_id})
 		if not res:
 			return "No valid UserID", 404
@@ -115,7 +119,7 @@ class User(Resource):
 # Class used to register a new User.
 # First reads out the body of the request and saves it into the variable body.
 # Then it checks if the body contains both a Username and a Password. If either is missing, it respondes with an error and stops.
-# If both are provided, it trys to create a new User in the database with the data from the request. 
+# If both are provided, it trys to create a new User in the database with the data from the request.
 # If the user-id is already in use, the function returns an error and stops. If no error is given, it returns the user_id.
 class Register(Resource):
 	def post(self):
@@ -138,12 +142,12 @@ class Register(Resource):
 			return "Duplicate ID: Account name is already in Use", 400
 		return {"uid": uid}, 200
 
-# This class handels logging in. 
-# After loading the request body into the variable body, it first checks if it contains a Username and a Password, throwing an error if either or both are missing. 
-# Then it loads the value of uname and password into variables of the same name. 
+# This class handels logging in.
+# After loading the request body into the variable body, it first checks if it contains a Username and a Password, throwing an error if either or both are missing.
+# Then it loads the value of uname and password into variables of the same name.
 # Then it tries to load the user of the given name from the database. If the user doesn't exist, it throws an error.
 # Then it checks if the submitted password matches the password in the database. If it doesn't, it throws an error.
-# If the password is correct, the function creates a new token and adds it to the database. 
+# If the password is correct, the function creates a new token and adds it to the database.
 # It then creates the request to the caller, setting two cookies used for authoriation. These cookies are set to expire after around a year.
 class Login(Resource):
 	def post(self):
@@ -165,7 +169,7 @@ class Login(Resource):
 		response.set_cookie(key="UID", value=res["_id"], secure=False, max_age=360 * 60 * 60 * 24)
 		return response
 
-# This class handels the logout. 
+# This class handels the logout.
 # After checking that the caller has the right authorisation, it deletes the token of the current session from the list in the database.
 class Logout(Resource):
 	@needs_authentication
@@ -294,7 +298,7 @@ class Group(Resource):
 		return {**res, "groups" : "group/<string:group_id>/plans"}, 200
 
 	# Function used to update the data of a group. Uses needs_authentication and needs_to_be_in_group.
-	# First checks if the group_id from the request body is valid, returning an error it it isn't. 
+	# First checks if the group_id from the request body is valid, returning an error it it isn't.
 	# Then it checks if the request body contains the group name, returning an error if it does. The reason for that is that the group name can't be changed.
 	# If it doesn't contain the group name, it updates the entry of the group with the provided data and returns the group_id to the caller.
 	@needs_authentication
@@ -311,8 +315,8 @@ class Group(Resource):
 		groups.update_one({"_id": group_id}, {"$set": body})
 		return self.get(group_id)
 
-# This class handels the creation of new groups. Uses need_authentication. Loads the request body into a new variable. 
-# Then it checks if the body contains a group name, returning an error if not. 
+# This class handels the creation of new groups. Uses need_authentication. Loads the request body into a new variable.
+# Then it checks if the body contains a group name, returning an error if not.
 # If it does, it creates a group_id using the group name and then tries to insert the new group into the database.
 # If the group_id is already in use, the function returns an error. Otherwise, it retunrs the group_id.
 class MakeGroup(Resource):
@@ -338,8 +342,8 @@ class MakeGroup(Resource):
 
 # This class handels adding and removing users from groups.
 class AddUserToGroup(Resource):
-	# Function used to add a user to a group. Uses needs_authentication. 
-	# First checks if the group_id and the user_id from the request body are valid, throwing corresponding errors if either aren't valid. 
+	# Function used to add a user to a group. Uses needs_authentication.
+	# First checks if the group_id and the user_id from the request body are valid, throwing corresponding errors if either aren't valid.
 	# If it passes the checks, the given user is added to the group.
 	@needs_authentication
 	def post(self, group_id, user_id):
@@ -352,11 +356,11 @@ class AddUserToGroup(Resource):
 			groups.update_one({"_id": group_id}, {"$addToSet": {"planPack.$[].units.$[unit].finished": {"uid": user_id, "finished": False}}}, array_filters=[{"unit._id": {"$regex": ".*"}}])
 		events.insert_one({"_id": str(datetime.datetime.now()), "target": "group.members.add", "body": {"member": user_id, "group": group_id}})
 		return None, 200
-    
+
 	# Function used to add a user to a group. Uses needs_authentication and needs_to_be_in_group.
-	# First checks if the group_id and the user_id from the request body are valid, throwing corresponding errors if either aren't valid. 
-	# If it passes the checks, the given user is removed to the group. 
-	# After removing the user, the function tests how many people were in the group when the function was called. 
+	# First checks if the group_id and the user_id from the request body are valid, throwing corresponding errors if either aren't valid.
+	# If it passes the checks, the given user is removed to the group.
+	# After removing the user, the function tests how many people were in the group when the function was called.
 	# If there was only one member, the group would be empty at this point. In which case the group will be deleted. (Authors: and JS)
 	@needs_authentication
 	@needs_to_be_in_group

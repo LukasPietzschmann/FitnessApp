@@ -1,3 +1,7 @@
+/**
+ * @author Lukas Pietzschmann, Johannes Schenker, Leon Schugk
+ */
+
 import axios from 'axios';
 
 const axiosInstance = axios.create({

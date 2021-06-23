@@ -1,3 +1,7 @@
+/**
+ * @author Lukas Pietzschmann
+ */
+
 import React, { useState, useRef, useEffect } from 'react';
 
 import Arrow from './Arrow';

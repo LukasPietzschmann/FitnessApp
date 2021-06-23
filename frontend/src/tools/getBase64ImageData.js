@@ -1,3 +1,7 @@
+/**
+ * @author Lukas Pietzschmann
+ */
+
 function getBase64ImageData(url) {
 	var img = new Image();
 	img.setAttribute('crossOrigin', 'anonymous');

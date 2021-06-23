@@ -1,3 +1,7 @@
+/**
+ * @author Vincent Ugrai
+ */
+
 function ShopSearchCard({ className, onClick, children }) {
 	return (
 			<div className={`card ${className}`} style={{ width: '18rem' }} onClick={onClick}>

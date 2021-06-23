@@ -1,3 +1,7 @@
+/**
+ * @author Vincent Ugrai
+ */
+
 import { useState } from 'react';
 import { axiosInstance } from '../../constants';
 import Card from './ShopSearchCard';

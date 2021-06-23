@@ -1,3 +1,7 @@
+/**
+ * @author Lukas Pietzschmann
+ */
+
 import React from 'react';
 
 function Arrow({ className }) {

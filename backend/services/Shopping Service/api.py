@@ -1,4 +1,8 @@
-﻿from flask import Flask, request as req
+﻿'''
+Authors: Leon Schugk
+'''
+
+from flask import Flask, request as req
 from flask_restful import Api, Resource
 from flask_cors import CORS
 from dotenv import load_dotenv

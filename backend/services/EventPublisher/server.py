@@ -1,3 +1,7 @@
+'''
+Authors: Lukas Pietzschmann
+'''
+
 from dotenv import load_dotenv
 from os import environ as env
 from pymongo import MongoClient

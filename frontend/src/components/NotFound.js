@@ -1,3 +1,7 @@
+/**
+ * @author Lukas Pietzschmann
+ */
+
 function NotFound({ className }) {
 	return (
 		<div className={`text-center mt-5 ${className}`}>

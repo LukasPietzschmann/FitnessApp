@@ -1,3 +1,7 @@
+/**
+ * @author Lukas Pietzschmann
+ */
+
 function useCookie(cookieName) {
 	let cookies = document.cookie.split(';').map((cookie) => {
 		let elems = cookie.split('=');

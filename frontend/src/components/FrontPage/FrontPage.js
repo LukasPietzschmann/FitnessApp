@@ -1,3 +1,7 @@
+/**
+ * @author Lukas Pietzschmann, Vincent Ugrai
+ */
+
 import Greeting from './Greeting';
 import Card from '../Cards/Card';
 

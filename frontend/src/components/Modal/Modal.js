@@ -1,3 +1,7 @@
+/**
+ * @author Lukas Pietzschmann
+ */
+
 import ReactModal from 'react-modal';
 
 import './Modal.css';

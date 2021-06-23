@@ -1,3 +1,7 @@
+/**
+ * @author Lukas Pietzschmann, Johannes Schenker
+ */
+
 import { useEffect, useState } from 'react';
 import { axiosInstance } from '../../constants';
 import useUser from '../../hooks/useUser';

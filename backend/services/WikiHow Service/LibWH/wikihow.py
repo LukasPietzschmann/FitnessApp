@@ -1,3 +1,7 @@
+'''
+Authors: Lukas Pietzschmann
+'''
+
 from LibWH import errors
 import requests
 import bs4

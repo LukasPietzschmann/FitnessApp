@@ -1,3 +1,7 @@
+'''
+Authors: Lukas Pietzschmann, Leon Schugk
+'''
+
 from hashlib import sha1
 from flask import Flask, request as req
 from flask_restful import Api, Resource

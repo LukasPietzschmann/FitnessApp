@@ -1,3 +1,7 @@
+'''
+Authors: Lukas Pietzschmann, Johannes Schenker, Vincent Ugrai
+'''
+
 # FIXME Behebe möglichen fehler mit Flask:
 # https://github.com/flask-restful/flask-restful/pull/913
 # import flask.scaffold

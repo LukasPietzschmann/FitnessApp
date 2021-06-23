@@ -1,3 +1,7 @@
+/**
+ * @author Lukas Pietzschmann
+ */
+
 .ReactModal__Overlay {
 	opacity: 0;
 	transform: translateY(-50px);

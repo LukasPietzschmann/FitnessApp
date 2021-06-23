@@ -1,3 +1,7 @@
+/**
+ * @author Lukas Pietzschmann
+ */
+
 import { useEffect, useState } from 'react';
 import UnitCard from './UnitCard';
 import { axiosInstance } from '../../constants';

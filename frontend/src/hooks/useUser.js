@@ -1,3 +1,7 @@
+/**
+ * @author Lukas Pietzschmann
+ */
+
 import useCookie from './useCookie';
 
 function useUser() {

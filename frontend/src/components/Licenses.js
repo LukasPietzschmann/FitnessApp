@@ -1,3 +1,7 @@
+/**
+ * @author Lukas Pietzschmann
+ */
+
 import Accordion from './Accordion/Accordion';
 
 function Licenses({ className }) {

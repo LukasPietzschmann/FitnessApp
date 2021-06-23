@@ -1,3 +1,7 @@
+/**
+ * @author Lukas Pietzschmann, Vincent Ugrai, Johannes Schenker
+ */
+
 import { useState } from 'react';
 import { axiosInstance, hash } from '../../constants';
 import getBase64ImageData from '../../tools/getBase64ImageData';
