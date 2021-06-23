@@ -25,6 +25,8 @@ def proxy(path):
 		port = env.get("WORKOUT_PORT")
 	elif path.startswith("wikiHow"):
 		port = env.get("WIKI_HOW_PORT")
+	elif path.startswith("shoppingsearch"):
+		port = env.get("SHOPPING_PORT")
 	else:
 		return "The Proxy is not aware of this URL", 404
 	if request.method in ["POST", "PUT"]:
