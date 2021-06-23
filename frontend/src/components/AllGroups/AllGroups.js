@@ -89,9 +89,14 @@ function AddGroup({ add, gname, setName, image, setImage }) {
 				<sup className='text-danger'>*</sup> required
 			</small>
 			<button className='btn btn-success' disabled={!gname} onClick={() => {
-				axiosInstance.post(`/group`, {'gname': gname, 'rawImg': image.rawBytes }, {headers: { Token: token, uid: uid }})
-					.then(({data}) => window.location.href = `/groups/${data.gid}`)
-					.catch(err => console.error(err));
+				if(image)
+					axiosInstance.post(`/group`, {'gname': gname, 'rawImg': image.rawBytes }, {headers: { Token: token, uid: uid }})
+						.then(({data}) => window.location.href = `/groups/${data.gid}`)
+						.catch(err => console.error(err));
+				else
+					axiosInstance.post(`/group`, {'gname': gname }, {headers: { Token: token, uid: uid }})
+						.then(({data}) => window.location.href = `/groups/${data.gid}`)
+						.catch(err => console.error(err.response));
 			}}>Add Group</button>
 			<button className='btn btn-outline-danger float-right' onClick={() => { add(false); setError(''); setImage(null); setName('') }} >Cancel</button>
 		</div>
