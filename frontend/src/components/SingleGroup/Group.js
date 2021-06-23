@@ -5,6 +5,7 @@ import useWebSocket from 'react-use-websocket';
 import UnitCard from './UnitCard';
 import Modal from '../Modal/Modal';
 import getBase64ImageData from '../../tools/getBase64ImageData';
+import Group_Icon from '../../image/Group_Icon.png';
 
 function EditGroup({ showEditGroup, id }) {
 	const [error, setError] = useState('');
@@ -140,8 +141,9 @@ function Group({ className, match }) {
 			<Modal closeOnClickOutside={false} showModal={editGroup} showModalHook={showEditGroup}>
 				<EditGroup showEditGroup={showEditGroup} id={group._id}/>
 			</Modal>
-
-			<h1 className='display-3 text-center' onChange={e => console.log(e.target.value)}>{group.gname}</h1>
+			<div className='text-center'>
+				<h1 className='display-3 d-inline' onChange={e => console.log(e.target.value)}>{group.gname}</h1>
+			</div>
 			<img className='img-fluid rounded d-sm-none mb-4' alt='Grouppicture' src={group.img} />
 			<button className='btn btn-block d-sm-none mb-3 btn-primary' onClick={() => showEditGroup(true)}>Edit Group</button>
 			<div className={`row align-items-start ${!plan ? 'align-items-center' : ''}`}>
