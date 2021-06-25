@@ -21,6 +21,9 @@ plans = client.Training.TrainingPlans
 categories = client.Training.Category
 users = client.GroupAndUser.User
 
+# Decorater to authenticate a user.
+# The function looks for a Token and UID in the Requests Header and checks if they are valid
+# If this check doesn't pass an Error is returned to Request-Sender. Otherwise the Request gets executed.
 def needs_authentication(func):
     def authenticate(user_id, token) -> bool:
         res = users.find_one({"_id": user_id})
@@ -58,7 +61,9 @@ class MakeWorkoutPlan(Resource):
              return "Duplicate ID: WorkoutPlanname is already in Use", 400
         return {"pid": pid}, 200
 
+# This Class wraps a single Workout-Plan. The Resource is accessible under /workoutPlan/<id>
 class WorkoutPlan(Resource):
+    # GET returns all Information about the Plan. Only an authenticated User is allowed to access this Ressource.
     @needs_authentication
     def get(self, plan_id):
         res = plans.find_one({"_id": plan_id})
@@ -84,13 +89,17 @@ class WorkoutPlan(Resource):
 api.add_resource(WorkoutPlan, '/workoutPlan/<string:plan_id>')
 
 
+# This Class provides access to all Categories. The Resource is accessible under /category
 class Categories(Resource):
+    # GET returns a List of all Categories. Only a authenticated User has access to Categories.
     @needs_authentication
     def get(self):
         return list(categories.find())
 
 
+# This Class provides access to all Workout-Plans in one Category. The Resource is accessible under /category/<id>
 class PlansInCategory(Resource):
+    # GET returns a List of all Workout-Plans associated with the given Category. A User has to be authenticated to access this.
     @needs_authentication
     def get(self, category_id):
         def resolve_units(us):

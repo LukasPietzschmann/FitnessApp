@@ -12,6 +12,10 @@ import websockets
 import json
 
 
+# This file is responsible for searching for events and distributing them to connected Clients.
+# In this file all currently connected Clients are stored.
+# It contains four functions that run asynchronously and each performing their own task.
+
 load_dotenv()
 client = MongoClient(env.get("MONGODB_CON_STR"))
 events = client.Events.Events
@@ -20,7 +24,11 @@ users = client.GroupAndUser.User
 
 clients = set()
 
-
+# The Producer checks every two seconds if theres a new Event stored in the Database.
+# If thats the case it stores the Event temporarily in a Queue and deletes it from the DB afterwards.
+# If n Clients are connected and the Producer finds m Events, it generades m * n Events for the Queue,
+# so distributing the event to multiple Clients can be done in parallel.
+# If no Client is connected, the Producer just waits, withoud looking for new Events.
 async def producer(queue: Queue):
 	while True:
 		if len(clients) > 0:
@@ -35,12 +43,15 @@ async def producer(queue: Queue):
 		await asyncio.sleep(2)
 
 
+# The Consumer takes Events from the Queue and sends it to one Client.
 async def consumer(queue: Queue):
 	while True:
 		work_item = await queue.get()
 		await work_item["client"].send(work_item["event"])
 
 
+# If no Client is connected, this function deletes all Events from the DB every 10 seconds
+# so only new Events get distributed to a newly connected Client.
 async def clear_events():
 	while True:
 		if(len(clients) == 0):
@@ -48,6 +59,9 @@ async def clear_events():
 		await asyncio.sleep(10)
 
 
+# The Handler is responsible for managing Client Connections.
+# It stores new connected Clients, and removes them if they disconnect.
+# A Client only gets added, if its first Message contains a UID and an associated Token.
 async def handler(websocket: WebSocketServerProtocol, path):
 	async def close_con():
 		print(f"Client {websocket.remote_address} was disconnected, as it isnt authenticated")

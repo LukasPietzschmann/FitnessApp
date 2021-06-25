@@ -17,6 +17,7 @@ import json
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 
+# The Proxy receives all API-Requests and forwards them to the corresponding service
 @app.route('/<path:path>', methods=["GET", "POST", "PUT", "DELETE"])
 def proxy(path):
 	base = env.get("API_BASE")

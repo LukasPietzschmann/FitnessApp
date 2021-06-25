@@ -35,11 +35,9 @@ users = client.GroupAndUser.User
 groups = client.GroupAndUser.Group
 events = client.Events.Events
 
-# Function to authenticate the logged in user, if required.
-# authenticate checks if the submitted token of the user matched their user_id and returns true if it does and false if not. It's called by the wrapper.
-# wrapper first checks if a token was given, then if a valid user_id was given. If both are true, it uses authenticate. If the user is successfully authenticated,
-# the calling function will be executed and the result returned.
-# If any of the checks returns false, a corresponding error code is returned to the caller. (Author: LP)
+# Decorater to authenticate a user.
+# The function looks for a Token and UID in the Requests Header and checks if they are valid
+# If this check doesn't pass an Error is returned to Request-Sender. Otherwise the Request gets executed.
 def needs_authentication(func):
 	def authenticate(user_id, token) -> bool:
 		res = users.find_one({"_id": user_id})
@@ -49,17 +47,17 @@ def needs_authentication(func):
 
 	def wrapper(*args, **kw):
 		if (token := req.headers.get("token")) == None:
-			return "No Token was spezified", 401
+			return "No Token was specified", 401
 		uid = kw["user_id"] if "user_id" in kw else req.headers.get("uid")
 		if uid == None:
-			return "No uid was spezified", 401
+			return "No uid was specified", 401
 		if not authenticate(uid, token):
 			return "No valid Token for the given uid", 401
 		else:
 			return func(*args, **kw)
 	return wrapper
 
-
+# This function is used to upload Images to the MS Azure Blob Storage. If this succeeds the Image-URL is returned.
 def uploadBlob(image, name):
 	blob_service_client = BlobServiceClient(env.get("BLOB_CON_STRING"))
 	blob_client = blob_service_client.get_blob_client(container="images", blob=name)
@@ -67,18 +65,20 @@ def uploadBlob(image, name):
 	return f"https://fitnessappblob.blob.core.windows.net/images/{name}"
 
 
-# Class containing a get function. Returns the Username belonging to a given user-id.
+# This Class wraps the Users Name. The Resource is accessible under /user/<id>/name
 class UserName(Resource):
+	# GET returns the Users Name. This Req. doesn't need to be authenticated, as everybody should be able to resolve a UID to a Name.
 	def get(self, user_id):
 		res = users.find_one({"_id": user_id})
 		if not res:
 			return "No valid UserID", 404
 		return res["uname"], 200
 
-# Class providing the get, put, and delete functionality for the User objects.
+# This Class wraps the generall Users Info. The Resource is accessible under /user/<id>
+# Every Request accessing this Resource has to be authenticated.
 class User(Resource):
-	# Uses needs_authentication and returns all data belonging to the specified user.
-	# The list of groups and associated training plans are provided as links to the respecitve calls to save space in the reply.
+	# GET returns the ID, Username, Profilepicture, real Name, EMail, Adress, and Password
+	# Also a GET returns the URL to other User related Resources.
 	@needs_authentication
 	def get(self, user_id):
 		res = users.find_one({"_id": user_id})
@@ -87,7 +87,7 @@ class User(Resource):
 		del res["tokens"]
 		return {**res, "groups" : "user/{user_id}/groups","plans" : "user/<string:user_id>/plans"}, 200
 
-	# Uses needs_authentication and updates the data of the specified user.
+	# PUT lets you update everything GET returns, except the ID and Username.
 	@needs_authentication
 	def put(self, user_id):
 		if not users.find_one({"_id": user_id}):
@@ -101,7 +101,7 @@ class User(Resource):
 		users.update_one({"_id": user_id}, {"$set": body})
 		return self.get(user_id)
 
-	# Uses needs_authentication and deletes the specified user.
+	# DELETE deletes the User.
 	@needs_authentication
 	def delete(self, user_id):
 		res = users.find_one({"_id": user_id})
@@ -116,12 +116,12 @@ class User(Resource):
 			users.delete_one({"_id": user_id})
 			return res, 200
 
-# Class used to register a new User.
-# First reads out the body of the request and saves it into the variable body.
-# Then it checks if the body contains both a Username and a Password. If either is missing, it respondes with an error and stops.
-# If both are provided, it trys to create a new User in the database with the data from the request.
-# If the user-id is already in use, the function returns an error and stops. If no error is given, it returns the user_id.
+
+# This Class is used to register a new User. The Resource is accessible under /register
 class Register(Resource):
+	# POST registers a new User. It needs at minimum a uname (Username) and a Password.
+	# If the Username is already taken, an Error is returned.
+	# As a Profilepicture either a URL (img filed) or a Base64 encoded Image (rawImg filed) can be provided.
 	def post(self):
 		body = req.get_json() if req.content_type == "application/json" else json.loads(req.get_data().decode("utf-8"))
 		if not "uname" in body or body["uname"] == "":
@@ -142,14 +142,10 @@ class Register(Resource):
 			return "Duplicate ID: Account name is already in Use", 400
 		return {"uid": uid}, 200
 
-# This class handels logging in.
-# After loading the request body into the variable body, it first checks if it contains a Username and a Password, throwing an error if either or both are missing.
-# Then it loads the value of uname and password into variables of the same name.
-# Then it tries to load the user of the given name from the database. If the user doesn't exist, it throws an error.
-# Then it checks if the submitted password matches the password in the database. If it doesn't, it throws an error.
-# If the password is correct, the function creates a new token and adds it to the database.
-# It then creates the request to the caller, setting two cookies used for authoriation. These cookies are set to expire after around a year.
+# This Class is used to login a User. The Resource is accessible under /login
 class Login(Resource):
+	# POST requires a uname (Username) and Password.
+	# If both are valid, a token is generated and sent back together with the UID as a Cookie.
 	def post(self):
 		body = req.get_json() if req.content_type == "application/json" else json.loads(req.get_data().decode("utf-8"))
 		if not ("password" in body and "uname" in body):
@@ -169,9 +165,9 @@ class Login(Resource):
 		response.set_cookie(key="UID", value=res["_id"], secure=False, max_age=360 * 60 * 60 * 24)
 		return response
 
-# This class handels the logout.
-# After checking that the caller has the right authorisation, it deletes the token of the current session from the list in the database.
+# This Class is used to logout a User. The Resource is accessible under /logout
 class Logout(Resource):
+	# POST needs to be authenticated. This operation invalidates the used Token.
 	@needs_authentication
 	def post(self, user_id):
 		res = users.find_one({"_id": user_id})
@@ -181,8 +177,9 @@ class Logout(Resource):
 		users.update_one({"_id": user_id}, {"$pull": {"tokens": token}})
 		return None, 200
 
-# This class returns a list of the groups a given user is a member of.
+# This Class provides access to all Groups a User is a member of. The Resource is accessible under /user/<id>/groups
 class GroupsWithUser(Resource):
+	# GET needs to be authenticated and returns a list of all Groups the User is a member of.
 	@needs_authentication
 	# FIXME Wenn im Header eine uid angegeben ist (mit dem korrekten Token) dann
 	# lässt sich eine andere uid im Pfad angeben und somit lassen sich die
@@ -195,7 +192,10 @@ class GroupsWithUser(Resource):
 		return list(gres), 200
 
 
+# This Class provides access to all Workout-Plans a User works on. The Resource is accessible under /user/<id>/plan
+# All Methods must be authenticated.
 class UserPlanPack(Resource):
+	# GET returns a List of all Workout-Plans a User works on.
 	@needs_authentication
 	def get(self, user_id):
 		if not (res := users.find_one({"_id": user_id})):
@@ -204,6 +204,7 @@ class UserPlanPack(Resource):
 			return [], 200
 		return res["planPack"], 200
 
+	# POST adds a new Workout-Plan to the List. Therefor a valid pid (PlanID) has to be provided.
 	@needs_authentication
 	def post(self, user_id):
 		if not (res := users.find_one({"_id": user_id})):
@@ -220,7 +221,10 @@ class UserPlanPack(Resource):
 		return None, 200
 
 
+# This Class provides access to a specific Workout-Plan a User works on. The Resource is accessible under /user/<id>/plan/<id>
+# All Methods must be authenticated.
 class UserPlan(Resource):
+	# GET retrieves Information about this specific Workout-Plan.
 	@needs_authentication
 	def get(self, user_id, plan_id):
 		if not (res := users.find_one({"_id": user_id})):
@@ -232,6 +236,7 @@ class UserPlan(Resource):
 				return p
 		return "No valid PlanID", 404
 
+	# PUT can mark a specific Workout-Plan-Unit as done. A unit_id and finished field has to be provided.
 	@needs_authentication
 	def put(self, user_id, plan_id):
 		if not (res := users.find_one({"_id": user_id})):
@@ -251,6 +256,7 @@ class UserPlan(Resource):
 		)
 		return users.find_one({"_id": user_id}), 200
 
+	# DELETE deletes the Workout-Plan from the Users PlanPack.
 	@needs_authentication
 	def delete(self, user_id, plan_id):
 		if not (res := users.find_one({"_id": user_id})):
@@ -271,7 +277,9 @@ api.add_resource(Register, '/user')
 api.add_resource(Login, '/login')
 api.add_resource(Logout, '/logout/<string:user_id>')
 
-# Wrapper that makes sure that the caller is a member of the given group.
+# Decorater to check if the requesting User is a member of the desired Group.
+# The function looks for a GroupID and UID in Functions Parameters and checks if they are valid.
+# If this check doesn't pass an Error is returned to Request-Sender. Otherwise the Request gets executed.
 def needs_to_be_in_group(func):
 	def wrapper(*args, **kw):
 		gid = kw["group_id"] if "group_id" in kw else (args[1] if len(args) >= 2 else None)
@@ -284,23 +292,22 @@ def needs_to_be_in_group(func):
 		return "The given User is no Member of the given Group", 400
 	return wrapper
 
-# This class handels groups.
+# This Class wraps the generall Group Info. The Resource is accessible under /group/<id>
+# Every Request accessing this Resource has to be authenticated and the requesting User has to be a Member of the Group.
 class Group(Resource):
-	# Function used to get the data of a group. Uses needs_authentication and needs_to_be_in_group.
-	# First checks if the group_id from the request body is valid, returning an error if it isn't.
-	# If it passes the checks, the functions returns the entry of the given group to the caller.
+	# GET returns the ID, Groupname, Grouppicture and Members.
+	# Also a GET returns the URL to other Group related Resources.
 	@needs_authentication
 	@needs_to_be_in_group
 	def get(self, group_id):
 		res = groups.find_one({"_id": group_id})
 		if not res:
 			return "No valid GroupID", 404
-		return {**res, "groups" : "group/<string:group_id>/plans"}, 200
+		if "planPack" in res:
+			del res["planPack"]
+		return {**res, "plans" : "group/<string:group_id>/plans"}, 200
 
-	# Function used to update the data of a group. Uses needs_authentication and needs_to_be_in_group.
-	# First checks if the group_id from the request body is valid, returning an error it it isn't.
-	# Then it checks if the request body contains the group name, returning an error if it does. The reason for that is that the group name can't be changed.
-	# If it doesn't contain the group name, it updates the entry of the group with the provided data and returns the group_id to the caller.
+	# PUT lets you update everything GET returns, except the ID and GroupName.
 	@needs_authentication
 	@needs_to_be_in_group
 	def put(self, group_id):
@@ -315,11 +322,12 @@ class Group(Resource):
 		groups.update_one({"_id": group_id}, {"$set": body})
 		return self.get(group_id)
 
-# This class handels the creation of new groups. Uses need_authentication. Loads the request body into a new variable.
-# Then it checks if the body contains a group name, returning an error if not.
-# If it does, it creates a group_id using the group name and then tries to insert the new group into the database.
-# If the group_id is already in use, the function returns an error. Otherwise, it retunrs the group_id.
+# This Class is responsible for creating new Groups. The Resource is accessible under /group
 class MakeGroup(Resource):
+	# POST is only accessible for an authenticated User. It expects at least a gname (Groupname).
+	# If the Groupname is already taken, an Error is returned.
+	# An Group Image can either be provided by a URL (img field) or a Base64 encoded Image (rawImg field).
+	# The User creating the Group automatically gets added as a Member to it.
 	@needs_authentication
 	def post(self):
 		body = req.get_json() if req.content_type == "application/json" else json.loads(req.get_data().decode("utf-8"))
@@ -334,17 +342,17 @@ class MakeGroup(Resource):
 			groups.insert_one({
 				"_id": gid,
 				**body,
-				"members": [request.headers.get("uid")] #FIXME das wirkt irgendwie nicht optimal die uid so zu bekommen
+				"members": [request.headers.get("uid")]
 			})
 		except errors.DuplicateKeyError:
 			return "Duplicate ID: Groupname is already in Use", 400
 		return {"gid": gid}, 200
 
-# This class handels adding and removing users from groups.
+# This Class handels adding and removing users from groups. The Resource is accessible under /group/<string:group_id>/<user_id>
+# All Methods require an authenticated User.
 class AddUserToGroup(Resource):
-	# Function used to add a user to a group. Uses needs_authentication.
-	# First checks if the group_id and the user_id from the request body are valid, throwing corresponding errors if either aren't valid.
-	# If it passes the checks, the given user is added to the group.
+	# POST adds the User to the Group.
+	# Once a user is added, an Event is triggered, that can be received from a Webhook-Client.
 	@needs_authentication
 	def post(self, group_id, user_id):
 		if not (group := groups.find_one({"_id": group_id})):
@@ -357,11 +365,10 @@ class AddUserToGroup(Resource):
 		events.insert_one({"_id": str(datetime.datetime.now()), "target": "group.members.add", "body": {"member": user_id, "group": group_id}})
 		return None, 200
 
-	# Function used to add a user to a group. Uses needs_authentication and needs_to_be_in_group.
-	# First checks if the group_id and the user_id from the request body are valid, throwing corresponding errors if either aren't valid.
-	# If it passes the checks, the given user is removed to the group.
-	# After removing the user, the function tests how many people were in the group when the function was called.
-	# If there was only one member, the group would be empty at this point. In which case the group will be deleted. (Authors: and JS)
+	# DELETE removes the User from the Group.
+	# If, after this Operation, theres no Member left in the Group, the Group gets deleted.
+	# Once a User is removed, an Event is triggered, that can be received from a Webhook-Client.
+	# To be able to leave a Group, the User has to be in the Group.
 	@needs_authentication
 	@needs_to_be_in_group
 	def delete(self, group_id, user_id):
@@ -381,23 +388,28 @@ class AddUserToGroup(Resource):
 
 		return None, 200
 
-# Returns the name of the group with the specified group_id. (Author: JS)
+# This Class wraps the Groups Name. The Resource is accessible under /group/<id>/name
 class GroupName(Resource):
+	# GET returns the Group Name. This Req. doesn't need to be authenticated, as everybody should be able to resolve a GID to a Name.
 	def get(self, group_id):
 		res = groups.find_one({"_id": group_id})
 		if not res:
 			return "No valid GroupID", 404
 		return res["gname"], 200
 
-# Enables the Front End to access the picture of a group. (Author: JS)
+# This Class wraps the Groups Picture. The Resource is accessible under /group/<id>/img
 class GroupPicture(Resource):
+	# GET returns the Group Picture. This Req. doesn't need to be authenticated, as everybody should be able to resolve a GID to a Picture.
 	def get(self, group_id):
 		res = groups.find_one({"_id": group_id})
 		if not res:
 			return "No valid GroupID", 404
 		return res["img"], 200
 
+# This Class provides access to all Workout-Plans a Group works on. The Resource is accessible under /group/<id>/plan
+# All Methods must be authenticated and the User as to ne in the Group.
 class GroupPlanPack(Resource):
+	# GET returns a List of all Workout-Plans a Group works on.
 	@needs_authentication
 	@needs_to_be_in_group
 	def get(self, group_id):
@@ -407,6 +419,8 @@ class GroupPlanPack(Resource):
 			return [], 200
 		return res["planPack"], 200
 
+	# POST adds a new Workout-Plan to the List. Therefor a valid pid (PlanID) has to be provided.
+	# This creates an Event that can be received by a WebSocket Client.
 	@needs_authentication
 	@needs_to_be_in_group
 	def post(self, group_id):
@@ -425,7 +439,10 @@ class GroupPlanPack(Resource):
 		return None, 200
 
 
+# This Class provides access to a specific Workout-Plan a Group works on. The Resource is accessible under /group/<id>/plan/<id>
+# All Methods must be authenticated and the User has to be a member of the Group.
 class GroupPlan(Resource):
+	# GET retrieves Information about this specific Workout-Plan.
 	@needs_authentication
 	@needs_to_be_in_group
 	def get(self, group_id, plan_id):
@@ -438,6 +455,8 @@ class GroupPlan(Resource):
 				return plan
 		return "No valid PlanID", 404
 
+	# PUT can mark a specific Workout-Plan-Unit as done. A unit_id and finished field has to be provided.
+	# This creates an Event that can be received by a WebSocket Client.
 	@needs_authentication
 	@needs_to_be_in_group
 	def put(self, group_id, plan_id):
@@ -460,6 +479,8 @@ class GroupPlan(Resource):
 		events.insert_one({"_id": str(datetime.datetime.now()), "target": f"group.plan.finished.{'add' if body['finished'] else 'remove'}", "body": {"member": uid, "group": group_id, "plan": plan_id, "unit": body["unit_id"]}})
 		return groups.find_one({"_id": group_id}), 200
 
+	# DELETE deletes the Workout-Plan from the Groups PlanPack.
+	# This creates an Event that can be received by a WebSocket Client.
 	@needs_authentication
 	@needs_to_be_in_group
 	def delete(self, group_id, plan_id):

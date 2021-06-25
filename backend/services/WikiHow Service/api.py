@@ -15,7 +15,9 @@ CORS(app, supports_credentials=True)
 api = Api(app)
 
 
+# This Class provides easy Access to the WikiHow Data.
 class WikiHow(Resource):
+	# GET returns a WikiHow Article matching the Query parsed into its single steps.
 	def get(self, query):
 		if len(obj := wikihow.search(query, max_results=1)) < 1:
 			return None, 404

@@ -18,7 +18,9 @@ client = MongoClient(env.get("MONGODB_CON_STR"))
 items = client.Shopping.Items
 
 
+# This Class wraps all stored Items. The Resource is accessible under /shoppingsearch/<query>
 class ShoppingItemSearch(Resource):
+    # GET returns a List of all Items matching the Query.
     def get(self, query):
         tags = list(items.find({"tags": {"$regex": f".*{query}.*","$options": "-i"}}))
         names = list(items.find({"name": {"$regex": f".*{query}.*","$options": "-i"}}))
