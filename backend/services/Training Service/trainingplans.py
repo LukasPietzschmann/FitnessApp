@@ -2,6 +2,10 @@
 Authors: Lukas Pietzschmann, Leon Schugk
 '''
 
+# FIXME Behebe möglichen fehler mit Flask:
+# https://github.com/flask-restful/flask-restful/pull/913
+# import flask.scaffold
+# flask.helpers._endpoint_from_view_func = flask.scaffold._endpoint_from_view_func
 from hashlib import sha1
 from flask import Flask, request as req
 from flask_restful import Api, Resource
