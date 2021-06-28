@@ -1,6 +1,4 @@
-'''
-Authors: Lukas Pietzschmann, Vincent Ugrai
-'''
+# Authors: Lukas Pietzschmann, Vincent Ugrai
 
 flask
 flask-restful
