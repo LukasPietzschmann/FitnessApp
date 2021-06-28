@@ -55,11 +55,7 @@ function UnitCard({ className, name, rep, finished, i, unit_id, group_id, plan_i
 						.then(res => console.log(res))
 						.catch(err => console.error(err.response));
 				}}>Mark as done</button> :
-					<button className='btn btn-dark btn-block' onClick={() => {
-						axiosInstance.put(`/group/${group_id}/plan/${plan_id}`, { "unit_id": unit_id, "uid": uid, "finished": false }, { headers: { Token: token, uid: uid } })
-							.then(res => console.log(res))
-							.catch(err => console.error(err.response));
-					}}>Mark as undone (only for testing!)</button>}
+					''}
 			</Accordion> : 'loading...'}
 		</div>
 	);
