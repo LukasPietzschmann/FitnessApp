@@ -1,5 +1,8 @@
 /**
  * @author Vincent Ugrai
+ *
+ * This File is the Entrypoint of React.
+ * It specifies Components that get rendered and the HTML Element that they get rendered in.
  */
 
 import React from 'react';

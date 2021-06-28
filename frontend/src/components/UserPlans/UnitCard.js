@@ -7,6 +7,16 @@ import { axiosInstance } from '../../constants';
 import useUser from '../../hooks/useUser';
 import Accordion from '../Accordion/Accordion';
 
+/**
+ *
+ * @param className The className always gets forwarded to the Top-Level Element of the Component. This enables Styling 'from outside'.
+ * @param unit_id The Units ID.
+ * @param plan_id The Plans ID.
+ * @param name The Units Name.
+ * @param rep The number of repetitions of the Unit.
+ * @param finished If the User finished this Unit, this will be true, otherwise false,
+ * @param updateFinished If the User marks this Unit as finished, this Method should be called.
+ */
 function UnitCard({ className, unit_id, plan_id, name, rep, finished, updateFinished }) {
 	const [token, uid] = useUser();
 	const [data, setData] = useState(null);

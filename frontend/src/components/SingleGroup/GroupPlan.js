@@ -8,6 +8,15 @@ import { axiosInstance } from '../../constants';
 import useUser from '../../hooks/useUser';
 import UnitCard from './UnitCard';
 
+/**
+ * This Component shows a single Workout-Plan in a Group.
+ * @param className The className always gets forwarded to the Top-Level Element of the Component. This enables Styling 'from outside'.
+ * @param group_id The ID of the Group.
+ * @param plan_id The ID of the Plan.
+ * @param name The Plans Name.
+ * @param units A List of Units in the Plan.
+ * @param members A List of Members in the Group.
+ */
 function GroupPlan({ className, group_id, plan_id, name, units, members }) {
 	const { lastMessage, sendJsonMessage } = useWebSocket('ws://localhost:4000');
 	const [token, uid] = useUser();

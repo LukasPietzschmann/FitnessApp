@@ -8,6 +8,10 @@ import { axiosInstance } from '../../constants';
 
 import useUser from '../../hooks/useUser';
 
+/**
+ * This Component greets the User. It's shown on the Frontpage Component.
+ * @param className The className always gets forwarded to the Top-Level Element of the Component. This enables Styling 'from outside'.
+ */
 function Greeting({ className }) {
 	const [token, uid] = useUser();
 	const [userInfo, setUserInfo] = useState(null);

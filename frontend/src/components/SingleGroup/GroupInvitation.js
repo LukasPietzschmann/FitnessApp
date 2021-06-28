@@ -6,7 +6,11 @@ import { useEffect, useState } from 'react';
 import { axiosInstance } from '../../constants';
 import useUser from '../../hooks/useUser';
 
-//Ich versuch mich mal daran, das aufzuhübschen. (Johannes S)
+/**
+ * This Component lets a User join a Group. It is shown under the 'Join-Link' /groups/<id>/join
+ * @param className The className always gets forwarded to the Top-Level Element of the Component. This enables Styling 'from outside'.
+ * @param match In the match Parameter the React-Router stores Information about the current Route. If the Route contains a variable Path, the variable is accessable here.
+ */
 function GroupInvitation({ className, match }) {
 	const [token, uid] = useUser();
 	const [groupName, setName] = useState('');

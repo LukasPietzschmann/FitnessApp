@@ -1,5 +1,8 @@
 /**
  * @author Lukas Pietzschmann, Vincent Ugrai
+ *
+ * This File is the Entrypoint in our Project.
+ * All Routes are specified here.
  */
 
 import 'bootstrap/dist/css/bootstrap.min.css';

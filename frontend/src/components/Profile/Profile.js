@@ -12,7 +12,21 @@ import editPen from '../../image/editPen.png';
 import getBase64ImageData from '../../tools/getBase64ImageData';
 import './changeImgHover.css';
 
-function ChangePassword({ password, uid, token, setChangePassword, setUserInfo }) {
+/**
+ * This Component lets the User join a Group by inputing a Link. It is shown inside a Modal.
+ * @param showJoinGroup a function to show or unshow the Outside Modal.
+ * @param joinLink the state in which the Link inputted by the User is stored.
+ * @param setJoinLink a function to set the joinLink.
+ */
+
+/**
+ * This Component lets the User change his Password. It is shown inside a Modal.
+ * @param password The existing Password. This is used to check if the new Passwort does not equal the old one.
+ * @param showChangePassword a function to show or unshow the Outside Modal.
+ * @param setUserInfo After the Passwort was updated, this function gets called with the updated Userdata.
+ */
+function ChangePassword({ password, showChangePassword, setUserInfo }) {
+	const [token, uid] = useUser();
 	const [newPassword, setNewPassword] = useState('');
 	const [oldPassword, setOldPassword] = useState('');
 	const [newPasswordConfirmed, setNewPasswordConfirmed] = useState('');
@@ -61,17 +75,21 @@ function ChangePassword({ password, uid, token, setChangePassword, setUserInfo }
 					}
 					axiosInstance.put(`/user/${uid}`, { 'password': hash(newPassword) }, { headers: { Token: token, uid: uid } })
 						.then(({ data }) => {
-							setChangePassword(false);
+							showChangePassword(false);
 							setUserInfo(data);
 						})
 						.catch(err => console.error(err));
 				}}>Save Password</button>
-				<button className='btn btn-danger mr-3' onClick={() => setChangePassword(false)}>Cancel</button>
+				<button className='btn btn-danger mr-3' onClick={() => showChangePassword(false)}>Cancel</button>
 			</div>
 		</div>
 	);
 }
 
+/**
+ * This Component lets the User view and Change his Information. He can also Logout or delete his Account here. This Component is shown under /profile
+ * @param className The className always gets forwarded to the Top-Level Element of the Component. This enables Styling 'from outside'.
+ */
 function Profile({ className }) {
 	const [token, uid, logout] = useUser();
 	const [userInfo, setUserInfo] = useState({});
@@ -127,7 +145,7 @@ function Profile({ className }) {
 				</Modal>
 
 				<Modal Modal closeOnClickOutside={false} showModal={changePassword} showModalHook={showChangePassword}>
-					<ChangePassword uid={uid} token={token} password={userInfo.password} setChangePassword={showChangePassword} setUserInfo={setUserInfo}/>
+					<ChangePassword password={userInfo.password} showChangePassword={showChangePassword} setUserInfo={setUserInfo}/>
 				</Modal>
 
 				<Modal Modal closeOnClickOutside={false} showModal={deleteProfil} showModalHook={showDeleteProfile}>

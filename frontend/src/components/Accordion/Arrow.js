@@ -4,6 +4,10 @@
 
 import React from 'react';
 
+/**
+ * The Arrow Component only wraps an svg looking like an Arrow.
+ * @param className The className always gets forwarded to the Top-Level Element of the Component. This enables Styling 'from outside'.
+ */
 function Arrow({ className }) {
 	return (
 		<svg className={`${className}`} xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 512' fill='currentColor' width='14px' height='14px'>

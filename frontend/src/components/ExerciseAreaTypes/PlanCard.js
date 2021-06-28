@@ -8,6 +8,13 @@ import useUser from '../../hooks/useUser';
 import Modal from '../Modal/Modal';
 import '../Cards/ButtonBehavior.css';
 
+/**
+ * This Component shows one Wokout-Plan in the ExerciseAreaTypes Component. This Component also provides a way to add the Workout-Plan to the Users Profile or to a Group the User is a Member of.
+ * @param className The className always gets forwarded to the Top-Level Element of the Component. This enables Styling 'from outside'.
+ * @param name The Name of the Workout-Plan
+ * @param units A List of Units of a Workout-Plan.
+ * @param id The ID of the Workout-Plan.
+ */
 function PlanCard({ className, name, units, id }) {
 	const [token, uid] = useUser();
 	const [groups, setGroups] = useState([]);
@@ -30,12 +37,7 @@ function PlanCard({ className, name, units, id }) {
 						<button key={_id + gname} className='list-group-item list-group-item-action' onClick={() => {
 							axiosInstance.post(`/group/${_id}/plan`, { "pid": id }, { headers: { Token: token, uid: uid } })
 								.then(_ => window.location.href = `/groups/${_id}`)
-								.catch(err => {
-									if (err.response && err.response.status === 428)
-										setError('This Plan could not be added this Group, as you\'re already working on a Plan!');
-									else
-										console.error(err);
-								});
+								.catch(err => console.error(err));
 						}}>{gname}</button>
 					)})}
 				</div>
@@ -61,12 +63,7 @@ function PlanCard({ className, name, units, id }) {
 				<div className='card-footer btn' onClick={() => {
 					axiosInstance.post(`/user/${uid}/plan`, { "pid": id }, { headers: { Token: token } })
 						.then(_ => window.location.href = '/')
-						.catch(err => {
-							if (err.response && err.response.status === 428)
-								setError('This Plan could not be added to your Profile, as you\'re already working on a Plan!');
-							else
-								console.error(err);
-						});
+						.catch(err => console.error(err));
 				}}>Add to Profile</div>
 				<div className='card-footer btn' onClick={() => setAddToGroup(true)}>Add to Group</div>
 			</div>

@@ -6,12 +6,15 @@ import { useEffect, useState } from 'react';
 import { axiosInstance } from '../../constants';
 import useUser from '../../hooks/useUser';
 import useWebSocket from 'react-use-websocket';
-import UnitCard from './UnitCard';
 import GroupPlan from './GroupPlan';
 import Modal from '../Modal/Modal';
 import getBase64ImageData from '../../tools/getBase64ImageData';
-import Group_Icon from '../../image/Group_Icon.png';
 
+/**
+ * This Component lets the User edit the Grouppicture. It is shown inside a Modal.
+ * @param showEditGroup a function to show or unshow the Outside Modal.
+ * @param id The ID of the Group.
+ */
 function EditGroup({ showEditGroup, id }) {
 	const [error, setError] = useState('');
 	const [image, setImage] = useState(null);
@@ -63,6 +66,11 @@ function EditGroup({ showEditGroup, id }) {
 	);
 }
 
+/**
+ * This Component displays a single Group. In addition to general Information like the Members, Groupname and Grouppicture, the User can also see the Groups Plans there and interact with them. It is shown under /groups/<id>
+ * @param className The className always gets forwarded to the Top-Level Element of the Component. This enables Styling 'from outside'.
+ * @param match In the match Parameter the React-Router stores Information about the current Route. If the Route contains a variable Path, the variable is accessable here.
+ */
 function Group({ className, match }) {
 	const [token, uid] = useUser();
 	const { lastMessage, sendJsonMessage } = useWebSocket('ws://localhost:4000');

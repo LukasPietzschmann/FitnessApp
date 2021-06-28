@@ -4,6 +4,10 @@
 
 import Accordion from './Accordion/Accordion';
 
+/**
+ * This Component shows all used Open Source Software and its License. This is shown under /licenses
+ * @param className The className always gets forwarded to the Top-Level Element of the Component. This enables Styling 'from outside'.
+ */
 function Licenses({ className }) {
 	return (
 		<div className={className}>

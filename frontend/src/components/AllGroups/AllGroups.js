@@ -13,7 +13,13 @@ import AddGroupIcon from '../../image/add.svg';
 import Card from '../Cards/Card';
 import getBase64ImageData from '../../tools/getBase64ImageData';
 
-function JoinGroup({ join, joinLink, setJoinLink }) {
+/**
+ * This Component lets the User join a Group by inputing a Link. It is shown inside a Modal.
+ * @param showJoinGroup a function to show or unshow the Outside Modal.
+ * @param joinLink the state in which the Link inputted by the User is stored.
+ * @param setJoinLink a function to set the joinLink.
+ */
+function JoinGroup({ showJoinGroup, joinLink, setJoinLink }) {
 	const [token, uid] = useUser();
 	const [error, setError] = useState('');
 
@@ -40,12 +46,20 @@ function JoinGroup({ join, joinLink, setJoinLink }) {
 					.catch(err => setError(err.response));
 
 			}}>Join Group</button>
-			<button className='btn btn-outline-danger mt-3 float-right' onClick={() => { join(false); setError(''); setJoinLink('') }} >Cancel</button>
+			<button className='btn btn-outline-danger mt-3 float-right' onClick={() => { showJoinGroup(false); setError(''); setJoinLink('') }} >Cancel</button>
 		</div>
 	);
 }
 
-function AddGroup({ add, gname, setName, image, setImage }) {
+/**
+ * This Component lets the User add a Group. It is shown inside a Modal.
+ * @param showAddGroup a function to show or unshow the Outside Modal.
+ * @param gname the state in which the Name of the new Group is stored.
+ * @param setName a function to set the gname.
+ * @param image the state in which the Image of the new Group is stored.
+ * @param setImage a function to set the image.
+ */
+function AddGroup({ showAddGroup, gname, setName, image, setImage }) {
 	const [error, setError] = useState('');
 	const [token, uid] = useUser();
 
@@ -102,12 +116,15 @@ function AddGroup({ add, gname, setName, image, setImage }) {
 						.then(({data}) => window.location.href = `/groups/${data.gid}`)
 						.catch(err => console.error(err.response));
 			}}>Add Group</button>
-			<button className='btn btn-outline-danger float-right' onClick={() => { add(false); setError(''); setImage(null); setName('') }} >Cancel</button>
+			<button className='btn btn-outline-danger float-right' onClick={() => { showAddGroup(false); setError(''); setImage(null); setName('') }} >Cancel</button>
 		</div>
 	);
 }
 
-
+/**
+ * This Component shows all Groups a user is a Member of. Also Options to join and add a Group are presented here. It is shown under /groups
+ * @param className The className always gets forwarded to the Top-Level Element of the Component. This enables Styling 'from outside'.
+ */
 function AllGroups({ className }) {
 	const [token, uid] = useUser();
 	const [groups, setGroups] = useState([]);
@@ -130,14 +147,14 @@ function AllGroups({ className }) {
 				showJoinGroup(r);
 				setJoinLink('');
 			}}>
-				<JoinGroup joinLink={joinLink} setJoinLink={setJoinLink} join={showJoinGroup} />
+				<JoinGroup joinLink={joinLink} setJoinLink={setJoinLink} showJoinGroup={showJoinGroup} />
 			</Modal>
 			<Modal showModal={add} showModalHook={r => {
 				showAddGroup(r);
 				setName('');
 				setImage(null);
 			}}>
-				<AddGroup gname={gname} setName={setName} image={image} setImage={setImage} add={showAddGroup} />
+				<AddGroup gname={gname} setName={setName} image={image} setImage={setImage} showAddGroup={showAddGroup} />
 			</Modal>
 			<div className='d-inline-flex flex-wrap justify-content-center mt-3 ml-3'>
 				{groups.map(({ gname, img, _id }, i) => {return (

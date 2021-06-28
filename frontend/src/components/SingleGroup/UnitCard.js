@@ -7,6 +7,17 @@ import { axiosInstance } from '../../constants';
 import useUser from '../../hooks/useUser';
 import Accordion from '../Accordion/Accordion';
 
+/**
+ *
+ * @param className The className always gets forwarded to the Top-Level Element of the Component. This enables Styling 'from outside'.
+ * @param name The Name of the Unit.
+ * @param rep The number of repetitions of the Unit.
+ * @param finished A List containing another List containing UIDs of the Users who have already finished the Unit. Theres one inner List per Unit.
+ * @param i The Index of the Unit in finished.
+ * @param unit_id The ID of the Unit.
+ * @param group_id The ID of the Group.
+ * @param plan_id The ID of the Plan.
+ */
 function UnitCard({ className, name, rep, finished, i, unit_id, group_id, plan_id }) {
 	const [token, uid] = useUser();
 	const [finishedNames, setFinishedNames] = useState([]);

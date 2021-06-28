@@ -9,6 +9,10 @@ import { axiosInstance } from '../../constants';
 
 import Card from '../Cards/Card';
 
+/**
+ * This Component shows all Workout-Plan-Categories. Its accessible under /area
+ * @param className The className always gets forwarded to the Top-Level Element of the Component. This enables Styling 'from outside'.
+ */
 function AreaChoice({ className }) {
 	const [token, uid] = useUser();
 	const [categories, setCats] = useState([]);

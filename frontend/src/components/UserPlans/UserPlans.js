@@ -7,6 +7,10 @@ import { axiosInstance } from '../../constants';
 import useUser from '../../hooks/useUser';
 import Plan from './Plan';
 
+/**
+ * This Component shows all Workout-Plans the User currently works on. If there are no Workout-Plans a message is shown, where the User is prompted to add a Workout-Plan.
+ * @param className The className always gets forwarded to the Top-Level Element of the Component. This enables Styling 'from outside'.
+ */
 function UserPlans({ className }) {
 	const [token, uid] = useUser();
 	const [planPack, setPlanPack] = useState([]);
@@ -16,8 +20,6 @@ function UserPlans({ className }) {
 			.then(({ data }) => setPlanPack(data))
 			.catch(err => console.error(err));
 	}, [token, uid]);
-
-	console.log(planPack);
 
 	return (
 		<div className={className}>

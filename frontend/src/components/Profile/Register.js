@@ -6,6 +6,11 @@ import { useState } from 'react';
 import { axiosInstance, hash } from '../../constants';
 import getBase64ImageData from '../../tools/getBase64ImageData';
 
+/**
+ * This Component is used to Register a new User. It is shown unser /register
+ * @param className The className always gets forwarded to the Top-Level Element of the Component. This enables Styling 'from outside'.
+ * @param style The style gets forwarded to the Top-Level Element of the Component. This enables Styling with attributes 'from outside'.
+ */
 function Register({ className, style }) {
 	const [uname, setUName] = useState('');
 	const [passwd, setPasswd] = useState('');

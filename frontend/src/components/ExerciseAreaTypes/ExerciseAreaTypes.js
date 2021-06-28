@@ -8,6 +8,11 @@ import { axiosInstance } from '../../constants';
 import useUser from '../../hooks/useUser';
 import PlanCard from './PlanCard';
 
+/**
+ * This Component shows all Workout-Plans in one Category. It is shown under /area/<id>
+ * @param className The className always gets forwarded to the Top-Level Element of the Component. This enables Styling 'from outside'.
+ * @param match In the match Parameter the React-Router stores Information about the current Route. If the Route contains a variable Path, the variable is accessable here.
+ */
 function ExerciseAreaTypes({ className, match }) {
 	const [token, uid] = useUser();
 	const [plans, setPlans] = useState([]);

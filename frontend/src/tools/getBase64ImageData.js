@@ -2,6 +2,11 @@
  * @author Lukas Pietzschmann
  */
 
+/**
+ *
+ * @param url the URL to the Picture.
+ * @returns a Base64 encoded String representing the Picture.
+ */
 function getBase64ImageData(url) {
 	var img = new Image();
 	img.setAttribute('crossOrigin', 'anonymous');

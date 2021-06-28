@@ -7,6 +7,11 @@ import { useEffect, useState } from 'react';
 import useUser from '../../hooks/useUser';
 import { axiosInstance, hash } from '../../constants';
 
+/**
+ * This Component is used to Login a existing User. It is shown under /login or / if no User is logged in.
+ * @param className The className always gets forwarded to the Top-Level Element of the Component. This enables Styling 'from outside'.
+ * @param style The style gets forwarded to the Top-Level Element of the Component. This enables Styling with attributes 'from outside'.
+ */
 function Login({ className, style }) {
 	const [uname, setUName] = useState('');
 	const [passwd, setPasswd] = useState('');

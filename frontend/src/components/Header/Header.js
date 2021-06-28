@@ -9,7 +9,10 @@ import useUser from '../../hooks/useUser';
 import logo from '../../image/logo.png';
 import profilPic from '../../image/sample-profile.png';
 
-
+/**
+ * The Header is always shown at the Top of the Page. It shows the Apps Name and Logo and the Users Profilepicture.
+ * @param className The className always gets forwarded to the Top-Level Element of the Component. This enables Styling 'from outside'.
+ */
 function Header({ className }) {
 	const [token, uid] = useUser();
 	const [userData, setUserData] = useState(null);

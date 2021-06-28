@@ -2,6 +2,10 @@
  * @author Lukas Pietzschmann
  */
 
+/**
+ * This Component gets shown, if the URL does not match any defined Route.
+ * @param className The className always gets forwarded to the Top-Level Element of the Component. This enables Styling 'from outside'.
+ */
 function NotFound({ className }) {
 	return (
 		<div className={`text-center mt-5 ${className}`}>
