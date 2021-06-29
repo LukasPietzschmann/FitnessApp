@@ -28,6 +28,15 @@ services:
             - crushit
         restart: unless-stopped
 
+    shopping:
+        image: fitnessappcontainerregistry.azurecr.io/crushit:backend-shopping
+        build:
+            context: ./backend
+            dockerfile: ./services/Shopping Service
+        networks:
+            - crushit
+        restart: unless-stopped
+
     eventpublisher:
         build:
             context: backend
