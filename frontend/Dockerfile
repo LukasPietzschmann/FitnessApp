@@ -1,6 +1,6 @@
-#Author: Johannes Wimmer
+#Author: Johannes Wimmer, Lukas Pietzschmann
 
-FROM node:12
+FROM node:16-slim
 ENV NODE_ENV=production
 
 WORKDIR /app
