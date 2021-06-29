@@ -20,18 +20,22 @@ CORS(app, supports_credentials=True)
 # The Proxy receives all API-Requests and forwards them to the corresponding service
 @app.route('/<path:path>', methods=["GET", "POST", "PUT", "DELETE"])
 def proxy(path):
-	base = env.get("API_BASE")
+	base = None
 	port = None
 	body = None
 	method = {"GET": requests.get, "POST": requests.post, "PUT": requests.put, "DELETE": requests.delete}
 	if path.startswith("user") or path.startswith("group") or path.startswith("login") or path.startswith("logout"):
 		port = env.get("USER_GROUP_PORT")
+		base = env.get("USER_GROUP_BASE")
 	elif path.startswith("workoutPlan") or path.startswith("category"):
 		port = env.get("WORKOUT_PORT")
+		base = env.get("WORKOUT_BASE")
 	elif path.startswith("wikiHow"):
 		port = env.get("WIKI_HOW_PORT")
+		base = env.get("WIKI_HOW_BASE")
 	elif path.startswith("shoppingsearch"):
 		port = env.get("SHOPPING_PORT")
+		base = env.get("SHOPPING_BASE")
 	else:
 		return "The Proxy is not aware of this URL", 404
 	if request.method in ["POST", "PUT"]:
