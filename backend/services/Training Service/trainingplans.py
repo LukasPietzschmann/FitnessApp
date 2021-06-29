@@ -117,4 +117,4 @@ api.add_resource(PlansInCategory, "/category/<string:category_id>")
 
 if __name__ == '__main__':
     load_dotenv()
-    app.run(debug=True, port=env.get("WORKOUT_PORT"))
+    app.run(host="0.0.0.0", debug=True, port=env.get("WORKOUT_PORT"))

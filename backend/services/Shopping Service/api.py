@@ -40,4 +40,4 @@ api.add_resource(ShoppingItemSearch, '/shoppingsearch/<string:query>')
 
 if __name__ == '__main__':
     load_dotenv()
-    app.run(debug=True, port=env.get("SHOPPING_PORT"))
+    app.run(host="0.0.0.0", debug=True, port=env.get("SHOPPING_PORT"))

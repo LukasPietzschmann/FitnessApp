@@ -506,4 +506,4 @@ api.add_resource(GroupPlan, '/group/<string:group_id>/plan/<string:plan_id>')
 
 if __name__ == '__main__':
 	load_dotenv()
-	app.run(debug=True, port=env.get("USER_GROUP_PORT"))
+	app.run(host="0.0.0.0", debug=True, port=env.get("USER_GROUP_PORT"))
