@@ -1,4 +1,4 @@
-#Author: Johannes Wimmer
+#Author: Johannes Wimmer, Lukas Pietzschmann, Vincent Ugrai
 
 version: "3.9"
 services:
@@ -6,47 +6,52 @@ services:
         build:
             context: ./frontend
             dockerfile: Dockerfile
+        networks:
+            - crushit
         ports:
-            -   "80:3000"
+            - "80:3000"
         restart: unless-stopped
 
     wikihow:
         build:
             context: backend
             dockerfile: ./services/WikiHow Service/Dockerfile
-        ports:
-            -   ${WIKI_HOW_PORT}:${WIKI_HOW_PORT}
+        networks:
+            - crushit
         restart: unless-stopped
 
     training:
         build:
             context: backend
             dockerfile: ./services/Training Service/Dockerfile
-        ports:
-            -   ${WORKOUT_PORT}:${WORKOUT_PORT}
+        networks:
+            - crushit
         restart: unless-stopped
-        stdin_open: true
-        tty: true
 
     eventpublisher:
         build:
             context: backend
             dockerfile: ./services/EventPublisher/Dockerfile
-        ports:
-            -   ${WEBSOCKET_PORT}:${WEBSOCKET_PORT}
+        networks:
+            - crushit
         restart: unless-stopped
 
     accountservice:
         build:
             context: backend
             dockerfile: ./services/Account Service/Dockerfile
-        ports:
-            -   ${USER_GROUP_PORT}:${USER_GROUP_PORT}
+        networks:
+            - crushit
         restart: unless-stopped
     proxy:
         build:
             context: backend/
             dockerfile: ./proxy/Dockerfile
+        networks:
+            - crushit
         ports:
-            -   "5000:5000"
+            - "5000:5000"
         restart: unless-stopped
+networks:
+    crushit:
+        driver: bridge
