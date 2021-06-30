@@ -27,7 +27,7 @@ function ExerciseAreaTypes({ className, match }) {
 		<div className={className}>
 			<div className='d-flex flex-column flex-wrap justify-content-around align-items-center' style={{ height: '80vh' }}>
 				{plans.map(({ name, units, _id }) => {return (
-					<PlanCard className='shadow-lg' name={name} units={units} id={_id} />
+					<PlanCard className='shadow-lg' key={_id} name={name} units={units} id={_id} />
 				)})}
 			</div>
 		</div>

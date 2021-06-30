@@ -49,7 +49,7 @@ function CurrentPlans({ className }) {
 	return (
 		<div className={`d-flex flex-wrap justify-content-center ${className}`}>
 			{planPack.length > 0 ?
-				planPack.map(plan => <CurrentPlan plan={plan}/>)
+				planPack.map((plan, i) => <CurrentPlan key={i} plan={plan}/>)
 				:
 				<div className='text-center'>
 					<h2>Looks like you're lazy. There is currently no Plan!</h2>
