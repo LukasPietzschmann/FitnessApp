@@ -3,6 +3,7 @@
 version: "3.9"
 services:
     frontend:
+        image: fitnessappcontainerregistry.azurecr.io/crushit:frontend
         build:
             context: ./frontend
             dockerfile: Dockerfile
@@ -13,16 +14,18 @@ services:
         restart: unless-stopped
 
     wikihow:
+        image: fitnessappcontainerregistry.azurecr.io/crushit:backend-wikihow
         build:
-            context: backend
+            context: ./backend
             dockerfile: ./services/WikiHow Service/Dockerfile
         networks:
             - crushit
         restart: unless-stopped
 
     training:
+        image: fitnessappcontainerregistry.azurecr.io/crushit:backend-training
         build:
-            context: backend
+            context: ./backend
             dockerfile: ./services/Training Service/Dockerfile
         networks:
             - crushit
@@ -32,29 +35,34 @@ services:
         image: fitnessappcontainerregistry.azurecr.io/crushit:backend-shopping
         build:
             context: ./backend
-            dockerfile: ./services/Shopping Service
+            dockerfile: ./services/Shopping Service/Dockerfile
         networks:
             - crushit
         restart: unless-stopped
 
     eventpublisher:
+        image: fitnessappcontainerregistry.azurecr.io/crushit:backend-eventpublisher
         build:
-            context: backend
+            context: ./backend
             dockerfile: ./services/EventPublisher/Dockerfile
+        ports:
+            - "4000:4000"
         networks:
             - crushit
         restart: unless-stopped
 
     accountservice:
+        image: fitnessappcontainerregistry.azurecr.io/crushit:backend-account
         build:
-            context: backend
+            context: ./backend
             dockerfile: ./services/Account Service/Dockerfile
         networks:
             - crushit
         restart: unless-stopped
     proxy:
+        image: fitnessappcontainerregistry.azurecr.io/crushit:backend-proxy
         build:
-            context: backend/
+            context: ./backend
             dockerfile: ./proxy/Dockerfile
         networks:
             - crushit
