@@ -2,7 +2,7 @@
 Authors: Leon Schugk
 '''
 
-﻿# FIXME Behebe möglichen fehler mit Flask:
+# FIXME Behebe möglichen fehler mit Flask:
 # https://github.com/flask-restful/flask-restful/pull/913
 # import flask.scaffold
 # flask.helpers._endpoint_from_view_func = flask.scaffold._endpoint_from_view_func
