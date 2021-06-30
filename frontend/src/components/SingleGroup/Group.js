@@ -161,10 +161,18 @@ function Group({ className, match }) {
 					</div>
 					<div className='btn-group-vertical d-flex'>
 						<button className='btn btn-block btn-primary' onClick={() => {
-							let link = `${process.env.REACT_APP_FRONTEND_BASE}groups/${group._id}/join`;
-							navigator.clipboard.writeText(link)
-								.then(() => setCopied(true))
-								.catch((err) => console.error('Async: Could not copy text: ', err));
+							let link = `http://${window.location.hostname}/groups/${group._id}/join`;
+
+							const el = document.createElement('textarea');
+							el.value = link;
+							el.setAttribute('readonly', '');
+							el.style.position = 'absolute';
+							el.style.left = '-9999px';
+							document.body.appendChild(el);
+							el.select();
+							document.execCommand('copy');
+							document.body.removeChild(el);
+							setCopied(true);
 						}}>Copy Invitation Link {copied ? '(Copied!)' : ''}</button>
 						<button className='btn btn-block btn-outline-danger' onClick={() => {
 							axiosInstance.delete(`/group/${group._id}/${uid}`, { headers: { Token: token } })
