@@ -10,7 +10,7 @@ import axios from 'axios';
  * This creates a global Instance of axios, with some initial Settings.
  */
 const axiosInstance = axios.create({
-	baseURL: process.env.REACT_APP_API_BASE,
+	baseURL: `http://${window.location.hostname}:5000`,
 	timeout: 2000
 });
 

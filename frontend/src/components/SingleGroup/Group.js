@@ -73,7 +73,7 @@ function EditGroup({ showEditGroup, id }) {
  */
 function Group({ className, match }) {
 	const [token, uid] = useUser();
-	const { lastMessage, sendJsonMessage } = useWebSocket('ws://localhost:4000');
+	const { lastMessage, sendJsonMessage } = useWebSocket(`ws://${window.location.hostname}:4000`);
 	const [group, setGroup] = useState(null);
 	const [memberNames, setMemberNames] = useState([]);
 	const [members, setMembers] = useState([]);

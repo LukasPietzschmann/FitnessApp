@@ -212,7 +212,7 @@ class UserPlanPack(Resource):
 		body = req.get_json() if req.content_type == "application/json" else json.loads(req.get_data().decode("utf-8"))
 		if not "pid" in body:
 			return "A PlanID (pid) id required", 400
-		plan = requests.get(f"{env.get('API_BASE')}:5000/workoutPlan/{body['pid']}", headers={"uid": user_id, "Token": req.headers.get("Token")})
+		plan = requests.get(f"{req.url_root}/workoutPlan/{body['pid']}", headers={"uid": user_id, "Token": req.headers.get("Token")})
 		if plan.status_code != 200: #TODO genauere Fehlerabfrage der Response. Bei 404 wollen wir auch 404 zurückgeben
 			return "/user/<id>/plans konnte /workoutPlan/<id> nicht erreichen, oder es wurde ein unerwartetes Ergebnis zurück gegeben", 500
 		plan = plan.json()
@@ -429,7 +429,7 @@ class GroupPlanPack(Resource):
 		body = req.get_json() if req.content_type == "application/json" else json.loads(req.get_data().decode("utf-8"))
 		if not "pid" in body:
 			return "A PlanID (pid) id required", 400
-		plan = requests.get(f"{env.get('API_BASE')}:5000/workoutPlan/{body['pid']}", headers={"uid": req.headers.get("uid"), "Token": req.headers.get("Token")})
+		plan = requests.get(f"{req.url_root}/workoutPlan/{body['pid']}", headers={"uid": req.headers.get("uid"), "Token": req.headers.get("Token")})
 		if plan.status_code != 200: #TODO genauere Fehlerabfrage der Response. Bei 404 wollen wir auch 404 zurückgeben
 			return "/group/<id>/plans konnte /workoutPlan/<id> nicht erreichen, oder es wurde ein unerwartetes Ergebnis zurück gegeben", 500
 		plan = plan.json()

@@ -18,7 +18,7 @@ import UnitCard from './UnitCard';
  * @param members A List of Members in the Group.
  */
 function GroupPlan({ className, group_id, plan_id, name, units, members }) {
-	const { lastMessage, sendJsonMessage } = useWebSocket('ws://localhost:4000');
+	const { lastMessage, sendJsonMessage } = useWebSocket(`ws://${window.location.hostname}:4000`);
 	const [token, uid] = useUser();
 	const [finishedPerUnit, setFinishedPerUnit] = useState([]);
 
