@@ -56,7 +56,7 @@ function PlanCard({ className, name, units, id }) {
 				</div>
 				<div className='row justify-content-start'>
 					{units.map(({ name, rep }, i) =>
-						<div className='col-auto' key={i}>{name} ({rep} Wiederholung{rep > 1 ? 'en' : ''})</div>)}
+						<div className='col-auto' key={i}>{name} ({rep} Iteration{rep > 1 ? 's' : ''})</div>)}
 				</div>
 			</div>
 			<div className='btn-group'>
